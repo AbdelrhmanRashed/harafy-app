@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: 'Cairo', sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -51,7 +52,7 @@
 
 /*
   ╔══════════════════════════════════════════╗
-  ║        Harafy Design System              ║
+  ║              Design System               ║
   ║  Primary   #1A1A1A → oklch(0.13 0 0)     ║
   ║  Secondary #F59E0B → oklch(0.75 0.18 72) ║
   ║  Tertiary  #10B981 → oklch(0.70 0.17 162 ║
@@ -96,7 +97,7 @@
   --input: oklch(0.91 0 0);
 
   /* Ring → amber focus outline */
-  --ring: oklch(0.75 0.183 72);
+  --ring: oklch(0.13 0 0);
 
   /* Tertiary → #10B981 emerald */
   --tertiary: oklch(0.7 0.165 162);
@@ -146,7 +147,7 @@
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.75 0.183 72);
+  --ring: oklch(0.95 0 0);
 
   --tertiary: oklch(0.7 0.165 162);
   --tertiary-foreground: oklch(0.13 0 0);
@@ -172,7 +173,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
 
