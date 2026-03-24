@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import logo from '@/assets/images/logo.png';
 
-const text: string = 'ahmed';
 const App = () => {
-  return <div className="my-5 bg-amber-100 p-3 text-amber-900">{text}</div>;
+  return <img src={logo} alt="logo" className="w-32" />;
 };
+
+
+
 
 export default App;
