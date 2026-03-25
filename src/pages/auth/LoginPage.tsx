@@ -1,130 +1,105 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
-
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Card, CardContent } from '@/components/ui/card';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import {
   InputGroup,
   InputGroupAddon,
+  InputGroupButton,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from '@/components/ui/input-group';
+import { Button } from '@/components/ui/button';
+import { Mail, LogIn, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { loginSchema } from '@/schemas/loginSchema';
 
-import { Button } from "@/components/ui/button";
+type LoginFormData = z.infer<typeof loginSchema>;
 
-import {
-  Mail,
-  LogIn,
-  Eye,
-  EyeOff
-} from "lucide-react";
-
-const loginSchema = z.object({
-  email: z.string().email({
-    message: "البريد الإلكتروني غير صالح",
-  }),
-  password: z.string().min(6, {
-    message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
-  }),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
-
-const Login = () => {
+const LoginPage = () => {
+  //State for password visibility
   const [show, setShow] = useState(false);
 
+  //Form Setup
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginForm>({
+    formState: { errors },
+  } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginForm) => {
+  //Submit Handler
+  const onSubmit = (data: LoginFormData) => {
     console.log(data);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">
-      <Card className="w-105 rounded-2xl shadow-xl border-0 relative overflow-hidden">
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
+    <div className="relative mx-6 flex items-center justify-center">
+      <Card className="relative w-105 shadow-lg">
+        <div className="bg-primary absolute bottom-0 left-0 h-1 w-full" />
 
-        <CardContent className="p-8 space-y-6">
+        <CardContent className="space-y-6 p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="text-center space-y-1">
-              <h1 className="text-xl font-bold text-gray-800">
+            {/* Title */}
+            <div className="space-y-1 text-center">
+              <h1 className="text-foreground text-xl font-bold">
                 تسجيل الدخول
               </h1>
-              <p className="text-sm text-gray-500">
+              <p className="text-muted-foreground text-sm">
                 مرحباً بعودتك! يرجى إدخال بياناتك للمتابعة
               </p>
             </div>
 
-            <Field>
+            {/* Email */}
+            <Field data-invalid={!!errors.email}>
               <FieldLabel>البريد الإلكتروني</FieldLabel>
 
-              <InputGroup
-                className={`px-2 h-11 bg-gray-100 rounded-xl border border-gray-200 focus-within:border-0 transition
-                  ${errors.email ? "border-red-500" : "border-gray-200"}
-                  focus-within:border-primary`}
-              >
+              <InputGroup className={'rounded-lg px-3 py-5'}>
                 <InputGroupInput
                   dir="ltr"
                   placeholder="name@example.com"
-                  {...register("email")}
+                  {...register('email')}
+                  aria-invalid={!!errors.email}
                 />
-                <InputGroupAddon align="inline-end">
+                <InputGroupAddon align="inline-start">
                   <Mail className="text-muted-foreground" />
                 </InputGroupAddon>
               </InputGroup>
 
-              {errors.email && (
-                <FieldError>{errors.email.message}</FieldError>
-              )}
+              {errors.email && <FieldError>{errors.email.message}</FieldError>}
             </Field>
 
-            <Field>
-              <div className="flex justify-between text-sm text-gray-600">
-                <FieldLabel>كلمة المرور</FieldLabel>
-                <span className="text-gray-400 cursor-pointer">
+            {/* Password */}
+            <Field data-invalid={!!errors.password}>
+              <FieldLabel className="flex justify-between">
+                كلمة المرور
+                <span className="text-muted-foreground cursor-pointer">
                   نسيت كلمة المرور؟
                 </span>
-              </div>
+              </FieldLabel>
 
-              <InputGroup
-                className={`px-2 h-11 bg-gray-100 rounded-xl border border-gray-200 focus-within:border-0 transition
-                  ${errors.password ? "border-red-500" : "border-gray-200"}
-                  focus-within:border-primary`}
-              >
+              <InputGroup className={'rounded-lg px-3 py-5'}>
                 <InputGroupInput
-                  type={show ? "text" : "password"}
+                  aria-invalid={!!errors.password}
+                  type={show ? 'text' : 'password'}
                   placeholder="أدخل كلمة المرور"
-                  {...register("password")}
+                  {...register('password')}
                 />
-
-                <InputGroupAddon align="inline-end">
-                  <button
-                    type="button"
-                    onClick={() => setShow(!show)}
-                  >
-                    {show ? (
-                      <EyeOff className="text-muted-foreground" />
-                    ) : (
-                      <Eye className="text-muted-foreground" />
-                    )}
-                  </button>
+                <InputGroupAddon align="inline-start">
+                  <KeyRound className="text-muted-foreground" />
                 </InputGroupAddon>
+                <InputGroupButton
+                  size={'icon-sm'}
+                  className="cursor-pointer"
+                  onClick={() => setShow(!show)}
+                >
+                  {show ? (
+                    <EyeOff className="text-muted-foreground" />
+                  ) : (
+                    <Eye className="text-muted-foreground" />
+                  )}
+                </InputGroupButton>
               </InputGroup>
 
               {errors.password && (
@@ -133,45 +108,46 @@ const Login = () => {
             </Field>
 
             <Button
+              variant="default"
               type="submit"
-              disabled={isSubmitting}
-              className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 flex items-center justify-center gap-2"
+              className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg"
             >
-              {isSubmitting ? "جاري الدخول..." : "تسجيل الدخول"}
-              <LogIn className="w-4 h-4" />
+              تسجيل الدخول
+              <LogIn size={16} />
             </Button>
           </form>
 
-          <div className="flex items-center gap-3 text-gray-400 text-sm">
-            <div className="flex-1 h-px bg-gray-200" />
+          {/* Divider */}
+          <div className="text-muted-foreground flex items-center gap-3 text-sm">
+            <div className="h-px flex-1 bg-gray-200" />
             أو
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="h-px flex-1 bg-gray-200" />
           </div>
 
           <Button
             type="button"
             variant="outline"
-            className="w-full h-11 rounded-xl bg-white flex items-center justify-center gap-2"
+            className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg"
           >
-            <span className="text-sm text-gray-600">
+            <span className="text-foreground text-sm">
               المتابعة باستخدام Google
             </span>
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
-              className="w-4 h-4"
+              className="h-4 w-4"
             />
           </Button>
 
-          <p className="text-sm text-center text-gray-500">
-            ليس لديك حساب؟{" "}
-            <span className="text-orange-500 cursor-pointer">
+          <p className="text-muted-foreground text-center text-sm">
+            ليس لديك حساب؟{' '}
+            <span className="text-primary ms-1 cursor-pointer">
               إنشاء حساب جديد
             </span>
           </p>
         </CardContent>
       </Card>
 
-      <div className="absolute bottom-24 text-xs text-gray-400 flex gap-4">
+      <div className="text-muted-foreground absolute -bottom-12 flex gap-4 text-xs">
         <span>سياسة الخصوصية</span>
         <span>الشروط والأحكام</span>
         <span>اتصل بنا</span>
@@ -180,4 +156,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
