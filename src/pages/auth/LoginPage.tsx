@@ -29,44 +29,39 @@ import {
   EyeOff
 } from "lucide-react";
 
-
-// ✅ schema
 const loginSchema = z.object({
-  email: z.string().email("البريد الإلكتروني غير صالح"),
-  password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل"),
+  email: z.string().email({
+    message: "البريد الإلكتروني غير صالح",
+  }),
+  password: z.string().min(6, {
+    message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+  }),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-
 const Login = () => {
   const [show, setShow] = useState(false);
 
-  // ✅ form setup
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
-  // ✅ submit
   const onSubmit = (data: LoginForm) => {
     console.log(data);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">
-
       <Card className="w-105 rounded-2xl shadow-xl border-0 relative overflow-hidden">
         <div className="absolute bottom-0 left-0 w-full h-1 bg-primary" />
 
         <CardContent className="p-8 space-y-6">
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
-            {/* Title */}
             <div className="text-center space-y-1">
               <h1 className="text-xl font-bold text-gray-800">
                 تسجيل الدخول
@@ -76,16 +71,16 @@ const Login = () => {
               </p>
             </div>
 
-            {/* Email */}
             <Field>
               <FieldLabel>البريد الإلكتروني</FieldLabel>
 
               <InputGroup
-                className={`px-2 h-11 bg-gray-100 rounded-xl border transition
+                className={`px-2 h-11 bg-gray-100 rounded-xl border border-gray-200 focus-within:border-0 transition
                   ${errors.email ? "border-red-500" : "border-gray-200"}
-                  focus-within:border-0`}
+                  focus-within:border-primary`}
               >
                 <InputGroupInput
+                  dir="ltr"
                   placeholder="name@example.com"
                   {...register("email")}
                 />
@@ -99,7 +94,6 @@ const Login = () => {
               )}
             </Field>
 
-            {/* Password */}
             <Field>
               <div className="flex justify-between text-sm text-gray-600">
                 <FieldLabel>كلمة المرور</FieldLabel>
@@ -109,9 +103,9 @@ const Login = () => {
               </div>
 
               <InputGroup
-                className={`px-2 h-11 bg-gray-100 rounded-xl border transition
+                className={`px-2 h-11 bg-gray-100 rounded-xl border border-gray-200 focus-within:border-0 transition
                   ${errors.password ? "border-red-500" : "border-gray-200"}
-                  focus-within:border-0`}
+                  focus-within:border-primary`}
               >
                 <InputGroupInput
                   type={show ? "text" : "password"}
@@ -120,7 +114,6 @@ const Login = () => {
                 />
 
                 <InputGroupAddon align="inline-end">
-                  {/* ✅ FIX: prevent submit */}
                   <button
                     type="button"
                     onClick={() => setShow(!show)}
@@ -138,17 +131,17 @@ const Login = () => {
                 <FieldError>{errors.password.message}</FieldError>
               )}
             </Field>
+
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 flex items-center justify-center gap-2"
             >
-              تسجيل الدخول
+              {isSubmitting ? "جاري الدخول..." : "تسجيل الدخول"}
               <LogIn className="w-4 h-4" />
             </Button>
-
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-3 text-gray-400 text-sm">
             <div className="flex-1 h-px bg-gray-200" />
             أو
@@ -175,7 +168,6 @@ const Login = () => {
               إنشاء حساب جديد
             </span>
           </p>
-
         </CardContent>
       </Card>
 
@@ -184,7 +176,6 @@ const Login = () => {
         <span>الشروط والأحكام</span>
         <span>اتصل بنا</span>
       </div>
-
     </div>
   );
 };
