@@ -2,26 +2,21 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-
 import { Card, CardContent } from '@/components/ui/card';
-
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
-
 import {
   InputGroup,
   InputGroupAddon,
+  InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
-
 import { Button } from '@/components/ui/button';
-
-import { Mail, LogIn, Eye, EyeOff } from 'lucide-react';
-
+import { Mail, LogIn, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { loginSchema } from '@/schemas/loginSchema';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const Login = () => {
+const LoginPage = () => {
   //State for password visibility
   const [show, setShow] = useState(false);
 
@@ -40,32 +35,33 @@ const Login = () => {
   };
 
   return (
-    <div className="mx-6 flex h-screen items-center justify-center">
-      <Card className="w-105">
+    <div className="relative mx-6 flex items-center justify-center">
+      <Card className="relative w-105 shadow-lg">
         <div className="bg-primary absolute bottom-0 left-0 h-1 w-full" />
 
         <CardContent className="space-y-6 p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Title */}
             <div className="space-y-1 text-center">
-              <h1 className="text-xl font-bold text-gray-800">تسجيل الدخول</h1>
-              <p className="text-sm text-gray-500">
+              <h1 className="text-foreground text-xl font-bold">
+                تسجيل الدخول
+              </h1>
+              <p className="text-muted-foreground text-sm">
                 مرحباً بعودتك! يرجى إدخال بياناتك للمتابعة
               </p>
             </div>
 
             {/* Email */}
-            <Field>
+            <Field data-invalid={!!errors.email}>
               <FieldLabel>البريد الإلكتروني</FieldLabel>
 
-              <InputGroup
-                className={`h-11 rounded-xl border bg-gray-100 px-2 transition ${errors.email ? 'border-red-500' : 'border-gray-200'} focus-within:border-0`}
-              >
+              <InputGroup className={'rounded-lg px-3 py-5'}>
                 <InputGroupInput
                   placeholder="name@example.com"
                   {...register('email')}
+                  aria-invalid={!!errors.email}
                 />
-                <InputGroupAddon align="inline-end">
+                <InputGroupAddon align="inline-start">
                   <Mail className="text-muted-foreground" />
                 </InputGroupAddon>
               </InputGroup>
@@ -74,33 +70,35 @@ const Login = () => {
             </Field>
 
             {/* Password */}
-            <Field>
-              <div className="flex justify-between text-sm text-gray-600">
-                <FieldLabel>كلمة المرور</FieldLabel>
-                <span className="cursor-pointer text-gray-400">
+            <Field data-invalid={!!errors.password}>
+              <FieldLabel className="flex justify-between">
+                كلمة المرور
+                <span className="text-muted-foreground cursor-pointer">
                   نسيت كلمة المرور؟
                 </span>
-              </div>
+              </FieldLabel>
 
-              <InputGroup
-                className={`h-11 rounded-xl border bg-gray-100 px-2 transition ${errors.password ? 'border-red-500' : 'border-gray-200'} focus-within:border-0`}
-              >
+              <InputGroup className={'rounded-lg px-3 py-5'}>
                 <InputGroupInput
+                  aria-invalid={!!errors.password}
                   type={show ? 'text' : 'password'}
                   placeholder="أدخل كلمة المرور"
                   {...register('password')}
                 />
-
-                <InputGroupAddon align="inline-end">
-                  {/* ✅ FIX: prevent submit */}
-                  <button type="button" onClick={() => setShow(!show)}>
-                    {show ? (
-                      <EyeOff className="text-muted-foreground" />
-                    ) : (
-                      <Eye className="text-muted-foreground" />
-                    )}
-                  </button>
+                <InputGroupAddon align="inline-start">
+                  <KeyRound className="text-muted-foreground" />
                 </InputGroupAddon>
+                <InputGroupButton
+                  size={'icon-sm'}
+                  className="cursor-pointer"
+                  onClick={() => setShow(!show)}
+                >
+                  {show ? (
+                    <EyeOff className="text-muted-foreground" />
+                  ) : (
+                    <Eye className="text-muted-foreground" />
+                  )}
+                </InputGroupButton>
               </InputGroup>
 
               {errors.password && (
@@ -110,16 +108,16 @@ const Login = () => {
 
             <Button
               variant="default"
-              type="button"
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl"
+              type="submit"
+              className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg"
             >
               تسجيل الدخول
-              <LogIn className="h-4 w-4" />
+              <LogIn size={16} />
             </Button>
           </form>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 text-sm text-gray-400">
+          <div className="text-muted-foreground flex items-center gap-3 text-sm">
             <div className="h-px flex-1 bg-gray-200" />
             أو
             <div className="h-px flex-1 bg-gray-200" />
@@ -128,9 +126,9 @@ const Login = () => {
           <Button
             type="button"
             variant="outline"
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-white"
+            className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg"
           >
-            <span className="text-sm text-gray-600">
+            <span className="text-foreground text-sm">
               المتابعة باستخدام Google
             </span>
             <img
@@ -139,16 +137,16 @@ const Login = () => {
             />
           </Button>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-muted-foreground text-center text-sm">
             ليس لديك حساب؟{' '}
-            <span className="cursor-pointer text-orange-500">
+            <span className="text-primary ms-1 cursor-pointer">
               إنشاء حساب جديد
             </span>
           </p>
         </CardContent>
       </Card>
 
-      <div className="absolute bottom-24 flex gap-4 text-xs text-gray-400">
+      <div className="text-muted-foreground absolute -bottom-12 flex gap-4 text-xs">
         <span>سياسة الخصوصية</span>
         <span>الشروط والأحكام</span>
         <span>اتصل بنا</span>
@@ -157,4 +155,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
