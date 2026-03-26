@@ -11,8 +11,9 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
-import { Mail, LogIn, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { Mail, LogIn, Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { loginSchema } from '@/schemas/loginSchema';
+import { Link } from 'react-router-dom';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -86,7 +87,7 @@ const LoginPage = () => {
                   {...register('password')}
                 />
                 <InputGroupAddon align="inline-start">
-                  <KeyRound className="text-muted-foreground" />
+                  <LockKeyhole className="text-muted-foreground" />
                 </InputGroupAddon>
                 <InputGroupButton
                   size={'icon-sm'}
@@ -139,9 +140,12 @@ const LoginPage = () => {
 
           <p className="text-muted-foreground text-center text-sm">
             ليس لديك حساب؟{' '}
-            <span className="text-primary ms-1 cursor-pointer">
+            <Link
+              to="/auth/register"
+              className="text-primary ms-1 font-semibold hover:underline"
+            >
               إنشاء حساب جديد
-            </span>
+            </Link>
           </p>
         </CardContent>
       </Card>

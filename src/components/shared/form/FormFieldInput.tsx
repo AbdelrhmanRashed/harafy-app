@@ -1,3 +1,4 @@
+import { Field } from '@/components/ui/field';
 import {
   FormControl,
   FormField,
@@ -45,36 +46,48 @@ const FormFieldInput = <T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <InputGroup className={'rounded-lg px-3 py-5'}>
-              <InputGroupInput
-                aria-invalid={fieldState.invalid}
-                placeholder={placeholder}
-                type={type === 'password' ? (show ? 'text' : 'password') : type}
-                autoComplete={type}
-                {...field}
-                dir={dir}
-              />
-              {Icon && (
-                <InputGroupAddon align="inline-start">
-                  <Icon className="text-muted-foreground" />
-                </InputGroupAddon>
-              )}
-              {type === 'password' && (
-                <InputGroupButton
-                  size={'icon-sm'}
-                  className="cursor-pointer"
-                  onClick={() => setShow(!show)}
-                  aria-label={show ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-                  type="button"
-                >
-                  {show ? (
-                    <EyeOff className="text-muted-foreground" />
-                  ) : (
-                    <Eye className="text-muted-foreground" />
-                  )}
-                </InputGroupButton>
-              )}
-            </InputGroup>
+            <Field data-invalid={fieldState.invalid}>
+              <InputGroup className={'rounded-lg px-3 py-5'}>
+                <InputGroupInput
+                  aria-invalid={fieldState.invalid}
+                  placeholder={placeholder}
+                  type={
+                    type === 'password' ? (show ? 'text' : 'password') : type
+                  }
+                  autoComplete={
+                    type === 'password'
+                      ? 'new-password'
+                      : type === 'email'
+                        ? 'email'
+                        : 'off'
+                  }
+                  {...field}
+                  dir={dir}
+                />
+                {Icon && (
+                  <InputGroupAddon align="inline-start">
+                    <Icon className="text-muted-foreground" />
+                  </InputGroupAddon>
+                )}
+                {type === 'password' && (
+                  <InputGroupButton
+                    size={'icon-sm'}
+                    className="cursor-pointer"
+                    onClick={() => setShow(!show)}
+                    aria-label={
+                      show ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'
+                    }
+                    type="button"
+                  >
+                    {show ? (
+                      <EyeOff className="text-muted-foreground" />
+                    ) : (
+                      <Eye className="text-muted-foreground" />
+                    )}
+                  </InputGroupButton>
+                )}
+              </InputGroup>
+            </Field>
           </FormControl>
           <FormMessage />
         </FormItem>
