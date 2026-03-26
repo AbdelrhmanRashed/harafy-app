@@ -1,6 +1,7 @@
 import AdminLayout from '@/layouts/AdminLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import LoginPage from '@/pages/auth/LoginPage';
+import RegisterPage from '@/pages/auth/RegisterPage';
 import {
   createBrowserRouter,
   Navigate,
@@ -10,15 +11,19 @@ import {
 const routes = [
   {
     path: '/',
-    element: <Navigate to="/login" replace />,
+    element: <Navigate to="/auth/login" replace />,
   },
   {
-    path: '/login',
+    path: '/auth',
     element: <AuthLayout />,
     children: [
       {
-        index: true,
+        path: 'login',
         element: <LoginPage />,
+      },
+      {
+        path: 'register',
+        element: <RegisterPage />,
       },
     ],
   },

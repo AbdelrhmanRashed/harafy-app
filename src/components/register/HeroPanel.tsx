@@ -4,7 +4,7 @@ import registerImg from '@/assets/images/register-img.png';
 import heropanel1 from '@/assets/images/heropanel1.jpg';
 import heropanel2 from '@/assets/images/heropanel2.jpg';
 import heropanel3 from '@/assets/images/heropanel3.jpg';
-import FeatureCard from './featureCard';
+import FeatureCard from './FeatureCard';
 import { cn } from '@/lib/utils';
 
 const HeroPanel = () => {

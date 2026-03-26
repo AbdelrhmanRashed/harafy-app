@@ -20,7 +20,7 @@ interface FormInputProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
   placeholder: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   type?: string;
   dir?: 'rtl' | 'ltr';
 }
@@ -54,9 +54,11 @@ const FormFieldInput = <T extends FieldValues>({
                 {...field}
                 dir={dir}
               />
-              <InputGroupAddon align="inline-start">
-                <Icon className="text-muted-foreground" />
-              </InputGroupAddon>
+              {Icon && (
+                <InputGroupAddon align="inline-start">
+                  <Icon className="text-muted-foreground" />
+                </InputGroupAddon>
+              )}
               {type === 'password' && (
                 <InputGroupButton
                   size={'icon-sm'}

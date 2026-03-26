@@ -2,7 +2,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 //import registerSchema for React form
-import { registerSchema, type RegisterFormValues } from './registerSchema.ts';
+import {
+  registerSchema,
+  type RegisterFormValues,
+} from '../../schemas/registerSchema.ts';
 // Shadcn UI components
 import {
   Form,
@@ -26,11 +29,10 @@ import {
   Loader2,
 } from 'lucide-react';
 
-import HeroPanel from './heroPanel.tsx';
-
-import AccountTypeCard from './accountTypeCard.tsx';
-
-import FormFieldInput from './FormFieldInput.tsx';
+//import components
+import HeroPanel from '@/components/register/HeroPanel.tsx';
+import AccountTypeCard from '@/components/register/AccountTypeCard.tsx';
+import FormFieldInput from '@/components/shared/form/FormFieldInput.tsx';
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 const RegisterPage = () => {
@@ -88,7 +90,7 @@ const RegisterPage = () => {
                     <AccountTypeCard
                       type="client"
                       label="عميل"
-                      sublabel="أبحث عن خدمات"
+                      subLabel="أبحث عن خدمات"
                       icon={<User className="h-6 w-6" />}
                       selected={accountType === 'client'}
                       onSelect={() => form.setValue('accountType', 'client')}
@@ -96,7 +98,7 @@ const RegisterPage = () => {
                     <AccountTypeCard
                       type="professional"
                       label="حرفي"
-                      sublabel="أنا فني وأريد تقديم خدماتي للعملاء"
+                      subLabel="أنا فني وأريد تقديم خدماتي للعملاء"
                       icon={<Wrench className="h-6 w-6" />}
                       selected={accountType === 'professional'}
                       onSelect={() =>
