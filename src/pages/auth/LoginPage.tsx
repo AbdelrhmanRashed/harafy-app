@@ -37,7 +37,7 @@ const LoginPage = () => {
 
   return (
     <div className="relative mx-6 flex items-center justify-center">
-      <Card className="relative w-105 shadow-lg">
+      <Card className="relative shadow-lg sm:w-105">
         <div className="bg-primary absolute bottom-0 left-0 h-1 w-full" />
 
         <CardContent className="space-y-6 p-8">
