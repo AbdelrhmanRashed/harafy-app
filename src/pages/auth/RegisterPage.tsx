@@ -72,7 +72,7 @@ const RegisterPage = () => {
               </h1>
               <p className="text-muted-foreground mt-1 font-normal">
                 انضم إلينا وابدأ رحلتك مع{' '}
-                <span className="text-foreground">حِرَفِيّ</span> اليوم.
+                <span className="text-primary">حِرَفِيّ</span> اليوم.
               </p>
             </div>
 
