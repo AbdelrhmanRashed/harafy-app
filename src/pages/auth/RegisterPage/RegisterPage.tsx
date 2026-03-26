@@ -1,87 +1,75 @@
-
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 //import registerSchema for React form
-import { registerSchema, type RegisterFormValues } from "./registerSchema.ts"
+import { registerSchema, type RegisterFormValues } from './registerSchema.ts';
 // Shadcn UI components
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // Lucide icons
 import {
   User,
   Mail,
   Phone,
-  Eye,
-  EyeOff,
   Wrench,
   IdCard,
   LockKeyhole,
   RotateCcwKey,
-} from "lucide-react";
+  Loader2,
+} from 'lucide-react';
 
-import HeroPanel from "./heroPanel.tsx";
-import Footer from "./footer.tsx";
-import AccountTypeCard from "./accountTypeCard.tsx";
-import InputWithIcon from "./inputWithIcon.tsx"
+import HeroPanel from './heroPanel.tsx';
+
+import AccountTypeCard from './accountTypeCard.tsx';
+
+import FormFieldInput from './FormFieldInput.tsx';
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 const RegisterPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      accountType: "client",
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
+      accountType: 'client',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
       terms: false,
     },
-    mode: "onTouched",
+    mode: 'onTouched',
   });
 
-  const accountType = form.watch("accountType");
+  const accountType = form.watch('accountType');
 
   function onSubmit(values: RegisterFormValues) {
-    console.log("Form submitted:", values);
+    console.log('Form submitted:', values);
     // TODO: connect to your API
   }
 
   return (
     <>
-
-      <div
-        dir="rtl"
-        className="min-h-screen bg-background flex items-center justify-center p-4 lg:p-8"
-      >
-        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-center">
-
-
+      <main className="flex min-h-screen items-center justify-center p-4 lg:p-8">
+        <div className="grid w-full max-w-5xl grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-14">
           {/* ── Form Panel ── */}
           <div className="w-full space-y-5">
             {/* Header */}
             <div className="text-right">
-              <h1 className="text-[1.875rem] font-bold text-foreground leading-9">
+              <h1 className="text-foreground text-[1.875rem] leading-9 font-bold">
                 إنشاء حساب جديد
               </h1>
-              <p className="text-muted-foreground font-normal mt-1">
-                انضم إلينا وابدأ رحلتك مع <span className="text-foreground">حِرَفِيّ</span> اليوم.
+              <p className="text-muted-foreground mt-1 font-normal">
+                انضم إلينا وابدأ رحلتك مع{' '}
+                <span className="text-foreground">حِرَفِيّ</span> اليوم.
               </p>
             </div>
 
@@ -89,11 +77,11 @@ const RegisterPage = () => {
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 noValidate
-                className="space-y-4"
+                className="space-y-4.5"
               >
                 {/* ── Account Type ── */}
                 <div className="space-y-3">
-                  <p className="text-sm font-normal text-foreground">
+                  <p className="text-foreground text-sm font-normal">
                     اختر نوع الحساب
                   </p>
                   <div className="grid grid-cols-2 gap-3">
@@ -102,181 +90,77 @@ const RegisterPage = () => {
                       label="عميل"
                       sublabel="أبحث عن خدمات"
                       icon={<User className="h-6 w-6" />}
-                      selected={accountType === "client"}
-                      onSelect={() => form.setValue("accountType", "client")}
+                      selected={accountType === 'client'}
+                      onSelect={() => form.setValue('accountType', 'client')}
                     />
                     <AccountTypeCard
                       type="professional"
                       label="حرفي"
                       sublabel="أنا فني وأريد تقديم خدماتي للعملاء"
                       icon={<Wrench className="h-6 w-6" />}
-                      selected={accountType === "professional"}
+                      selected={accountType === 'professional'}
                       onSelect={() =>
-                        form.setValue("accountType", "professional")
+                        form.setValue('accountType', 'professional')
                       }
                     />
-
                   </div>
                 </div>
 
                 {/* ── First & Last Name ── */}
 
-                <FormField
+                <FormFieldInput
                   control={form.control}
                   name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>الاسم الأول</FormLabel>
-                      <FormControl>
-                        <InputWithIcon
-                          icon={<IdCard className="h-4 w-4" />}
-                          placeholder="أدخل اسمك الأول"
-                          autoComplete="given-name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="الاسم الأول"
+                  placeholder="أدخل اسمك الأول"
+                  icon={User}
                 />
-                <FormField
+                <FormFieldInput
                   control={form.control}
                   name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>أسم العائلة</FormLabel>
-                      <FormControl>
-                        <InputWithIcon
-                          icon={<IdCard className="h-4 w-4" />}
-                          placeholder="أدخل اسم العائلة"
-                          autoComplete="family-name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="أسم العائلة"
+                  placeholder="أدخل اسم العائلة"
+                  icon={IdCard}
                 />
 
-
                 {/* ── Email ── */}
-                <FormField
+                <FormFieldInput
                   control={form.control}
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>البريد الإلكتروني</FormLabel>
-                      <FormControl>
-                        <InputWithIcon
-                          icon={<Mail className="h-4 w-4" />}
-                          placeholder="example@domain.com"
-                          type="email"
-                          autoComplete="email"
-                          dir="ltr"
-                          className="text-right"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="البريد الإلكتروني"
+                  placeholder="example@domain.com"
+                  icon={Mail}
+                  type="email"
                 />
 
                 {/* ── Phone ── */}
-                <FormField
+                <FormFieldInput
                   control={form.control}
                   name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>رقم الهاتف</FormLabel>
-                      <FormControl>
-                        <InputWithIcon
-                          icon={<Phone className="h-4 w-4" />}
-                          placeholder="01xxxxxxxxx"
-                          type="tel"
-                          autoComplete="tel"
-                          dir="ltr"
-                          className="text-right"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="رقم الهاتف"
+                  placeholder="01xxxxxxxxx"
+                  icon={Phone}
+                  type="tel"
                 />
 
                 {/* ── Password ── */}
-                <FormField
+                <FormFieldInput
                   control={form.control}
                   name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>كلمة المرور</FormLabel>
-                      <FormControl>
-                        <InputWithIcon
-                          icon={<LockKeyhole className="h-4 w-4" />}
-                          placeholder="••••••••"
-                          type={showPassword ? "text" : "password"}
-                          autoComplete="new-password"
-                          suffix={
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword((p) => !p)}
-                              className="text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
-                              aria-label={
-                                showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"
-                              }
-                            >
-                              {showPassword ? (
-                                <EyeOff className="h-4 w-4" />
-                              ) : (
-                                <Eye className="h-4 w-4" />
-                              )}
-                            </button>
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="كلمة المرور"
+                  placeholder="••••••••"
+                  icon={LockKeyhole}
+                  type="password"
                 />
 
                 {/* ── Confirm Password ── */}
-                <FormField
+                <FormFieldInput
                   control={form.control}
                   name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>تأكيد كلمة المرور</FormLabel>
-                      <FormControl>
-                        <InputWithIcon
-                          icon={<RotateCcwKey className="h-4 w-4" />}
-                          placeholder="••••••••"
-                          type={showConfirm ? "text" : "password"}
-                          autoComplete="new-password"
-                          suffix={
-                            <button
-                              type="button"
-                              onClick={() => setShowConfirm((p) => !p)}
-                              className="text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
-                              aria-label={
-                                showConfirm ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"
-                              }
-                            >
-                              {showConfirm ? (
-                                <EyeOff className="h-4 w-4" />
-                              ) : (
-                                <Eye className="h-4 w-4" />
-                              )}
-                            </button>
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="تأكيد كلمة المرور"
+                  placeholder="••••••••"
+                  icon={RotateCcwKey}
+                  type="password"
                 />
 
                 {/* ── Terms ── */}
@@ -295,19 +179,19 @@ const RegisterPage = () => {
                         </FormControl>
                         <label
                           htmlFor="terms"
-                          className="text-sm text-foreground leading-snug cursor-pointer select-none"
+                          className="text-foreground cursor-pointer text-sm leading-snug select-none"
                         >
-                          أوافق على{" "}
+                          أوافق على{' '}
                           <a
                             href="#"
-                            className="text-primary hover:underline font-medium"
+                            className="text-primary font-medium hover:underline"
                           >
                             الشروط والأحكام
-                          </a>{" "}
-                          و{" "}
+                          </a>{' '}
+                          و{' '}
                           <a
                             href="#"
-                            className="text-primary hover:underline font-medium"
+                            className="text-primary font-medium hover:underline"
                           >
                             سياسة الخصوصية
                           </a>
@@ -321,17 +205,25 @@ const RegisterPage = () => {
                 {/* ── Submit ── */}
                 <Button
                   type="submit"
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 text-base rounded-2xl transition-all duration-200 active:scale-[0.98]"
+                  variant="default"
+                  className="h-11 w-full cursor-pointer rounded-lg font-bold"
                   disabled={form.formState.isSubmitting}
                 >
-                  {form.formState.isSubmitting ? "جاري التسجيل..." : "متابعة"}
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="ml-2">جاري التسجيل...</span>
+                    </>
+                  ) : (
+                    'متابعة'
+                  )}
                 </Button>
 
-                <p className="text-center text-sm text-muted-foreground">
-                  لديك حساب بالفعل؟{" "}
+                <p className="text-muted-foreground text-center text-sm">
+                  لديك حساب بالفعل؟{' '}
                   <a
                     href="/login"
-                    className="text-primary hover:underline font-semibold"
+                    className="text-primary font-semibold hover:underline"
                   >
                     تسجيل الدخول
                   </a>
@@ -342,11 +234,9 @@ const RegisterPage = () => {
           {/* ── Hero Panel (Left on screen, right in DOM for RTL) ── */}
           <HeroPanel />
         </div>
-      </div>
-      {/* footer */}
-      <Footer/>
+      </main>
     </>
   );
-}
+};
 
 export default RegisterPage;
