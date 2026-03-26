@@ -57,7 +57,7 @@ const LoginPage = () => {
 
               <InputGroup className={'rounded-lg px-3 py-5'}>
                 <InputGroupInput
-                  placeholder="name@example.com"
+                  placeholder="أدخل بريدك الإلكتروني"
                   {...register('email')}
                   aria-invalid={!!errors.email}
                 />
