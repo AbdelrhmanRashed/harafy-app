@@ -1,5 +1,7 @@
 import {
   FileText,
+  Hammer,
+  HammerIcon,
   LayoutDashboard,
   LogOut,
   NotepadText,
@@ -7,9 +9,7 @@ import {
   ShieldUser,
   UserRoundCog,
   Users,
-  type LucideIcon,
 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -17,22 +17,16 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuBadge,
   SidebarMenuItem,
   SidebarFooter,
+  useSidebar,
 } from '../ui/sidebar';
-import logo from '@/assets/icons/Icon.png';
 import { Button } from '../ui/button';
+import SidebarNavItem from './SidebarNavItem';
+import type { navLink } from '@/types/dashboard';
+import { SidebarSeparator } from '../ui/sidebar';
 
-interface navLinks {
-  title: string;
-  icon: LucideIcon;
-  path: string;
-  badge?: string | number | null;
-}
-
-const mainLinks: navLinks[] = [
+const mainLinks: navLink[] = [
   {
     title: 'الرئيسيه',
     icon: LayoutDashboard,
@@ -47,6 +41,7 @@ const mainLinks: navLinks[] = [
     title: 'العملاء',
     icon: Users,
     path: '/dashboard/customers',
+    badge: 7,
   },
   {
     title: 'الطلبات',
@@ -60,7 +55,7 @@ const mainLinks: navLinks[] = [
   },
 ];
 
-const settingsItems: { title: string; icon: LucideIcon; path: string }[] = [
+const settingsItems: navLink[] = [
   {
     title: 'اعدادات المنصه',
     icon: Settings,
@@ -74,6 +69,7 @@ const settingsItems: { title: string; icon: LucideIcon; path: string }[] = [
 ];
 
 const AppSidebar = () => {
+  const { state, isMobile } = useSidebar();
   return (
     <Sidebar side="right" collapsible="icon">
       {/* Header */}
@@ -81,82 +77,58 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-3">
             <div className="bg-sidebar-accent flex size-9 items-center justify-center rounded-md">
-              <img src={logo} alt="logo" className="size-5" />
+              <HammerIcon size={24} className="text-primary" />
             </div>
-            <div>
-              <p className="text-sidebar-foreground text-sm font-bold">حرفي</p>
-              <p className="text-sidebar-foreground/50 text-xs">لوحة التحكم</p>
-            </div>
+            {(state !== 'collapsed' || isMobile) && (
+              <div>
+                <p className="text-sidebar-foreground text-sm font-bold">
+                  حرفي
+                </p>
+                <p className="text-sidebar-foreground/50 text-xs">
+                  لوحة التحكم
+                </p>
+              </div>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
+        <SidebarSeparator className="mx-0 w-full" />
       </SidebarHeader>
 
       <SidebarContent>
         {/* Main Menu */}
         <SidebarGroup>
-          <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
+          <SidebarGroupLabel>القائمة الرئيسية</SidebarGroupLabel>
           <SidebarMenu>
             {mainLinks.map((item) => (
-              <SidebarMenuItem key={item.path}>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to={item.path}
-                    className={(isActive) =>
-                      isActive
-                        ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                        : 'default'
-                    }
-                  >
-                    <item.icon size={18} />
-                    <span>{item.title}</span>
-                  </NavLink>
-                </SidebarMenuButton>
-                {item.badge && (
-                  <SidebarMenuBadge className="bg-secondary text-secondary-foreground">
-                    {item.badge}
-                  </SidebarMenuBadge>
-                )}
-              </SidebarMenuItem>
+              <SidebarNavItem key={item.path} item={item} />
             ))}
           </SidebarMenu>
         </SidebarGroup>
-        <Button variant="outline">dagsvcdgvca</Button>
 
         {/* Settings */}
         <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarGroupLabel>الإعدادات</SidebarGroupLabel>
           <SidebarMenu>
             {settingsItems.map((item) => (
-              <SidebarMenuItem key={item.path}>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to={item.path}
-                    className={(isActive) =>
-                      isActive
-                        ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                        : 'default'
-                    }
-                  >
-                    <item.icon size={18} />
-                    <span>{item.title}</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <SidebarNavItem key={item.path} item={item} />
             ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <SidebarSeparator className="mx-0 w-full" />
         <SidebarMenu>
           <Button
-            variant="outline"
-            className="w-full cursor-pointer rounded-lg border-red-500/30 bg-red-50 px-3 py-5 text-red-500 transition-colors hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-600"
+            variant="default"
+            className="cursor-pointer"
             onClick={() => {
               console.log('logout!');
             }}
           >
             <LogOut size={18} />
-            <span className="font-semibold">تسجيل الخروج</span>
+            {(state !== 'collapsed' || isMobile) && (
+              <span className="font-semibold">تسجيل الخروج</span>
+            )}
           </Button>
         </SidebarMenu>
       </SidebarFooter>
