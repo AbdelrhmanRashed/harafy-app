@@ -1,6 +1,5 @@
 import {
   FileText,
-  Hammer,
   HammerIcon,
   LayoutDashboard,
   LogOut,
