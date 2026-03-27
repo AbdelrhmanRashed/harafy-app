@@ -3,6 +3,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 import DashboardPage from '@/pages/admin/DashboardPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
+import NotFoundPage from '@/pages/shared/NotFoundPage';
 import {
   createBrowserRouter,
   Navigate,
@@ -37,6 +38,10 @@ const routes = [
         element: <DashboardPage />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ];
 
