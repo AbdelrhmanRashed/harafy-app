@@ -1,5 +1,6 @@
 import AdminLayout from '@/layouts/AdminLayout';
 import AuthLayout from '@/layouts/AuthLayout';
+import DashboardPage from '@/pages/admin/DashboardPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import {
@@ -30,7 +31,12 @@ const routes = [
   {
     path: '/dashboard',
     element: <AdminLayout />,
-    children: [],
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
+      },
+    ],
   },
 ];
 

@@ -2,7 +2,6 @@ import {
   FileText,
   HammerIcon,
   LayoutDashboard,
-  LogOut,
   NotepadText,
   Settings,
   ShieldUser,
@@ -20,10 +19,10 @@ import {
   SidebarFooter,
   useSidebar,
 } from '../ui/sidebar';
-import { Button } from '../ui/button';
 import SidebarNavItem from './SidebarNavItem';
 import type { navLink } from '@/types/dashboard';
 import { SidebarSeparator } from '../ui/sidebar';
+import ProfileMenu from './ProfileMenu';
 
 const mainLinks: navLink[] = [
   {
@@ -72,16 +71,16 @@ const AppSidebar = () => {
   return (
     <Sidebar side="right" collapsible="icon">
       {/* Header */}
-      <SidebarHeader className="py-4">
+      <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-3">
+          <SidebarMenuItem className="flex h-10 items-center gap-3">
             <div className="bg-sidebar-accent flex size-9 items-center justify-center rounded-md">
               <HammerIcon size={24} className="text-primary" />
             </div>
             {(state !== 'collapsed' || isMobile) && (
               <div>
-                <p className="text-sidebar-foreground text-sm font-bold">
-                  حرفي
+                <p className="text-sidebar-foreground mb-0.5 text-sm font-bold">
+                  حِرَفِيّ
                 </p>
                 <p className="text-sidebar-foreground/50 text-xs">
                   لوحة التحكم
@@ -99,7 +98,11 @@ const AppSidebar = () => {
           <SidebarGroupLabel>القائمة الرئيسية</SidebarGroupLabel>
           <SidebarMenu>
             {mainLinks.map((item) => (
-              <SidebarNavItem key={item.path} item={item} />
+              <SidebarNavItem
+                key={item.path}
+                item={item}
+                tooltip={item.title}
+              />
             ))}
           </SidebarMenu>
         </SidebarGroup>
@@ -109,27 +112,19 @@ const AppSidebar = () => {
           <SidebarGroupLabel>الإعدادات</SidebarGroupLabel>
           <SidebarMenu>
             {settingsItems.map((item) => (
-              <SidebarNavItem key={item.path} item={item} />
+              <SidebarNavItem
+                key={item.path}
+                item={item}
+                tooltip={item.title}
+              />
             ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarSeparator className="mx-0 w-full" />
-        <SidebarMenu>
-          <Button
-            variant="default"
-            className="cursor-pointer"
-            onClick={() => {
-              console.log('logout!');
-            }}
-          >
-            <LogOut size={18} />
-            {(state !== 'collapsed' || isMobile) && (
-              <span className="font-semibold">تسجيل الخروج</span>
-            )}
-          </Button>
-        </SidebarMenu>
+
+        <ProfileMenu collapsed={state === 'collapsed'} isMobile={isMobile} />
       </SidebarFooter>
     </Sidebar>
   );

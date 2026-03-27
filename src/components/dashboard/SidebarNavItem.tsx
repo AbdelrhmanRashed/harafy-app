@@ -8,12 +8,19 @@ import { ChevronLeft } from 'lucide-react';
 import type { navLink } from '@/types/dashboard';
 import { useLocation } from 'react-router-dom';
 
-const SidebarNavItem = ({ item }: { item: navLink }) => {
+const SidebarNavItem = ({
+  item,
+  tooltip,
+}: {
+  item: navLink;
+  tooltip: string;
+}) => {
   const location = useLocation();
   const Icon = item.icon;
   return (
     <SidebarMenuItem key={item.path} className="group/item">
       <SidebarMenuButton
+        tooltip={tooltip}
         asChild
         isActive={location.pathname === item.path}
         className="py-5"
