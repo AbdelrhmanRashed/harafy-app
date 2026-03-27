@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <header className="bg-sidebar sticky top-0 z-10 flex h-14.5 items-center border-b px-4 backdrop-blur md:px-6">
       <div className="flex items-center gap-2 md:gap-4">
-        <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
+        <SidebarTrigger className="text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
         <div className="bg-border hidden h-6 w-px sm:block" />
         <p className="text-muted-foreground hidden text-sm font-semibold tracking-tight md:block">
           لوحة التحكم
@@ -32,7 +32,7 @@ const Navbar = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:bg-muted rounded-lg transition-all"
+              className="text-muted-foreground hover:bg-muted cursor-pointer rounded-lg transition-all"
             >
               {true ? (
                 <Sun className="h-5 w-5" />
@@ -51,7 +51,7 @@ const Navbar = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:bg-muted rounded-lg transition-all"
+              className="text-muted-foreground hover:bg-muted cursor-pointer rounded-lg transition-all"
             >
               <MessageSquare className="h-5 w-5" />
             </Button>
@@ -66,7 +66,7 @@ const Navbar = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:bg-muted relative rounded-lg transition-all"
+              className="text-muted-foreground hover:bg-muted relative cursor-pointer rounded-lg transition-all"
             >
               <Bell className="h-5 w-5" />
 

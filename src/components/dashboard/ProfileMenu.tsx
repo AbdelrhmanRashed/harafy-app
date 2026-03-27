@@ -47,7 +47,7 @@ const ProfileMenu = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className={`w-full px-2 py-6 ${collapsed ? 'justify-center' : 'justify-between'}`}
+          className={`w-full px-2 py-6 ${collapsed ? 'justify-center' : 'justify-between'} cursor-pointer`}
         >
           <AvatarSection collapsed={collapsed} />
           {!collapsed && <ChevronsUpDown className="size-4" />}
@@ -61,15 +61,15 @@ const ProfileMenu = ({
         <AvatarSection />
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <UserIcon />
           الملف الشخصي
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <BellIcon />
           الاشعارات
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer">
           <SettingsIcon />
           الاعدادات
         </DropdownMenuItem>
@@ -79,6 +79,7 @@ const ProfileMenu = ({
           onClick={() => {
             console.log('logout!');
           }}
+          className="cursor-pointer"
         >
           <LogOutIcon />
           تسجيل الخروج
