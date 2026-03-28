@@ -3,6 +3,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 import DashboardPage from '@/pages/admin/DashboardPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
+import ReviewPage from '@/pages/auth/ReviewPage';
 import NotFoundPage from '@/pages/shared/NotFoundPage';
 import {
   createBrowserRouter,
@@ -26,6 +27,10 @@ const routes = [
       {
         path: 'register',
         element: <RegisterPage />,
+      },
+      {
+        path: 'review',
+        element: <ReviewPage />,
       },
     ],
   },

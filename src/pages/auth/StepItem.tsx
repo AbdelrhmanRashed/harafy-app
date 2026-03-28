@@ -1,64 +1,73 @@
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
+import type { LucideIcon } from 'lucide-react';
 
-export type StepStatus = "completed" | "active" | "pending";
+export type StepStatus = 'completed' | 'active' | 'pending';
 
 export interface Step {
   id: number;
   label: string;
-  sublabel: string;
+  subLabel: string;
   status: StepStatus;
-  icon: React.ReactNode;
+  icon: LucideIcon;
+  animate?: boolean;
 }
 // ─── StepItem ─────────────────────────────────────────────────────────────────
 
-const StepItem=({ step }: { step: Step })=> {
+const StepItem = ({ step }: { step: Step }) => {
+  const isCompleted = step.status === 'completed';
+  const isActive = step.status === 'active';
+  const isPending = step.status === 'pending';
+
   return (
-    <div className="flex flex-col items-center  flex-1 relative">
+    <div className="relative flex flex-1 flex-col items-center">
       {/* Circle */}
-      <div className={cn("absolute top-5 h-0.5 w-full",step.status === "completed" &&"bg-primary ",
-        step.status === "active" &&"bg-primary ",step.status === "pending" &&"bg-muted-foreground/20",
-       )}/>
       <div
         className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors z-10",
-          step.status === "completed" &&
-          "bg-primary border-primary text-primary-foreground",
-          step.status === "active" &&
-          "bg-white border-primary text-primary shadow-md",
-          step.status === "pending" &&
-          "bg-muted border-border text-muted-foreground"
+          'absolute top-5 h-0.5 w-full',
+          isCompleted && 'bg-primary',
+          isActive && 'bg-primary',
+          isPending && 'bg-muted-foreground/20',
+        )}
+      />
+      <div
+        className={cn(
+          'z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors',
+          isCompleted && 'bg-primary border-primary text-primary-foreground',
+          isActive &&
+            'border-primary text-primary bg-card dark:bg-secondary shadow-md',
+          isPending && 'bg-muted text-muted-foreground',
         )}
       >
-        {step.icon}
+        <step.icon className={cn('h-5 w-5', step.animate && 'animate-spin')} />
       </div>
 
       {/* Labels */}
-      <div className="text-center">
+      <div className="mt-2 text-center">
         <p
           className={cn(
-            "text-xs font-semibold",
-            step.status === "pending"
-              ? "text-muted-foreground"
-              : "text-foreground",
-              step.status==="active"&&"text-primary",
+            'mb-1 text-xs font-bold',
+            step.status === 'pending'
+              ? 'text-muted-foreground'
+              : 'text-foreground',
+            step.status === 'active' && 'text-primary',
           )}
         >
           {step.label}
         </p>
         <p
           className={cn(
-            "text-[11px]",
-            step.status === "active"
-              ? "text-primary font-medium"
-              : "text-muted-foreground"
+            'text-[11px]',
+            step.status === 'active'
+              ? 'text-primary font-medium'
+              : 'text-muted-foreground',
           )}
         >
-          {step.sublabel}
+          {step.subLabel}
         </p>
       </div>
     </div>
   );
-}
+};
 export default StepItem;
