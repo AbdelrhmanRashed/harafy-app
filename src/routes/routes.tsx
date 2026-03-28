@@ -4,6 +4,7 @@ import DashboardPage from '@/pages/admin/DashboardPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import VerificationPage from '@/pages/auth/VerificationPage';
+import ReviewPage from '@/pages/auth/ReviewPage';
 import NotFoundPage from '@/pages/shared/NotFoundPage';
 import {
   createBrowserRouter,
@@ -31,6 +32,10 @@ const routes = [
       {
         path: 'verify',
         element: <VerificationPage />,
+      },
+      {
+        path: 'review',
+        element: <ReviewPage />,
       },
     ],
   },
