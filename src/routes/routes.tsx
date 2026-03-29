@@ -22,6 +22,10 @@ const routes = [
     element: <AuthLayout />,
     children: [
       {
+        index: true,
+        element: <Navigate to="/auth/login" replace />,
+      },
+      {
         path: 'login',
         element: <LoginPage />,
       },
