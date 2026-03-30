@@ -6,6 +6,7 @@ import DirectRequestPage from '@/features/requests/pages/DirectRequestPage';
 import CommunityPage from '@/features/community/pages/CommunityPage';
 import InstantRequestPage from '@/features/requests/pages/InstantRequestPage';
 import ProfilePage from '@/features/profile/pages/ProfilePage';
+import SettingsPage from '@/features/profile/pages/SettingsPage';
 
 const clientRoutes = [
   {
@@ -31,6 +32,10 @@ const clientRoutes = [
       {
         path: ROUTES.CLIENT.PROFILE,
         element: <ProfilePage />,
+      },
+      {
+        path: ROUTES.CLIENT.PROFILE_SETTINGS,
+        element: <SettingsPage />,
       },
       {
         path: ROUTES.CLIENT.INSTANT,

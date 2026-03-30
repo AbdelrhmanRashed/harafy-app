@@ -18,6 +18,7 @@ export const ROUTES = {
     COMMUNITY: '/community',
     INSTANT: '/instant',
     PROFILE: '/profile',
+    PROFILE_SETTINGS: '/profile/settings',
   },
 
   ADMIN: {
