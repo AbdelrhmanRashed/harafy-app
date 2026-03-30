@@ -216,7 +216,8 @@
   .bg-primary-gradient {
     background: var(--gradient-primary);
   }
-  .shadow-primary-gradient-shadow {
+
+  .shadow-primary-gradient {
     box-shadow: var(--gradient-primary-shadow);
   }
 }

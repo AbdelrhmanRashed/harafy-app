@@ -1,24 +1,32 @@
+const AUTH_BASE = '/auth';
+const ADMIN_BASE = '/admin';
+
 export const ROUTES = {
   AUTH: {
-    SIGNIN: '/auth/signin',
-    SIGNUP: '/auth/signup',
-    VERIFY: '/auth/verify',
-    REVIEW: '/auth/review',
+    BASE: AUTH_BASE,
+    SIGNIN: `${AUTH_BASE}/signin`,
+    SIGNUP: `${AUTH_BASE}/signup`,
+    VERIFY: `${AUTH_BASE}/verify`,
+    REVIEW: `${AUTH_BASE}/review`,
   },
+
   CLIENT: {
-    HOME: '/home',
-    ORDERS: '/orders',
-    SERVICES: '/services',
+    BASE: '/',
+    HOME: '/',
+    DASHBOARD: '/dashboard',
+    DIRECT: '/direct',
     COMMUNITY: '/community',
-    QUICK_SERVICE: '/quick-service',
+    INSTANT: '/instant',
   },
+
   ADMIN: {
-    DASHBOARD: '/admin/dashboard',
-    CRAFTSMEN: '/admin/craftsmen',
-    CLIENTS: '/admin/clients',
-    ORDERS: '/admin/orders',
-    REPORTS: '/admin/reports',
-    SETTINGS: '/admin/settings',
-    ROLES: '/admin/roles',
+    BASE: ADMIN_BASE,
+    DASHBOARD: `${ADMIN_BASE}/dashboard`,
+    CRAFTSMEN: `${ADMIN_BASE}/craftsmen`,
+    CLIENTS: `${ADMIN_BASE}/clients`,
+    ORDERS: `${ADMIN_BASE}/orders`,
+    REPORTS: `${ADMIN_BASE}/reports`,
+    SETTINGS: `${ADMIN_BASE}/settings`,
+    ROLES: `${ADMIN_BASE}/roles`,
   },
 };
