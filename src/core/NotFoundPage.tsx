@@ -35,8 +35,9 @@ const NotFoundPage = () => {
         {/* Buttons */}
         <div className="flex flex-col gap-3">
           <Button
-            onClick={() => navigate(-1)}
+            variant="gradient"
             className="h-11 w-full cursor-pointer gap-2"
+            onClick={() => navigate(-1)}
           >
             <ArrowLeft className="h-4 w-4" />
             رجوع
