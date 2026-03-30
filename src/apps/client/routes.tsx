@@ -5,6 +5,7 @@ import ClientDashboard from '@/features/dashboard/pages/ClientDashboard';
 import DirectRequestPage from '@/features/requests/pages/DirectRequestPage';
 import CommunityPage from '@/features/community/pages/CommunityPage';
 import InstantRequestPage from '@/features/requests/pages/InstantRequestPage';
+import ProfilePage from '@/features/profile/pages/ProfilePage';
 
 const clientRoutes = [
   {
@@ -26,6 +27,10 @@ const clientRoutes = [
       {
         path: ROUTES.CLIENT.COMMUNITY,
         element: <CommunityPage />,
+      },
+      {
+        path: ROUTES.CLIENT.PROFILE,
+        element: <ProfilePage />,
       },
       {
         path: ROUTES.CLIENT.INSTANT,

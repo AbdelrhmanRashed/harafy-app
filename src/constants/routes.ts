@@ -17,6 +17,7 @@ export const ROUTES = {
     DIRECT: '/direct',
     COMMUNITY: '/community',
     INSTANT: '/instant',
+    PROFILE: '/profile',
   },
 
   ADMIN: {
