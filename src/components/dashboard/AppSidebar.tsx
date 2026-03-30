@@ -23,33 +23,34 @@ import SidebarNavItem from './SidebarNavItem';
 import type { navLink } from '@/types/dashboard';
 import { SidebarSeparator } from '../ui/sidebar';
 import ProfileMenu from './ProfileMenu';
+import { ROUTES } from '@/constants/routes';
 
 const mainLinks: navLink[] = [
   {
     title: 'الرئيسيه',
     icon: LayoutDashboard,
-    path: '/dashboard',
+    path: ROUTES.ADMIN.DASHBOARD,
   },
   {
     title: 'الحرفيين',
     icon: UserRoundCog,
-    path: '/dashboard/craftsmen',
+    path: ROUTES.ADMIN.CRAFTSMEN,
   },
   {
     title: 'العملاء',
     icon: Users,
-    path: '/dashboard/customers',
+    path: ROUTES.ADMIN.CLIENTS,
     badge: 7,
   },
   {
     title: 'الطلبات',
     icon: NotepadText,
-    path: '/dashboard/orders',
+    path: ROUTES.ADMIN.ORDERS,
   },
   {
     title: 'التقارير',
     icon: FileText,
-    path: '/dashboard/reports',
+    path: ROUTES.ADMIN.REPORTS,
   },
 ];
 
@@ -57,12 +58,12 @@ const settingsItems: navLink[] = [
   {
     title: 'اعدادات المنصه',
     icon: Settings,
-    path: '/dashboard/settings',
+    path: ROUTES.ADMIN.SETTINGS,
   },
   {
     title: 'الأدوار والصلاحيات',
     icon: ShieldUser,
-    path: '/dashboard/roles',
+    path: ROUTES.ADMIN.ROLES,
   },
 ];
 

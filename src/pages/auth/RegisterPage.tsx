@@ -34,6 +34,7 @@ import HeroPanel from '@/components/register/HeroPanel.tsx';
 import AccountTypeCard from '@/components/register/AccountTypeCard.tsx';
 import FormFieldInput from '@/components/shared/form/FormFieldInput.tsx';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes.ts';
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 const RegisterPage = () => {
@@ -225,7 +226,7 @@ const RegisterPage = () => {
                 <p className="text-muted-foreground text-center text-sm">
                   لديك حساب بالفعل؟{' '}
                   <Link
-                    to="/auth/login"
+                    to={ROUTES.AUTH.SIGNIN}
                     className="text-primary font-semibold hover:underline"
                   >
                     تسجيل الدخول

@@ -75,7 +75,11 @@
   --popover-foreground: oklch(0.141 0.005 285.823);
 
   /* 🔥 Primary color (main brand color: buttons, links, active states) */
-  --primary: oklch(0.585 0.198 277.4);
+  --primary: #4f46e5;
+
+  --gradient-primary: linear-gradient(135deg, #4e45e4 0%, #842cd3 100%);
+
+  --gradient-primary-shadow: 0 10px 20px oklch(58.5% 0.2 277 / 0.25);
 
   /* 📝 Text on primary elements (buttons text) */
   --primary-foreground: oklch(0.98 0 0);
@@ -157,6 +161,10 @@
   --primary: oklch(0.65 0.22 277);
   --primary-foreground: oklch(0.98 0 0);
 
+  --gradient-primary: linear-gradient(135deg, #4e45e4 0%, #842cd3 100%);
+
+  --gradient-primary-shadow: 0 5px 10px oklch(58.5% 0.2 277 / 0.25);
+
   --secondary: oklch(0.26 0.04 275);
   --secondary-foreground: oklch(0.98 0 0);
 
@@ -201,5 +209,14 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .bg-primary-gradient {
+    background: var(--gradient-primary);
+  }
+  .shadow-primary-gradient-shadow {
+    box-shadow: var(--gradient-primary-shadow);
   }
 }

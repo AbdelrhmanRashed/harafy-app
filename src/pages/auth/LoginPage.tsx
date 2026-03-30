@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Mail, LogIn, Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { loginSchema } from '@/schemas/loginSchema';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -142,7 +143,7 @@ const LoginPage = () => {
           <p className="text-muted-foreground text-center text-sm">
             ليس لديك حساب؟{' '}
             <Link
-              to="/auth/register"
+              to={ROUTES.AUTH.SIGNUP}
               className="text-primary ms-1 font-semibold hover:underline"
             >
               إنشاء حساب جديد

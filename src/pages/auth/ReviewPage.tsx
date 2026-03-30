@@ -18,8 +18,8 @@ import {
   Check,
 } from 'lucide-react';
 import FeatureCard from '@/components/register/FeatureCard';
-import type { Step } from './StepItem';
-import StepItem from './StepItem';
+import type { Step } from '../../components/register/StepItem';
+import StepItem from '../../components/register/StepItem';
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
