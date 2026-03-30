@@ -1,5 +1,13 @@
+import Post from './Post';
+
 const CommunityFeed = () => {
-  return <div></div>;
+  return (
+    <div>
+      <Post />
+      <Post />
+      <Post />
+    </div>
+  );
 };
 
 export default CommunityFeed;
