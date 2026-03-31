@@ -7,7 +7,8 @@ import CommunityPage from '@/features/community/pages/CommunityPage';
 import InstantRequestPage from '@/features/requests/pages/InstantRequestPage';
 import ProfilePage from '@/features/profile/pages/ProfilePage';
 import SettingsPage from '@/features/profile/pages/SettingsPage';
-
+import Notifications from '@/features/profile/pages/Notifications';
+import SecurityPage from '@/features/profile/pages/SecurityPage';
 const clientRoutes = [
   {
     path: ROUTES.CLIENT.BASE,
@@ -29,13 +30,31 @@ const clientRoutes = [
         path: ROUTES.CLIENT.COMMUNITY,
         element: <CommunityPage />,
       },
-      {
+    {
         path: ROUTES.CLIENT.PROFILE,
         element: <ProfilePage />,
       },
       {
         path: ROUTES.CLIENT.PROFILE_SETTINGS,
         element: <SettingsPage />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="profile" replace />,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
+          },
+          {
+            path: 'notifications',
+            element: <Notifications />,
+          },
+          {
+            path: 'security',
+            element: <SecurityPage />,
+          },
+        ],
       },
       {
         path: ROUTES.CLIENT.INSTANT,

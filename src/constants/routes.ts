@@ -17,8 +17,11 @@ export const ROUTES = {
     DIRECT: '/direct',
     COMMUNITY: '/community',
     INSTANT: '/instant',
-    PROFILE: '/profile',
-    PROFILE_SETTINGS: '/profile/settings',
+     PROFILE: '/profile',
+  PROFILE_SETTINGS: '/profile/settings',
+  SETTINGS_PROFILE: '/profile/settings/profile',
+  SETTINGS_NOTIFICATIONS: '/profile/settings/notifications',
+  SETTINGS_SECURITY: '/profile/settings/security',
   },
 
   ADMIN: {
