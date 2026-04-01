@@ -12,11 +12,12 @@ export const ROUTES = {
 
   CLIENT: {
     BASE: '/',
-    HOME: '/',
     DASHBOARD: '/dashboard',
-    DIRECT: '/direct',
     COMMUNITY: '/community',
-    INSTANT: '/instant',
+    SERVICES: '/services',
+    INSTANT_SERVICE: '/instant',
+    DIRECT_SERVICE: '/direct',
+    REQUESTS: '/requests',
     PROFILE: '/profile',
     PROFILE_SETTINGS: '/profile/settings',
   },

@@ -7,8 +7,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../components/ui/tooltip';
+import { useTheme } from '@/hooks/useTheme';
 
 const AdminNavbar = () => {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <header className="bg-sidebar sticky top-0 z-10 flex h-14.5 items-center border-b px-4 backdrop-blur md:px-6">
       <div className="flex items-center gap-2 md:gap-4">
@@ -37,8 +40,9 @@ const AdminNavbar = () => {
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:bg-muted cursor-pointer rounded-lg transition-all"
+              onClick={toggleTheme}
             >
-              {true ? (
+              {theme === 'dark' ? (
                 <Sun className="h-5 w-5" />
               ) : (
                 <Moon className="h-5 w-5" />
@@ -46,7 +50,7 @@ const AdminNavbar = () => {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            {true ? 'الوضع النهاري' : 'الوضع الليلي'}
+            {theme === 'dark' ? 'الوضع النهاري' : 'الوضع الليلي'}
           </TooltipContent>
         </Tooltip>
 

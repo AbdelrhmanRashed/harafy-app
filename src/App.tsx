@@ -1,11 +1,14 @@
 import AppRoutes from './core/router';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import ThemeProvider from './providers/ThemeProvider';
 
 const App = () => {
   return (
-    <TooltipProvider>
-      <AppRoutes />
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <AppRoutes />
+      </TooltipProvider>
+    </ThemeProvider>
   );
 };
 

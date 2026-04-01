@@ -1,14 +1,4 @@
 import {
-  FileText,
-  HammerIcon,
-  LayoutDashboard,
-  NotepadText,
-  Settings,
-  ShieldUser,
-  UserRoundCog,
-  Users,
-} from 'lucide-react';
-import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -20,52 +10,10 @@ import {
   useSidebar,
 } from '../../../components/ui/sidebar';
 import SidebarNavItem from './SidebarNavItem';
-import type { navLink } from '@/features/admin/types/navLink';
 import { SidebarSeparator } from '../../../components/ui/sidebar';
 import ProfileMenu from './ProfileMenu';
-import { ROUTES } from '@/constants/routes';
-
-const mainLinks: navLink[] = [
-  {
-    title: 'الرئيسيه',
-    icon: LayoutDashboard,
-    path: ROUTES.ADMIN.DASHBOARD,
-  },
-  {
-    title: 'الحرفيين',
-    icon: UserRoundCog,
-    path: ROUTES.ADMIN.CRAFTSMEN,
-  },
-  {
-    title: 'العملاء',
-    icon: Users,
-    path: ROUTES.ADMIN.CLIENTS,
-    badge: 7,
-  },
-  {
-    title: 'الطلبات',
-    icon: NotepadText,
-    path: ROUTES.ADMIN.ORDERS,
-  },
-  {
-    title: 'التقارير',
-    icon: FileText,
-    path: ROUTES.ADMIN.REPORTS,
-  },
-];
-
-const settingsItems: navLink[] = [
-  {
-    title: 'اعدادات المنصه',
-    icon: Settings,
-    path: ROUTES.ADMIN.SETTINGS,
-  },
-  {
-    title: 'الأدوار والصلاحيات',
-    icon: ShieldUser,
-    path: ROUTES.ADMIN.ROLES,
-  },
-];
+import { ADMIN_NAV_LINKS } from '@/constants/admin-navigation';
+import { HammerIcon } from 'lucide-react';
 
 const AdminSidebar = () => {
   const { state, isMobile } = useSidebar();
@@ -98,7 +46,7 @@ const AdminSidebar = () => {
         <SidebarGroup>
           <SidebarGroupLabel>القائمة الرئيسية</SidebarGroupLabel>
           <SidebarMenu>
-            {mainLinks.map((item) => (
+            {ADMIN_NAV_LINKS.main.map((item) => (
               <SidebarNavItem
                 key={item.path}
                 item={item}
@@ -112,7 +60,7 @@ const AdminSidebar = () => {
         <SidebarGroup>
           <SidebarGroupLabel>الإعدادات</SidebarGroupLabel>
           <SidebarMenu>
-            {settingsItems.map((item) => (
+            {ADMIN_NAV_LINKS.settings.map((item) => (
               <SidebarNavItem
                 key={item.path}
                 item={item}
