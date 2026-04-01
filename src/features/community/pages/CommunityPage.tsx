@@ -2,7 +2,7 @@ import CreatePost from '../components/CreatePost';
 import CommunityFeed from '../components/CommunityFeed';
 import QuickLinks from '../components/QuickLinks';
 import ProfileCard from '../components/ProfileCard';
-import WorkSpace from '../components/WorkSpace';
+import FooterLinks from '../components/FooterLinks';
 
 const CommunityPage = () => {
   return (
@@ -24,7 +24,7 @@ const CommunityPage = () => {
           <QuickLinks  />
         </div>
         <div className=" order-4  lg:order-0  lg:col-span-12 ">
-          <WorkSpace />
+          <FooterLinks />
         </div>
       </div>
     </main>
