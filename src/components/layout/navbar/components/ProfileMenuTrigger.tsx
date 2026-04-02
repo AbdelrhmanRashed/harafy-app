@@ -8,15 +8,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/features/auth/components/LogoutButton';
-import { useLogout } from '@/features/auth/hooks/useLogout';
 import { useAuthStore, type User } from '@/store/useAuthStore';
-import {
-  BellIcon,
-  Loader2,
-  LogOutIcon,
-  SettingsIcon,
-  UserIcon,
-} from 'lucide-react';
+import { BellIcon, SettingsIcon, UserIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const AvatarSection = ({ user }: { user: User | null }) => {
   return (
@@ -47,19 +41,34 @@ const ProfileMenuTrigger = () => {
             <p className="text-muted-foreground text-xs">{user?.email}</p>
           </div>
         </div>
-
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <UserIcon />
-          الملف الشخصي
+
+        <DropdownMenuItem asChild>
+          <Link
+            to="/app/profile"
+            className="flex cursor-pointer items-center gap-2"
+          >
+            <UserIcon className="h-4 w-4" />
+            الملف الشخصي
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <BellIcon />
-          الاشعارات
+        <DropdownMenuItem asChild>
+          <Link
+            to="/app/profile/settings/notifications"
+            className="flex cursor-pointer items-center gap-2"
+          >
+            <BellIcon className="h-4 w-4" />
+            الإشعارات
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <SettingsIcon />
-          الاعدادات
+        <DropdownMenuItem asChild>
+          <Link
+            to="/app/profile/settings"
+            className="flex cursor-pointer items-center gap-2"
+          >
+            <SettingsIcon className="h-4 w-4" />
+            الإعدادات
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {/* Logout Button */}

@@ -4,7 +4,7 @@ import { Loader2, LogOutIcon } from 'lucide-react';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 
 const LogoutButton = () => {
-  const { mutate: logout, isPending } = useLogout();
+  const { mutateAsync: logout, isPending } = useLogout();
   return (
     <ConfirmDialog
       title="تسجيل الخروج"

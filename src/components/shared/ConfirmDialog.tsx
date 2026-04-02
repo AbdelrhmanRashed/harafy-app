@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -11,6 +10,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { LogOutIcon, Trash2Icon } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '../ui/button';
 
 interface ConfirmDialogProps {
   title: string;
@@ -35,32 +36,56 @@ const ConfirmDialog = ({
   cancelButton = 'إلغاء',
   size = 'default',
 }: ConfirmDialogProps) => {
+  const [open, setOpen] = useState(false);
+
+  const handleConfirm = async () => {
+    try {
+      await onConfirm();
+      setOpen(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild onClick={() => setOpen(true)}>
+        {children}
+      </AlertDialogTrigger>
+
       <AlertDialogContent size={size}>
         <AlertDialogHeader>
           {variant === 'delete' && (
-            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive size-12">
+            <AlertDialogMedia className="bg-destructive/10 text-destructive size-12">
               <Trash2Icon className="size-6" />
             </AlertDialogMedia>
           )}
+
           {variant === 'logout' && (
-            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive size-12">
+            <AlertDialogMedia className="bg-destructive/10 text-destructive size-12">
               <LogOutIcon className="size-6" />
             </AlertDialogMedia>
           )}
+
           <AlertDialogTitle>{title}</AlertDialogTitle>
+
           {description && (
             <AlertDialogDescription>{description}</AlertDialogDescription>
           )}
         </AlertDialogHeader>
+
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">
-            {cancelButton}
+          <AlertDialogCancel asChild>
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              disabled={isLoading}
+            >
+              {cancelButton}
+            </Button>
           </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onConfirm}
+          <Button
+            onClick={handleConfirm}
             disabled={isLoading}
             className="cursor-pointer"
             variant={
@@ -70,7 +95,7 @@ const ConfirmDialog = ({
             }
           >
             {confirmButton}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
