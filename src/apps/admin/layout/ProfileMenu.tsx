@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { useAuthStore } from '@/store/useAuthStore';
+import LogoutButton from '@/features/auth/components/LogoutButton';
 
 interface ProfileMenuProps {
   collapsed: boolean;
@@ -47,8 +48,6 @@ const AvatarSection = ({ collapsed }: { collapsed?: boolean }) => {
 };
 
 const ProfileMenu = ({ collapsed, isMobile }: ProfileMenuProps) => {
-  const { mutate: logout, isPending } = useLogout();
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -81,23 +80,8 @@ const ProfileMenu = ({ collapsed, isMobile }: ProfileMenuProps) => {
           الاعدادات
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => logout()}
-          className="cursor-pointer"
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              جارى تسجيل الخروج
-            </>
-          ) : (
-            <>
-              <LogOutIcon />
-              تسجيل الخروج
-            </>
-          )}
-        </DropdownMenuItem>
+        {/* Logout Button */}
+        <LogoutButton />
       </DropdownMenuContent>
     </DropdownMenu>
   );

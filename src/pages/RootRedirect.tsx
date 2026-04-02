@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getMainRole } from '@/lib/role';
+import LandingPage from './LandingPage';
 
 const RootRedirect = () => {
   const { isAuthenticated, user } = useAuthStore();
@@ -21,7 +22,7 @@ const RootRedirect = () => {
     }
   }
 
-  return <Navigate to="/" replace />;
+  return <LandingPage />;
 };
 
 export default RootRedirect;

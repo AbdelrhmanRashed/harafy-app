@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import LogoutButton from '@/features/auth/components/LogoutButton';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { useAuthStore, type User } from '@/store/useAuthStore';
 import {
@@ -30,7 +31,6 @@ const AvatarSection = ({ user }: { user: User | null }) => {
 };
 
 const ProfileMenuTrigger = () => {
-  const { mutate: logout, isPending } = useLogout();
   const { user } = useAuthStore();
   return (
     <DropdownMenu>
@@ -62,24 +62,8 @@ const ProfileMenuTrigger = () => {
           الاعدادات
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => logout()}
-          disabled={isPending}
-          className="cursor-pointer"
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              جاري تسجيل الخروج
-            </>
-          ) : (
-            <>
-              <LogOutIcon className="h-4 w-4" />
-              تسجيل الخروج
-            </>
-          )}
-        </DropdownMenuItem>
+        {/* Logout Button */}
+        <LogoutButton />
       </DropdownMenuContent>
     </DropdownMenu>
   );
