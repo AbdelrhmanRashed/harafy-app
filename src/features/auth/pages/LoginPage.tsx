@@ -12,16 +12,17 @@ import {
 } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 
-import { Mail, LogIn, Eye, EyeOff, LockKeyhole } from 'lucide-react';
+import { Mail, LogIn, Eye, EyeOff, LockKeyhole, Loader2 } from 'lucide-react';
 import { loginSchema } from '../schema/login.schema';
 import { Link } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
+import { useLogin } from '../hooks/useLogin';
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   //State for password visibility
   const [show, setShow] = useState(false);
+  const { mutate: login, isPending } = useLogin();
 
   //Form Setup
   const {
@@ -34,7 +35,7 @@ const LoginPage = () => {
 
   //Submit Handler
   const onSubmit = (data: LoginFormData) => {
-    console.log(data);
+    login(data);
   };
 
   return (
@@ -113,9 +114,19 @@ const LoginPage = () => {
               variant="gradient"
               type="submit"
               className="shadow-primary-gradient flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg"
+              disabled={isPending}
             >
-              تسجيل الدخول
-              <LogIn size={16} />
+              {isPending ? (
+                <>
+                  <Loader2 className="text-primary-foreground animate-spin" />
+                  جاري تسجيل الدخول
+                </>
+              ) : (
+                <>
+                  تسجيل الدخول
+                  <LogIn size={16} />
+                </>
+              )}
             </Button>
           </form>
 
@@ -143,7 +154,7 @@ const LoginPage = () => {
           <p className="text-muted-foreground text-center text-sm">
             ليس لديك حساب؟{' '}
             <Link
-              to={ROUTES.AUTH.SIGNUP}
+              to="/auth/register"
               className="text-primary ms-1 font-semibold hover:underline"
             >
               إنشاء حساب جديد

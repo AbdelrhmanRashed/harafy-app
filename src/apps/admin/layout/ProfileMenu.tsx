@@ -1,6 +1,7 @@
 import {
   BellIcon,
   ChevronsUpDown,
+  Loader2,
   LogOutIcon,
   SettingsIcon,
   UserIcon,
@@ -14,24 +15,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '../../../components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-import profileImage from '@/assets/images/profileImage.png';
+import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useAuthStore } from '@/store/useAuthStore';
+
+interface ProfileMenuProps {
+  collapsed: boolean;
+  isMobile: boolean;
+}
 
 const AvatarSection = ({ collapsed }: { collapsed?: boolean }) => {
+  const { user } = useAuthStore();
   return (
     <div className={`flex items-center ${collapsed ? 'gap-0' : 'gap-2'} py-1`}>
       <Avatar>
-        <AvatarImage src={profileImage} alt="Profile Image" />
-        <AvatarFallback>Profile Image</AvatarFallback>
+        <AvatarImage
+          src={user?.pictureUrl || 'https://github.com/shadcn.png'}
+          alt="Profile Image"
+        />
+        <AvatarFallback>{user?.fullName.split(' ')[0][0]}</AvatarFallback>
       </Avatar>
       {!collapsed && (
         <div className="flex flex-col items-start">
-          <span className="text-sm font-semibold">Ahmed Mohamed</span>
+          <span className="text-sm font-semibold">{user?.fullName}</span>
           <span className="text-muted-foreground text-xs">مدير النظام</span>
         </div>
       )}
@@ -39,13 +46,9 @@ const AvatarSection = ({ collapsed }: { collapsed?: boolean }) => {
   );
 };
 
-const ProfileMenu = ({
-  collapsed,
-  isMobile,
-}: {
-  collapsed: boolean;
-  isMobile: boolean;
-}) => {
+const ProfileMenu = ({ collapsed, isMobile }: ProfileMenuProps) => {
+  const { mutate: logout, isPending } = useLogout();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -80,13 +83,20 @@ const ProfileMenu = ({
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
-          onClick={() => {
-            console.log('logout!');
-          }}
+          onClick={() => logout()}
           className="cursor-pointer"
         >
-          <LogOutIcon />
-          تسجيل الخروج
+          {isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جارى تسجيل الخروج
+            </>
+          ) : (
+            <>
+              <LogOutIcon />
+              تسجيل الخروج
+            </>
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -14,7 +14,7 @@ const MobileNavbar = ({ role }: MobileNavbarProps) => {
       <header className="bg-background border-border sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b px-4 font-sans shadow-sm md:hidden">
         <Logo />
         <div className="flex items-center gap-2">
-          {role === 'client' && <ClientActions />}
+          {role === 'Client' && <ClientActions />}
         </div>
       </header>
 

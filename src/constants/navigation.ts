@@ -15,26 +15,26 @@ interface NavLink {
 }
 
 export const NAV_LINKS: Record<UserRole, NavLink[]> = {
-  guest: [
+  Guest: [
     { title: 'الرئيسية', path: '/', icon: Home },
     { title: 'الخدمات', path: '/services', icon: Compass },
     { title: 'المجتمع', path: '/community', icon: MessageCircle },
   ],
 
-  client: [
-    { title: 'الرئيسية', path: '/dashboard', icon: Home },
-    { title: 'الخدمات', path: '/services', icon: Compass },
-    { title: 'المجتمع', path: '/community', icon: MessageCircle },
-    { title: 'الطلبات', path: '/requests', icon: User },
+  Client: [
+    { title: 'الرئيسية', path: '/app/home', icon: Home },
+    { title: 'الخدمات', path: '/app/services', icon: Compass },
+    { title: 'المجتمع', path: '/app/community', icon: MessageCircle },
+    { title: 'الطلبات', path: '/app/requests', icon: User },
   ],
 
-  provider: [
-    { title: 'الرئيسية', path: '/dashboard', icon: Home },
-    { title: 'الطلبات', path: '/requests', icon: User },
-    { title: 'أعمالي', path: '/my-services', icon: Wrench },
+  Provider: [
+    { title: 'الرئيسية', path: '/provider', icon: Home },
+    { title: 'الطلبات', path: '/provider/requests', icon: User },
+    { title: 'أعمالي', path: '/provider/my-services', icon: Wrench },
   ],
 
-  admin: [
+  Admin: [
     { title: 'الرئيسية', path: '/dashboard', icon: Home },
     { title: 'الخدمات', path: '/services', icon: Compass },
     { title: 'المجتمع', path: '/community', icon: MessageCircle },

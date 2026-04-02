@@ -23,7 +23,7 @@ const DesktopNavbar = ({ role }: DesktopNavbarProps) => {
 
       {/* Left Side: Actions */}
       <div className="flex items-center gap-4">
-        {role === 'client' && <ClientActions />}
+        {role === 'Client' && <ClientActions />}
       </div>
     </header>
   );

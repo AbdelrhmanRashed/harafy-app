@@ -1,4 +1,3 @@
-import { ROUTES } from '@/constants/routes';
 import ClientLayout from './layout/ClientLayout';
 import { Navigate } from 'react-router-dom';
 import ClientDashboard from '@/features/dashboard/pages/ClientDashboard';
@@ -10,26 +9,30 @@ import SettingsPage from '@/features/profile/pages/SettingsPage';
 import InstantServicesPage from '@/features/services/pages/instant/InstantServicesPage';
 import DirectServicesPage from '@/features/services/pages/direct/DirectServicesPage';
 import ServicesPage from '@/features/services/pages/ServicesPage';
-
+import ProtectedRoute from '@/components/guards/ProtectedRoute';
 const clientRoutes = [
   {
-    path: ROUTES.CLIENT.BASE,
-    element: <ClientLayout />,
+    path: '/app',
+    element: (
+      <ProtectedRoute allowedRoles={['Client', 'Admin']}>
+        <ClientLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: <Navigate to={ROUTES.CLIENT.DASHBOARD} replace />,
+        element: <Navigate to="home" replace />,
       },
       {
-        path: ROUTES.CLIENT.DASHBOARD,
+        path: 'home',
         element: <ClientDashboard />,
       },
       {
-        path: ROUTES.CLIENT.COMMUNITY,
+        path: 'community',
         element: <CommunityPage />,
       },
       {
-        path: ROUTES.CLIENT.SERVICES,
+        path: 'services',
         children: [
           { index: true, element: <ServicesPage /> },
           { path: 'instant', element: <InstantServicesPage /> },
@@ -37,23 +40,23 @@ const clientRoutes = [
         ],
       },
       {
-        path: ROUTES.CLIENT.DIRECT_SERVICE,
+        path: 'direct-service',
         element: <DirectRequestPage />,
       },
       {
-        path: ROUTES.CLIENT.PROFILE,
+        path: 'profile',
         element: <ProfilePage />,
       },
       {
-        path: ROUTES.CLIENT.PROFILE_SETTINGS,
+        path: 'profile-settings',
         element: <SettingsPage />,
       },
       {
-        path: ROUTES.CLIENT.INSTANT_SERVICE,
+        path: 'instant-service',
         element: <InstantRequestPage />,
       },
       // {
-      //   path: ROUTES.CLIENT.REQUESTS,
+      //   path: "requests",
       //   element: <RequestsPage />,
       // },
     ],

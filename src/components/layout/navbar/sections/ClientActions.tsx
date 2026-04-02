@@ -24,13 +24,13 @@ const ClientActions = () => {
 
   const handleButtonClick = () => {
     if (variant[location.pathname] === 'إنشاء منشور') {
-      navigate('/community');
+      navigate('/dashboard/community');
     }
     if (variant[location.pathname] === 'طلب فورى') {
-      navigate('/services/instant');
+      navigate('/dashboard/services/instant');
     }
     if (variant[location.pathname] === 'طلب خدمه مباشره') {
-      navigate('/services/direct');
+      navigate('/dashboard/services/direct');
     }
   };
 

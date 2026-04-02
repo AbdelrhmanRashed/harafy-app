@@ -8,7 +8,6 @@ import {
   NotepadText,
   type LucideIcon,
 } from 'lucide-react';
-import { ROUTES } from './routes';
 
 interface NavLink {
   title: string;
@@ -22,40 +21,40 @@ export const ADMIN_NAV_LINKS: Record<'main' | 'settings', NavLink[]> = {
     {
       title: 'الرئيسيه',
       icon: LayoutDashboard,
-      path: ROUTES.ADMIN.DASHBOARD,
+      path: '/admin/dashboard',
     },
     {
       title: 'الحرفيين',
       icon: UserRoundCog,
-      path: ROUTES.ADMIN.CRAFTSMEN,
+      path: '/admin/craftsmen',
     },
     {
       title: 'العملاء',
       icon: Users,
-      path: ROUTES.ADMIN.CLIENTS,
+      path: '/admin/clients',
       badge: 7,
     },
     {
       title: 'الطلبات',
       icon: NotepadText,
-      path: ROUTES.ADMIN.ORDERS,
+      path: '/admin/orders',
     },
     {
       title: 'التقارير',
       icon: FileText,
-      path: ROUTES.ADMIN.REPORTS,
+      path: '/admin/reports',
     },
   ],
   settings: [
     {
       title: 'اعدادات المنصه',
       icon: Settings,
-      path: ROUTES.ADMIN.SETTINGS,
+      path: '/admin/settings',
     },
     {
       title: 'الأدوار والصلاحيات',
       icon: ShieldUser,
-      path: ROUTES.ADMIN.ROLES,
+      path: '/admin/roles',
     },
   ],
 };

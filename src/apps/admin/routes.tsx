@@ -1,4 +1,3 @@
-import { ROUTES } from '@/constants/routes';
 import AdminLayout from './layout/AdminLayout';
 import DashboardPage from '@/features/admin/dashboard/pages/DashboardPage';
 import CraftsmenPage from '@/features/admin/craftsmen/pages/CraftsmenPage';
@@ -8,15 +7,20 @@ import ReportsPage from '@/features/admin/reports/pages/ReportsPage';
 import SettingsPage from '@/features/admin/settings/pages/SettingsPage';
 import RolesPage from '@/features/admin/roles/pages/RolesPage';
 import { Navigate } from 'react-router-dom';
+import ProtectedRoute from '@/components/guards/ProtectedRoute';
 
 const adminRoutes = [
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute allowedRoles={['Admin']}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: <Navigate to={ROUTES.ADMIN.DASHBOARD} replace />,
+        element: <Navigate to="dashboard" replace />,
       },
       {
         path: 'dashboard',
