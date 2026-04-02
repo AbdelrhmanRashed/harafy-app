@@ -6,7 +6,7 @@ import FooterLinks from '../components/FooterLinks';
 
 const CommunityPage = () => {
   return (
-<main className="max-w-7xl mx-auto px-4 py-6">
+    <main className="max-w-7xl mx-auto px-4 py-6">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* RIGHT */}
         <div className="space-y-4 order-1 lg:order-0 lg:col-span-3 ">
@@ -21,7 +21,7 @@ const CommunityPage = () => {
 
         {/* LEFT */}
         <div className="space-y-4 order-2 lg:order-0  lg:col-span-3">
-          <QuickLinks  />
+          <QuickLinks />
         </div>
         <div className=" order-4  lg:order-0  lg:col-span-12 ">
           <FooterLinks />
