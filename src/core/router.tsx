@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // Shared Routes
-import LandingPage from '@/pages/LandingPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import UnauthorizedPage from '@/pages/UnauthorizedPage';
 
@@ -10,11 +9,12 @@ import authRoutes from '@/apps/auth/routes';
 import adminRoutes from '@/apps/admin/routes';
 import clientRoutes from '@/apps/client/routes';
 import ProviderRoutes from '@/apps/provider/routes';
+import RootRedirect from '@/pages/RootRedirect';
 
 const routes = [
   {
     path: '/',
-    element: <LandingPage />,
+    element: <RootRedirect />,
   },
   ...authRoutes,
   ...clientRoutes,

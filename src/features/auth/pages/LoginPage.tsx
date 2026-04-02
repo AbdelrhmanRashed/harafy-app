@@ -163,7 +163,7 @@ const LoginPage = () => {
         </CardContent>
       </Card>
 
-      <div className="text-muted-foreground my-10 flex gap-4 text-xs">
+      <div className="text-muted-foreground my-5 flex gap-4 text-xs">
         <span>سياسة الخصوصية</span>
         <span>الشروط والأحكام</span>
         <span>اتصل بنا</span>
