@@ -1,4 +1,4 @@
-const WorkSpace = () => {
+const FooterLinks = () => {
   return (
     <div className="text-center text-xs text-gray-400 space-y-3 ">
 
@@ -22,4 +22,4 @@ const WorkSpace = () => {
   );
 };
 
-export default WorkSpace;
+export default FooterLinks;

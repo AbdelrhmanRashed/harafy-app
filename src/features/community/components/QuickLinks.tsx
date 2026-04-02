@@ -10,7 +10,7 @@ const QuickLinks = () => {
         {/* Header */}
         <div className="flex items-center gap-2 text-md font-bold">
           <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center">
-            <Star color="white" className="text-white w-4 h-4" />
+            <Star color="white" className="text-white w-4 h-4 fill-white" />
           </div>
           <span>إجراءات سريعة</span>
         </div>

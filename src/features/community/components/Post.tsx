@@ -14,7 +14,9 @@ type PostType = {
     name: string;
     avatar?: string;
   };
+  role: string;
   content: string;
+  subject: string;
   images?: string[];
   likes: number;
   comments: number;
@@ -34,7 +36,7 @@ const Post = ({ post }: { post: PostType }) => {
   };
 
   return (
-    <Card className="rounded-2xl bg-background border shadow-sm">
+    <Card className="rounded-2xl bg-background border-0">
       <CardContent className="p-5 space-y-4">
 
         {/* Header */}
@@ -54,22 +56,22 @@ const Post = ({ post }: { post: PostType }) => {
             </div>
 
             {/* Info */}
-            <div className="text-right">
+            <div className="">
               <p className="font-semibold text-sm">
                 {post.user.name}
               </p>
-              <p className="text-xs text-gray-400">
-                {post.createdAt} 
+              <p className="text-xs text-gray-500">
+                  {post.role}  •  {post.createdAt}
               </p>
             </div>
           </div>
 
-          {/* Actions */}
           <MoreHorizontal className="text-gray-400 cursor-pointer" size={18} />
         </div>
-
-        {/* Content */}
-        <p className="text-sm leading-6 text-gray-700 text-right">
+        <p className="text-sm   font-bold ">
+          {post.subject}
+        </p>
+        <p className="text-sm leading-6 ">
           {post.content}
         </p>
 

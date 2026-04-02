@@ -12,31 +12,46 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   userImage?: string;
 };
 
-const CreatePost = ({ userImage}: Props) => {
+const CreatePost = ({ userImage }: Props) => {
   const [open, setOpen] = useState(false);
 
   const [content, setContent] = useState("");
+  const [subject, setSubject] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+const [postType, setPostType] = useState<string | null>(null);
 
+const isValid =
+  subject.trim().length > 0 &&
+  postType !== null &&
+  (content.trim().length > 0 || images.length > 0);
+ const handleSubmit = () => {
+  if (!isValid) return;
 
+  console.log({
+    subject,
+    type: postType,
+    content,
+    images,
+  });
 
-  const handleSubmit = () => {
-    if (!content.trim() && images.length === 0) return;
-
-    console.log({ content, images });
-
-    setContent("");
-    setImages([]);
-    setOpen(false);
-  };
+  setSubject("");
+  setContent("");
+  setImages([]);
+  setPostType(null);
+  setOpen(false);
+};
 
   const handleImageClick = () => {
     inputRef.current?.click();
@@ -57,6 +72,8 @@ const CreatePost = ({ userImage}: Props) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -65,15 +82,15 @@ const CreatePost = ({ userImage}: Props) => {
             {/* Header */}
             <div className="flex items-center gap-2">
               <div className="w-12 h-12 rounded-full overflow-hidden  bg-primary/5 flex items-center justify-center text-sm font-semibold ">
-            {userImage ? (
-              <img
-                src={userImage}
-                alt="user"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <User className="w-6 h-6 text-primary/60" />
-            )}
+                {userImage ? (
+                  <img
+                    src={userImage}
+                    alt="user"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-6 h-6 text-primary/60" />
+                )}
               </div>
 
               {/* Title */}
@@ -86,7 +103,7 @@ const CreatePost = ({ userImage}: Props) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="ماذا تفكر اليوم؟ شارك خبراتك أو اسأل المجتمع..."
-              className="min-w-110 bg-primary/5 border-0 resize-none rounded-2xl px-5 py-4 text-sm outline-none  min-h-25 max-h-25 "
+              className="lg:min-w-110 bg-primary/5 border-0 resize-none rounded-2xl px-5 py-4 text-sm outline-none  min-h-25 max-h-25 "
             />
 
             <div className="flex items-center justify-between">
@@ -109,10 +126,19 @@ const CreatePost = ({ userImage}: Props) => {
 
       {/*  DialogContent */}
       <DialogContent className="max-w-xl rounded-xl [&>button]:text-primary [&>button:hover]:text-primary/80">
+        <DialogHeader className="text-center text-md text-primary">
+          <DialogTitle>إنشاء منشور</DialogTitle>
 
-        <div className="space-y-4">
+        </DialogHeader>
+        <div className="space-y-4 mt-6">
           {/* Input */}
-          <div className="bg-background p-4 space-y-3 mt-6">
+          <Input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="موضوع المنشور"
+            className="bg-transparent border-0 shadow-none focus-visible:ring-0 p-0  "
+          />
+          <div className="bg-background  space-y-3 ">
             {/* Textarea */}
             <Textarea
               value={content}
@@ -142,27 +168,42 @@ const CreatePost = ({ userImage}: Props) => {
 
           </div>
           <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                onClick={handleImageClick}
+                className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary transition"
+              >
+                <ImageIcon size={16} />
+                صورة
+              </Button>
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleImageChange}
+              />
+<Select onValueChange={(value) => setPostType(value)}>
+                <SelectTrigger className="w-full max-w-48 border-0 bg-transparent p-0">
+                  <SelectValue placeholder="نوع المنشور" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>اختر نوع المنشور </SelectLabel>
+                    <SelectItem value="request">طلب خدمة</SelectItem>
+                    <SelectItem  value="general">مشاركة عامة</SelectItem>
 
-            <button
-              onClick={handleImageClick}
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary transition"
-            >
-              <ImageIcon size={16} />
-              صورة
-            </button>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
 
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleImageChange}
-            />
 
             <Button
               onClick={handleSubmit}
-              disabled={!content.trim() && images.length === 0}
+  disabled={!isValid}
               variant="gradient"
               className="rounded-full px-6"
             >
