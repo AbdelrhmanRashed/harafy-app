@@ -7,12 +7,12 @@ import {
 } from '../schema/profile.schema';
 import FormFieldInput from '@/components/shared/form/FormFieldInput';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useChangePassword } from '../hooks/useChangePassword';
 
 const ChangePasswordCard = () => {
-  const { mutate: changePassword } = useChangePassword();
+  const { mutate: changePassword, isPending } = useChangePassword();
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -83,9 +83,16 @@ const ChangePasswordCard = () => {
                 type="submit"
                 variant="gradient"
                 className="shadow-primary-gradient h-10 w-full md:w-auto"
-                disabled={form.formState.isSubmitting}
+                disabled={isPending}
               >
-                تغيير كلمة المرور
+                {isPending ? (
+                  <>
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    جاري تغيير كلمة المرور...
+                  </>
+                ) : (
+                  'تغيير كلمة المرور'
+                )}
               </Button>
             </div>
           </form>
