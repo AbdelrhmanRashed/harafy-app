@@ -214,7 +214,7 @@
 
 @layer utilities {
   .bg-primary-gradient {
-    background: var(--gradient-primary);
+    background-image: var(--gradient-primary);
   }
 
   .shadow-primary-gradient {

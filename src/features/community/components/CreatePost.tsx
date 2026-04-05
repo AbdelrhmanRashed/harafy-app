@@ -1,221 +1,267 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Image as ImageIcon,
-  Megaphone,
-  User,
-  X
-} from "lucide-react";
-import { useRef, useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Image as ImageIcon, Megaphone, User, X, Loader2 } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+
+import { createPostSchema, type CreatePostInput } from '../schemas/post.schema';
+import { useAddPost } from '../hooks/useAddPost';
+import CreatePostTrigger from './CreatePostTrigger';
+import type { User as AuthUser } from '@/store/useAuthStore';
+import { getImageUrl } from '@/lib/utils';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type Props = {
-  userImage?: string;
+  user: AuthUser | null;
 };
 
-const CreatePost = ({ userImage }: Props) => {
+// ─── Component ────────────────────────────────────────────────────────────────
+
+const CreatePost = ({ user }: Props) => {
   const [open, setOpen] = useState(false);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-  const [content, setContent] = useState("");
-  const [subject, setSubject] = useState("");
-  const [images, setImages] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
-const [postType, setPostType] = useState<string | null>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-const isValid =
-  subject.trim().length > 0 &&
-  postType !== null &&
-  (content.trim().length > 0 || images.length > 0);
- const handleSubmit = () => {
-  if (!isValid) return;
+  const { mutate: addPost, isPending } = useAddPost();
 
-  console.log({
-    subject,
-    type: postType,
-    content,
-    images,
+  // ── Open dialog from router state (e.g. navbar shortcut) ──────────────────
+  useEffect(() => {
+    if (location.state?.openCreatePost) {
+      setOpen(true);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+
+  // ── Form ──────────────────────────────────────────────────────────────────
+  const form = useForm<CreatePostInput>({
+    resolver: zodResolver(createPostSchema),
+    defaultValues: {
+      Title: '',
+      Description: '',
+    },
+    mode: 'onTouched',
   });
 
-  setSubject("");
-  setContent("");
-  setImages([]);
-  setPostType(null);
-  setOpen(false);
-};
-
-  const handleImageClick = () => {
-    inputRef.current?.click();
+  // ── Reset everything when dialog closes ───────────────────────────────────
+  const handleOpenChange = (value: boolean) => {
+    if (!value) {
+      form.reset();
+      setImagePreviews([]);
+      setImageFiles([]);
+    }
+    setOpen(value);
   };
 
+  // ── Image handlers ────────────────────────────────────────────────────────
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
 
-    const newImages = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImageFiles((prev) => [...prev, ...files]);
+    setImagePreviews((prev) => [...prev, ...previews]);
 
-    setImages((prev) => [...prev, ...newImages]);
+    // reset input so re-selecting the same file triggers onChange
+    e.target.value = '';
   };
 
   const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
+  // ── Submit ────────────────────────────────────────────────────────────────
+  const handleSubmit = (values: CreatePostInput) => {
+    const formData = new FormData();
+    formData.append('Title', values.Title);
+    if (values.Description) {
+      formData.append('Description', values.Description);
+    }
+    imageFiles.forEach((file) => formData.append('Images', file));
 
+    addPost(formData, {
+      onSuccess: () => {
+        handleOpenChange(false);
+      },
+    });
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Card className="rounded-2xl bg-background w-full ">
-          <CardContent className="p-6 space-y-4">
-            {/* Header */}
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-12 rounded-full overflow-hidden  bg-primary/5 flex items-center justify-center text-sm font-semibold ">
-                {userImage ? (
-                  <img
-                    src={userImage}
-                    alt="user"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-6 h-6 text-primary/60" />
+    <>
+      <CreatePostTrigger
+        userImage={getImageUrl(user?.pictureUrl)}
+        onClick={() => setOpen(true)}
+      />
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          className="bg-card max-w-xl gap-0 overflow-hidden rounded-2xl border-none p-0 shadow-2xl"
+          aria-describedby={undefined}
+        >
+          {/* ── Header ── */}
+          <DialogHeader className="border-border/50 bg-card border-b px-6 py-4">
+            <DialogTitle className="text-foreground flex items-center justify-center gap-2 text-lg font-semibold">
+              <Megaphone className="text-primary" size={20} />
+              <span>إنشاء منشور</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+              <div className="space-y-5 p-6">
+                {/* ── User avatar ── */}
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                    {user?.pictureUrl ? (
+                      <img
+                        src={getImageUrl(user.pictureUrl)}
+                        alt="user"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <User className="text-primary h-5 w-5" />
+                    )}
+                  </div>
+                </div>
+
+                {/* ── Title ── */}
+                <FormField
+                  control={form.control}
+                  name="Title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="موضوع المنشور..."
+                          dir="rtl"
+                          className="placeholder:text-muted-foreground/60 bg-secondary/30 border-0 px-4 py-6 font-medium shadow-none focus-visible:ring-0 md:text-lg"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* ── Description ── */}
+                <FormField
+                  control={form.control}
+                  name="Description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="اكتب ما يدور في ذهنك..."
+                          dir="rtl"
+                          className="placeholder:text-muted-foreground/60 bg-secondary/30 min-h-[120px] resize-none border-0 px-4 py-6 text-base shadow-none focus-visible:ring-0"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* ── Image Previews ── */}
+                {imagePreviews.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {imagePreviews.map((src, index) => (
+                      <div
+                        key={index}
+                        className="border-border group relative overflow-hidden rounded-xl border"
+                      >
+                        <img
+                          src={src}
+                          className="h-28 w-full object-cover transition-transform group-hover:scale-105"
+                          alt={`صورة ${index + 1}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="hover:bg-destructive/90 absolute top-2 right-2 rounded-full bg-black/50 p-1.5 text-white opacity-0 backdrop-blur-sm transition-all group-hover:opacity-100"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {/* Title */}
-              <div className="flex items-center gap-2 text-lg font-semibold text">
-                <Megaphone size={18} className="text-primary" />
-                شارك خبراتك أو اسأل المجتمع
+              {/* ── Footer ── */}
+              <div className="bg-muted/30 border-border/50 flex items-center justify-between border-t px-6 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground ml-2 hidden text-sm font-medium sm:inline-block">
+                    إضافة إلى منشورك
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => inputRef.current?.click()}
+                    className="text-primary hover:bg-primary/10 hover:text-primary bg-primary/5 rounded-full transition-colors"
+                    aria-label="إضافة صور"
+                  >
+                    <ImageIcon size={20} />
+                  </Button>
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  variant="gradient"
+                  className="shadow-primary-gradient rounded-full px-8 disabled:opacity-50 disabled:shadow-none"
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      جاري النشر...
+                    </>
+                  ) : (
+                    'نشر'
+                  )}
+                </Button>
               </div>
-            </div>
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="ماذا تفكر اليوم؟ شارك خبراتك أو اسأل المجتمع..."
-              className="lg:min-w-110 bg-primary/5 border-0 resize-none rounded-2xl px-5 py-4 text-sm outline-none  min-h-25 max-h-25 "
-            />
-
-            <div className="flex items-center justify-between">
-              <button className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary transition">
-                <ImageIcon size={16} />
-                صورة
-              </button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!content.trim()}
-                className="rounded-full px-6 h-10 "
-              >
-                نشر
-              </Button>
-            </div>
-
-          </CardContent>
-        </Card>
-      </DialogTrigger>
-
-      {/*  DialogContent */}
-      <DialogContent className="max-w-xl rounded-xl [&>button]:text-primary [&>button:hover]:text-primary/80">
-        <DialogHeader className="text-center text-md text-primary">
-          <DialogTitle>إنشاء منشور</DialogTitle>
-
-        </DialogHeader>
-        <div className="space-y-4 mt-6">
-          {/* Input */}
-          <Input
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="موضوع المنشور"
-            className="bg-transparent border-0 shadow-none focus-visible:ring-0 p-0  "
-          />
-          <div className="bg-background  space-y-3 ">
-            {/* Textarea */}
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="ماذا تفكر اليوم؟ شارك خبراتك أو اسأل المجتمع..."
-              className="bg-transparent border-0 resize-none shadow-none focus-visible:ring-0 p-0 min-h-25 "
-            />
-            {images.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {images.map((img, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={img}
-                      className="w-full h-32  rounded-xl"
-                    />
-
-                    <button
-                      onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 bg-primary text-white rounded-full p-1"
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                onClick={handleImageClick}
-                className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary transition"
-              >
-                <ImageIcon size={16} />
-                صورة
-              </Button>
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handleImageChange}
-              />
-<Select onValueChange={(value) => setPostType(value)}>
-                <SelectTrigger className="w-full max-w-48 border-0 bg-transparent p-0">
-                  <SelectValue placeholder="نوع المنشور" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>اختر نوع المنشور </SelectLabel>
-                    <SelectItem value="request">طلب خدمة</SelectItem>
-                    <SelectItem  value="general">مشاركة عامة</SelectItem>
-
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-
-            <Button
-              onClick={handleSubmit}
-  disabled={!isValid}
-              variant="gradient"
-              className="rounded-full px-6"
-            >
-              نشر
-            </Button>
-
-          </div>
-
-        </div>
-
-      </DialogContent>
-    </Dialog>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

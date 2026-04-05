@@ -1,46 +1,78 @@
-import { ROUTES } from '@/constants/routes';
-import ClientLayout from './layout/ClientLayout';
 import { Navigate } from 'react-router-dom';
+import ProtectedRoute from '@/components/guards/ProtectedRoute';
+// layout
+import ClientLayout from './layout/ClientLayout';
+// pages
 import ClientDashboard from '@/features/dashboard/pages/ClientDashboard';
-import DirectRequestPage from '@/features/requests/pages/DirectRequestPage';
 import CommunityPage from '@/features/community/pages/CommunityPage';
-import InstantRequestPage from '@/features/requests/pages/InstantRequestPage';
+// services
+import ServicesPage from '@/features/services/pages/ServicesPage';
+import InstantServicesPage from '@/features/services/pages/instant/InstantServicesPage';
+import DirectServicesPage from '@/features/services/pages/direct/DirectServicesPage';
+// profile
 import ProfilePage from '@/features/profile/pages/ProfilePage';
-import SettingsPage from '@/features/profile/pages/SettingsPage';
+// profile settings
+import SettingsLayout from '@/features/profile/layout/SettingsLayout';
+import ProfileSettingsPage from '@/features/profile/pages/ProfileSettingsPage';
+import NotificationsPage from '@/features/profile/pages/NotificationsPage';
+import SecurityPage from '@/features/profile/pages/SecurityPage';
 
 const clientRoutes = [
   {
-    path: ROUTES.CLIENT.BASE,
-    element: <ClientLayout />,
+    path: '/app',
+    element: (
+      <ProtectedRoute allowedRoles={['Client', 'Admin']}>
+        <ClientLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: <Navigate to={ROUTES.CLIENT.DASHBOARD} replace />,
+        element: <Navigate to="home" replace />,
       },
       {
-        path: ROUTES.CLIENT.DASHBOARD,
+        path: 'home',
         element: <ClientDashboard />,
       },
       {
-        path: ROUTES.CLIENT.DIRECT,
-        element: <DirectRequestPage />,
-      },
-      {
-        path: ROUTES.CLIENT.COMMUNITY,
+        path: 'community',
         element: <CommunityPage />,
       },
+      // services routes
       {
-        path: ROUTES.CLIENT.PROFILE,
-        element: <ProfilePage />,
+        path: 'services',
+        children: [
+          { index: true, element: <ServicesPage /> },
+          { path: 'instant', element: <InstantServicesPage /> },
+          { path: 'direct', element: <DirectServicesPage /> },
+        ],
       },
+
+      // profile routes
       {
-        path: ROUTES.CLIENT.PROFILE_SETTINGS,
-        element: <SettingsPage />,
+        path: 'profile',
+        children: [
+          {
+            index: true,
+            element: <ProfilePage />,
+          },
+          {
+            path: 'settings',
+            element: <SettingsLayout />,
+            children: [
+              { index: true, element: <Navigate to="info" replace /> },
+              { path: 'info', element: <ProfileSettingsPage /> },
+              { path: 'notifications', element: <NotificationsPage /> },
+              { path: 'security', element: <SecurityPage /> },
+            ],
+          },
+        ],
       },
-      {
-        path: ROUTES.CLIENT.INSTANT,
-        element: <InstantRequestPage />,
-      },
+
+      // {
+      //   path: "requests",
+      //   element: <RequestsPage />,
+      // },
     ],
   },
 ];

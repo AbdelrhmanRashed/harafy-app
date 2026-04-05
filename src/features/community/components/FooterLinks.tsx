@@ -1,7 +1,6 @@
 const FooterLinks = () => {
   return (
-    <div className="text-center text-xs text-gray-400 space-y-3 ">
-
+    <div className="space-y-3 text-center text-xs text-gray-400">
       <div className="flex justify-center gap-6">
         <span className="hover:text-primary cursor-pointer transition">
           الشروط والأحكام
@@ -17,7 +16,6 @@ const FooterLinks = () => {
         </span>
         <span>© 2026 حِرَفي</span>
       </div>
-
     </div>
   );
 };

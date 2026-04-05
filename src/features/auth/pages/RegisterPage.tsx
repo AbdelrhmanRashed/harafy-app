@@ -21,31 +21,30 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   User,
   Mail,
-  Phone,
   Wrench,
   IdCard,
   LockKeyhole,
   RotateCcwKey,
   Loader2,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useRegister } from '../hooks/useRegister.ts';
 
 //import components
 import HeroPanel from '../components/HeroPanel.tsx';
 import AccountTypeCard from '../components/AccountTypeCard.tsx';
 import FormFieldInput from '@/components/shared/form/FormFieldInput.tsx';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes.ts';
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 const RegisterPage = () => {
+  const { mutate: register, isPending } = useRegister();
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      accountType: 'client',
+      isProvider: false,
       firstName: '',
       lastName: '',
       email: '',
-      phone: '',
       password: '',
       confirmPassword: '',
       terms: false,
@@ -53,11 +52,19 @@ const RegisterPage = () => {
     mode: 'onTouched',
   });
 
-  const accountType = form.watch('accountType');
+  const isProvider = form.watch('isProvider');
 
   function onSubmit(values: RegisterFormValues) {
-    console.log('Form submitted:', values);
+    const data = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      password: values.password,
+      isProvider: values.isProvider,
+    };
+    console.log('Form submitted:', data);
     // TODO: connect to your API
+    register(data);
   }
 
   return (
@@ -94,18 +101,16 @@ const RegisterPage = () => {
                       label="عميل"
                       subLabel="أبحث عن خدمات"
                       icon={<User className="h-6 w-6" />}
-                      selected={accountType === 'client'}
-                      onSelect={() => form.setValue('accountType', 'client')}
+                      selected={!isProvider}
+                      onSelect={() => form.setValue('isProvider', false)}
                     />
                     <AccountTypeCard
                       type="professional"
                       label="حرفي"
                       subLabel="أنا فني وأريد تقديم خدماتي للعملاء"
                       icon={<Wrench className="h-6 w-6" />}
-                      selected={accountType === 'professional'}
-                      onSelect={() =>
-                        form.setValue('accountType', 'professional')
-                      }
+                      selected={isProvider}
+                      onSelect={() => form.setValue('isProvider', true)}
                     />
                   </div>
                 </div>
@@ -138,14 +143,14 @@ const RegisterPage = () => {
                 />
 
                 {/* ── Phone ── */}
-                <FormFieldInput
+                {/* <FormFieldInput
                   control={form.control}
                   name="phone"
                   label="رقم الهاتف"
                   placeholder="01xxxxxxxxx"
                   icon={Phone}
                   type="tel"
-                />
+                /> */}
 
                 {/* ── Password ── */}
                 <FormFieldInput
@@ -211,22 +216,22 @@ const RegisterPage = () => {
                   type="submit"
                   variant="gradient"
                   className="h-11 w-full cursor-pointer rounded-lg font-bold"
-                  disabled={form.formState.isSubmitting}
+                  disabled={isPending}
                 >
-                  {form.formState.isSubmitting ? (
+                  {isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="ml-2">جاري التسجيل...</span>
+                      <span className="ml-2">جاري إنشاء الحساب...</span>
                     </>
                   ) : (
-                    'متابعة'
+                    'إنشاء حساب'
                   )}
                 </Button>
 
                 <p className="text-muted-foreground text-center text-sm">
                   لديك حساب بالفعل؟{' '}
                   <Link
-                    to={ROUTES.AUTH.SIGNIN}
+                    to="/auth/login"
                     className="text-primary font-semibold hover:underline"
                   >
                     تسجيل الدخول

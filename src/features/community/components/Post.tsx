@@ -1,12 +1,12 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/ui/card';
 import {
   MoreHorizontal,
   Heart,
   MessageSquare,
   Bookmark,
-  User
-} from "lucide-react";
-import { useState } from "react";
+  User,
+} from 'lucide-react';
+import { useState } from 'react';
 
 type PostType = {
   id: number;
@@ -36,73 +36,63 @@ const Post = ({ post }: { post: PostType }) => {
   };
 
   return (
-    <Card className="rounded-2xl bg-background border-0">
-      <CardContent className="p-5 space-y-4">
-
+    <Card className="bg-card rounded-2xl border-0">
+      <CardContent className="space-y-4 p-5">
         {/* Header */}
         <div className="flex items-center justify-between">
-
           <div className="flex items-center gap-3">
-
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center">
+            <div className="bg-primary/5 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
               {post.user.avatar ? (
                 <img
                   src={post.user.avatar}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               ) : (
-                <User className="w-6 h-6 text-primary/60" />
+                <User className="text-primary/60 h-6 w-6" />
               )}
             </div>
 
             {/* Info */}
             <div className="">
-              <p className="font-semibold text-sm">
-                {post.user.name}
-              </p>
+              <p className="text-sm font-semibold">{post.user.name}</p>
               <p className="text-xs text-gray-500">
-                  {post.role}  •  {post.createdAt}
+                {post.role} • {post.createdAt}
               </p>
             </div>
           </div>
 
-          <MoreHorizontal className="text-gray-400 cursor-pointer" size={18} />
+          <MoreHorizontal className="cursor-pointer text-gray-400" size={18} />
         </div>
-        <p className="text-sm   font-bold ">
-          {post.subject}
-        </p>
-        <p className="text-sm leading-6 ">
-          {post.content}
-        </p>
+        <p className="text-sm font-bold">{post.subject}</p>
+        <p className="text-sm leading-6">{post.content}</p>
 
         {/* Images */}
         {post.images && post.images.length > 0 && (
           <div
             className={`grid gap-2 ${
               post.images.length === 1
-                ? "grid-cols-1"
+                ? 'grid-cols-1'
                 : post.images.length === 2
-                ? "grid-cols-2"
-                : "grid-cols-2 md:grid-cols-3"
+                  ? 'grid-cols-2'
+                  : 'grid-cols-2 md:grid-cols-3'
             }`}
           >
             {post.images.map((img, i) => (
               <img
                 key={i}
                 src={img}
-                className="w-full h-48 object-cover rounded-xl"
+                className="h-48 w-full rounded-xl object-cover"
               />
             ))}
           </div>
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t text-sm">
-
+        <div className="flex items-center justify-between border-t pt-2 text-sm">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setShowComments(!showComments)}
-              className="flex items-center gap-1 text-gray-500 hover:text-primary transition"
+              className="hover:text-primary flex items-center gap-1 text-gray-500 transition"
             >
               <MessageSquare size={16} />
               {post.comments}
@@ -112,36 +102,28 @@ const Post = ({ post }: { post: PostType }) => {
             <button
               onClick={toggleLike}
               className={`flex items-center gap-1 transition ${
-                liked ? "text-primary" : "text-gray-500"
+                liked ? 'text-primary' : 'text-gray-500'
               }`}
             >
-              <Heart size={16} fill={liked ? "currentColor" : "none"} />
+              <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
               {likesCount}
             </button>
-
           </div>
 
           <button
             onClick={() => setSaved(!saved)}
-            className={`transition ${
-              saved ? "text-primary" : "text-gray-400"
-            }`}
+            className={`transition ${saved ? 'text-primary' : 'text-gray-400'}`}
           >
-            <Bookmark
-              size={18}
-              fill={saved ? "currentColor" : "none"}
-            />
+            <Bookmark size={18} fill={saved ? 'currentColor' : 'none'} />
           </button>
-
         </div>
 
         {/* Comments */}
         {showComments && (
-          <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-600 text-right">
+          <div className="rounded-xl bg-gray-50 p-3 text-right text-sm text-gray-600">
             هنا التعليقات
           </div>
         )}
-
       </CardContent>
     </Card>
   );
