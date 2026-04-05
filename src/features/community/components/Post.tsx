@@ -36,7 +36,7 @@ const Post = ({ post }: { post: PostType }) => {
   };
 
   return (
-    <Card className="bg-background rounded-2xl border-0">
+    <Card className="bg-card rounded-2xl border-0">
       <CardContent className="space-y-4 p-5">
         {/* Header */}
         <div className="flex items-center justify-between">

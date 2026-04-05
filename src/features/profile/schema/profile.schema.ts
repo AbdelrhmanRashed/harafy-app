@@ -59,3 +59,33 @@ export const passwordSchema = z
   });
 
 export type PasswordFormValues = z.infer<typeof passwordSchema>;
+
+// ─── Update Client Profile schema ─────────────────────────────────────────────
+
+export const updateClientProfileSchema = z.object({
+  FirstName: z.string().min(1, 'الاسم الأول مطلوب'),
+  LastName: z.string().min(1, 'اسم العائلة مطلوب'),
+  Gender: z.union([z.literal(0), z.literal(1)], {
+    message: 'الجنس مطلوب',
+  }),
+  DateOfBirth: z.string().min(1, 'تاريخ الميلاد مطلوب'),
+  Picture: z.instanceof(File).optional(),
+  // stored as {value: string}[] so react-hook-form useFieldArray works correctly
+  PhoneNumbers: z
+    .array(z.object({ value: z.string().min(1, 'رقم الهاتف مطلوب') }))
+    .min(1, 'يجب إضافة رقم هاتف واحد على الأقل'),
+  governorate: z
+    .number()
+    .min(1, 'المحافظة مطلوبة')
+    .optional()
+    .refine((val) => val !== undefined, 'المحافظة مطلوبة'),
+  region: z
+    .number()
+    .min(1, 'المنطقة مطلوبة')
+    .optional()
+    .refine((val) => val !== undefined, 'المنطقة مطلوبة'),
+});
+
+export type UpdateClientProfileFormValues = z.infer<
+  typeof updateClientProfileSchema
+>;

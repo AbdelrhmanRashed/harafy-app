@@ -1,23 +1,28 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { User } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { User } from 'lucide-react';
 
 const DirectRequest = () => {
-    return (
-        <Card className=" items-center text-center bg-background border-none shadow-sm rounded-2xl">
-            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center ">
-                <User className="text-primary w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">طلب مباشر</h3>
-            <p className=" text-sm leading-relaxed ">
-                اختر المحترف المفضل لديك بناءً على التقييمات
-                والأعمال السابقة.
-            </p>
-            <Button variant="secondary" className="font-bold mt-auto rounded-2xl px-6 py-3 text-primary">
-                تصفح المحترفين
-            </Button>
-        </Card>
-    )
-}
+  return (
+    <Card className="bg-card flex h-[300px] rounded-4xl border-none p-8 shadow-sm transition-all hover:shadow-md">
+      <div className="bg-primary/10 flex size-12 items-center justify-center rounded-full">
+        <User className="text-primary h-6 w-6" />
+      </div>
+      <div className="space-y-3">
+        <h3 className="text-foreground text-2xl font-bold">طلب مباشر</h3>
+        <p className="text-muted-foreground">
+          اختر المحترف المفضل لديك بناءً على التقييمات والأعمال السابقة.
+        </p>
+      </div>
+
+      <Button
+        variant="secondary"
+        className="text-primary bg-primary/5 hover:bg-primary/10 mt-auto w-full rounded-2xl border-none py-6 text-lg font-bold transition-colors"
+      >
+        تصفح الحرفيين
+      </Button>
+    </Card>
+  );
+};
 
 export default DirectRequest;

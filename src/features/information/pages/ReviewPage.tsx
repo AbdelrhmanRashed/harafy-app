@@ -17,7 +17,7 @@ import {
   ShieldCheck,
   Check,
 } from 'lucide-react';
-import FeatureCard from '../components/FeatureCard';
+import FeatureCard from '../../auth/components/FeatureCard';
 import type { Step } from '../components/StepItem';
 import StepItem from '../components/StepItem';
 
@@ -52,7 +52,7 @@ const steps: Step[] = [
 
 const ReviewPage = () => {
   return (
-    <div className="mx-2 w-full max-w-lg space-y-4">
+    <div className="space-y-4">
       {/* ── Main review card ── */}
       <Card className="rounded-2xl text-center drop-shadow-lg drop-shadow-black/5">
         <CardHeader className="items-center pb-0">

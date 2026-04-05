@@ -13,7 +13,7 @@ const ProfileSettingsPage = () => {
           </p>
         </div>
 
-        <ProfileFormSettings onSubmit={() => {}} />
+        <ProfileFormSettings />
       </div>
     </main>
   );

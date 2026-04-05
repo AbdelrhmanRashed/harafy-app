@@ -8,11 +8,12 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { cn, getImageUrl, getRoleName } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useAuthStore } from '@/store/useAuthStore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,6 +47,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const ProfileSidebar = () => {
   const { mutateAsync: logout, isPending } = useLogout();
+  const user = useAuthStore((s) => s.user);
   return (
     <Card className="flex w-full flex-col gap-4 p-4">
       {/* ── User card ── */}
@@ -53,13 +55,13 @@ const ProfileSidebar = () => {
         <div className="size-12 overflow-hidden rounded-xl">
           <img
             className="h-full w-full object-cover"
-            src="https://github.com/shadcn.png"
+            src={getImageUrl(user?.pictureUrl)}
           />
         </div>
         <div className="flex flex-col">
-          <p className="text-md font-bold">تامر الجيار</p>
-          <p className="text-sm">abdo@gmail.com</p>
-          <p className="text-xs">عميل</p>
+          <p className="text-md font-bold">{user?.fullName}</p>
+          <p className="text-sm">{user?.email}</p>
+          <p className="text-xs">{getRoleName(user?.role)}</p>
         </div>
       </div>
 

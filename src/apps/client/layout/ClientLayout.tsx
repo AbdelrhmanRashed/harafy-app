@@ -2,6 +2,8 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from '@/components/layout/navbar/Navbar';
 
 const ClientLayout = () => {
+  // hydrate the store with the data from localStorage
+  // useClientProfile();
   return (
     <div className="flex h-screen flex-col">
       <Navbar />

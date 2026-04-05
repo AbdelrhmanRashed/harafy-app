@@ -11,21 +11,21 @@ import LogoutButton from '@/features/auth/components/LogoutButton';
 import { useAuthStore, type User } from '@/store/useAuthStore';
 import { BellIcon, SettingsIcon, UserIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '@/lib/utils';
 
 const AvatarSection = ({ user }: { user: User | null }) => {
+  const userPicture = getImageUrl(user?.pictureUrl);
   return (
     <Avatar className="cursor-pointer">
-      <AvatarImage
-        src={user?.pictureUrl || 'https://github.com/shadcn.png'}
-        alt="User Avatar"
-      />
+      <AvatarImage src={userPicture} alt="User Avatar" />
       <AvatarFallback>{user?.fullName.split(' ')[0][0]}</AvatarFallback>
     </Avatar>
   );
 };
 
 const ProfileMenuTrigger = () => {
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  console.log(user);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

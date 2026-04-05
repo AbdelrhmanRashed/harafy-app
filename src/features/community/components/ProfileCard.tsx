@@ -1,62 +1,82 @@
+import { Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Settings, User } from 'lucide-react';
-type Props = {
-  userImage?: string;
-};
-const ProfileCard = ({ userImage }: Props) => {
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { type User as AuthUser } from '@/store/useAuthStore';
+import { getImageUrl, getRoleName } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+
+const ProfileCard = ({ user }: { user: AuthUser | null }) => {
+  const navigate = useNavigate();
   return (
-    <Card className="bg-background w-full rounded-2xl">
-      <CardContent className="space-y-4 p-6">
-        <div className="relative flex justify-center">
-          <div className="bg-primary/5 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full shadow-md">
-            {userImage ? (
-              <img
-                src={userImage}
-                alt="user"
-                className="h-full w-full object-cover"
+    <Card className="group bg-card w-full max-w-sm overflow-hidden rounded-3xl border-none">
+      <CardContent className="p-6">
+        {/* Header Section with Avatar */}
+        <div className="relative mb-6 flex flex-col items-center">
+          <div className="relative">
+            <Avatar className="border-background shadow-primary-gradient h-20 w-20 border-4">
+              <AvatarImage
+                src={getImageUrl(user?.pictureUrl)}
+                alt={user?.fullName}
+                className="object-cover"
               />
-            ) : (
-              <User className="text-primary/60 h-8 w-8" />
-            )}
+              <AvatarFallback className="bg-secondary text-secondary-foreground">
+                <User size={32} />
+              </AvatarFallback>
+            </Avatar>
+
+            <span className="absolute right-1 bottom-1 flex h-4 w-4">
+              <span className="border-background relative inline-flex h-4 w-4 rounded-full border-2 bg-green-500"></span>
+            </span>
           </div>
-          <span className="absolute bottom-1 left-[45%] h-3 w-3 rounded-full border-2 border-white bg-green-500 lg:left-[35%]" />
+
+          <div className="mt-3 text-center">
+            <h3 className="text-foreground text-lg font-bold">
+              {user?.fullName}
+            </h3>
+            <p className="text-muted-foreground text-sm font-medium">
+              {getRoleName(user?.role)}
+            </p>
+          </div>
         </div>
-        {/* Name */}
-        <div className="text-center">
-          <p className="text-md font-bold">تامر الجيار</p>
-          <p className="text-xs text-gray-400">عميل جديد</p>
-        </div>
-        {/* Divider */}
-        <div className="border-t" />
-        {/* Stats */}
-        <div className="flex justify-between px-4 text-sm">
+
+        {/* Stats Grid */}
+        <div className="bg-muted/50 grid grid-cols-2 gap-4 rounded-2xl px-2 py-3">
           <div className="text-center">
-            <p className="text-xs text-gray-400">المنشورات</p>
-            <p className="text-primary font-semibold">12</p>
+            <p className="text-muted-foreground text-[10px] tracking-wider uppercase">
+              المنشورات
+            </p>
+            <p className="text-md text-primary font-bold">12</p>
           </div>
-          <div className="text-center">
-            <p className="text-xs text-gray-400">المتابعين</p>
-            <p className="text-primary font-semibold">850</p>
+          <div className="border-border border-r text-center">
+            <p className="text-muted-foreground text-[10px] tracking-wider uppercase">
+              المتابعين
+            </p>
+            <p className="text-md text-primary font-bold">850</p>
           </div>
         </div>
-        {/* Divider */}
-        <div className="border-t" />
-        {/* Rating */}
-        <div className="space-y-2 px-2">
-          <div className="flex justify-between text-xs text-gray-400">
-            <span>التقييم</span>
-            <span className="text-primary font-medium">4.8</span>
+
+        {/* Rating Section */}
+        <div className="mt-6 space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-foreground text-xs font-semibold">
+              مستوى التقييم
+            </span>
+            <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-bold">
+              4.8 / 5
+            </span>
           </div>
-          <Progress
-            value={96}
-            id="progress-upload"
-            className="rtl:rotate-180"
-          />
+          <Progress value={96} className="h-2 rtl:rotate-180" />
         </div>
-        <Button variant="secondary" className="w-full rounded-full">
-          <Settings size={16} />
+
+        {/* Action Button */}
+        <Button
+          variant="gradient"
+          className="shadow-primary-gradient mt-6 w-full cursor-pointer gap-2 rounded-xl py-6 font-bold transition-transform active:scale-95"
+          onClick={() => navigate('/app/profile/settings/info')}
+        >
+          <Settings size={18} className="animate-spin-slow" />
           إعدادات الحساب
         </Button>
       </CardContent>

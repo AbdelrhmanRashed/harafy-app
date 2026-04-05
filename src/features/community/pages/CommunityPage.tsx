@@ -3,30 +3,29 @@ import CommunityFeed from '../components/CommunityFeed';
 import QuickLinks from '../components/QuickLinks';
 import ProfileCard from '../components/ProfileCard';
 import FooterLinks from '../components/FooterLinks';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const CommunityPage = () => {
+  const user = useAuthStore((s) => s.user);
+  console.log(user);
+
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* RIGHT */}
-        <div className="order-1 space-y-4 lg:order-0 lg:col-span-3">
-          <ProfileCard />
+    <main className="container mx-auto px-4 py-6">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div className="hidden lg:sticky lg:top-6 lg:col-span-3 lg:block">
+          <ProfileCard user={user} />
         </div>
 
-        {/* CENTER */}
-        <div className="order-3 space-y-4 lg:order-0 lg:col-span-6">
-          <CreatePost />
+        <div className="col-span-1 space-y-4 lg:col-span-6">
+          <CreatePost user={user} />
           <CommunityFeed />
         </div>
 
-        {/* LEFT */}
-        <div className="order-2 space-y-4 lg:order-0 lg:col-span-3">
+        <div className="hidden lg:sticky lg:top-6 lg:col-span-3 lg:block">
           <QuickLinks />
-          <div className="order-2 space-y-4 lg:order-0 lg:col-span-3">
-            <QuickLinks />
-          </div>
         </div>
-        <div className="order-4 lg:order-0 lg:col-span-12">
+
+        <div className="col-span-1 mt-4 lg:col-span-12">
           <FooterLinks />
         </div>
       </div>

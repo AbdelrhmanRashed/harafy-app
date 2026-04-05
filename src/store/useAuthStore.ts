@@ -7,12 +7,15 @@ export interface User {
   role: string[];
   isProvider: boolean;
   providerStatus: string | null;
+  accessToken: string;
+  isAuthenticated: boolean;
 }
 
 interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  updateUserPartial: (data: Partial<User>) => void;
 
   saveUser: (data: any) => void;
   removeUser: () => void;
@@ -37,6 +40,8 @@ export const useAuthStore = create<AuthState>((set) => {
         role: data.role,
         isProvider: data.isProvider,
         providerStatus: data.providerStatus,
+        accessToken: data.accessToken,
+        isAuthenticated: data.isAuthenticated,
       };
 
       localStorage.setItem('token', data.accessToken);
@@ -49,6 +54,23 @@ export const useAuthStore = create<AuthState>((set) => {
         isAuthenticated: data.isAuthenticated,
       });
     },
+
+    updateUserPartial: (data: Partial<User>) =>
+      set((state) => {
+        if (!state.user) return state;
+
+        const updatedUser = {
+          ...state.user,
+          ...data,
+        };
+
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        return {
+          ...state,
+          user: updatedUser,
+        };
+      }),
 
     removeUser: () => {
       localStorage.removeItem('token');

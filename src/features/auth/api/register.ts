@@ -10,7 +10,7 @@ interface RegisterData {
 
 export const register = async (data: RegisterData) => {
   try {
-    const res = await axiosInstance.post('/Account/register', data);
+    const res = await axiosInstance.post('/api/Account/register', data);
     return res.data;
   } catch (error: any) {
     throw error;

@@ -7,7 +7,9 @@ interface LoginData {
 
 export const login = async (data: LoginData) => {
   try {
-    const res = await axiosInstance.post('/Account/login', data);
+    const res = await axiosInstance.post('/api/Account/login', data, {
+      withCredentials: true,
+    });
     return res.data;
   } catch (error: any) {
     throw error;

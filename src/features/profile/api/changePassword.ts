@@ -6,6 +6,6 @@ interface ChangePassword {
 }
 
 export const changePassword = async (data: ChangePassword) => {
-  const res = await axiosInstance.post('/Account/change-password', data);
+  const res = await axiosInstance.post('/api/Account/change-password', data);
   return res.data;
 };

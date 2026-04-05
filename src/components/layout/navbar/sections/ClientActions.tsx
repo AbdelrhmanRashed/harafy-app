@@ -15,22 +15,22 @@ const ClientActions = () => {
   const { theme, toggleTheme } = useTheme();
 
   const variant: Record<string, string> = {
-    '/dashboard': 'إنشاء منشور',
-    '/services': 'طلب فورى',
-    '/community': 'إنشاء منشور',
-    '/services/instant': 'طلب خدمه مباشره',
-    '/services/direct': 'طلب فورى',
+    '/app/home': 'إنشاء منشور',
+    '/app/services': 'طلب فورى',
+    '/app/community': 'إنشاء منشور',
+    '/app/services/instant': 'طلب خدمه مباشره',
+    '/app/services/direct': 'طلب فورى',
   };
 
   const handleButtonClick = () => {
     if (variant[location.pathname] === 'إنشاء منشور') {
-      navigate('/dashboard/community');
+      navigate('/app/community', { state: { openCreatePost: true } });
     }
     if (variant[location.pathname] === 'طلب فورى') {
-      navigate('/dashboard/services/instant');
+      navigate('/app/services/instant');
     }
     if (variant[location.pathname] === 'طلب خدمه مباشره') {
-      navigate('/dashboard/services/direct');
+      navigate('/app/services/direct');
     }
   };
 

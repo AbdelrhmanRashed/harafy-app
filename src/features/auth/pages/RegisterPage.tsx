@@ -27,13 +27,13 @@ import {
   RotateCcwKey,
   Loader2,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useRegister } from '../hooks/useRegister.ts';
 
 //import components
 import HeroPanel from '../components/HeroPanel.tsx';
 import AccountTypeCard from '../components/AccountTypeCard.tsx';
 import FormFieldInput from '@/components/shared/form/FormFieldInput.tsx';
-import { Link } from 'react-router-dom';
-import { useRegister } from '../hooks/useRegister.ts';
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 const RegisterPage = () => {
