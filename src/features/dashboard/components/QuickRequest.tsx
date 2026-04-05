@@ -18,7 +18,7 @@ const QuickRequest = () => {
           </h3>
         </div>
         <p className="text-primary-foreground/80 max-w-[350px] text-lg leading-relaxed">
-          احصل على محترف الآن بأسرع وقت ممكن للمهام العاجلة والطارئة.
+          احصل على حرفى الآن بأسرع وقت ممكن للمهام العاجلة والطارئة.
         </p>
       </div>
 

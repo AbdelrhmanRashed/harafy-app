@@ -11,13 +11,13 @@ const DirectRequest = () => {
       <div className="space-y-3">
         <h3 className="text-foreground text-2xl font-bold">طلب مباشر</h3>
         <p className="text-muted-foreground">
-          اختر المحترف المفضل لديك بناءً على التقييمات والأعمال السابقة.
+          اختر الحرفي المفضل لديك بناءً على التقييمات والأعمال السابقة.
         </p>
       </div>
 
       <Button
         variant="secondary"
-        className="text-primary bg-primary/5 hover:bg-primary/10 mt-auto w-full rounded-2xl border-none py-6 text-lg font-bold transition-colors"
+        className="text-primary bg-primary/5 hover:bg-primary/10 mt-auto w-full cursor-pointer rounded-2xl border-none py-6 text-lg font-bold transition-colors"
       >
         تصفح الحرفيين
       </Button>

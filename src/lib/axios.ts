@@ -5,10 +5,10 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// 🔒 Flag علشان نمنع تكرار refresh
+// flag to prevent loop
 let isRefreshing = false;
 
-// 🧾 Queue للـ requests اللي مستنية التوكن الجديد
+// queue for requests that are waiting for the new token
 let failedQueue: any[] = [];
 
 const processQueue = (error: any, token: string | null = null) => {
@@ -23,8 +23,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// ========================
-// 🟢 Request Interceptor
+//  Request Interceptor
 // ========================
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
@@ -36,8 +35,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// ========================
-// 🔴 Response Interceptor
+//  Response Interceptor
 // ========================
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -45,23 +43,25 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // loop prevention
     const isAuthRoute =
       originalRequest.url?.includes('/api/Account/login') ||
       originalRequest.url?.includes('/api/Account/register');
 
-    // ❗ منع loop
     if (originalRequest.url?.includes('/refresh-token')) {
       return Promise.reject(error);
     }
 
-    // ✅ لو token expired أو invalid
+    // if token expired or invalid
     if (
-      (error.response?.status === 401 || error.response?.status === 400) &&
+      (error.response?.status === 401 ||
+        error.response?.status === 400 ||
+        error.response?.status === 404) &&
       !originalRequest._retry &&
       !isAuthRoute &&
       originalRequest.headers?.Authorization
     ) {
-      // لو فيه refresh شغال
+      // if refresh is working
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
@@ -86,22 +86,22 @@ axiosInstance.interceptors.response.use(
 
         const newToken = res.data.accessToken;
 
-        // 💾 خزّن التوكن الجديد
+        // save new token
         localStorage.setItem('token', newToken);
 
-        // حدث الـ header
+        // update header
         axiosInstance.defaults.headers.common['Authorization'] =
           `Bearer ${newToken}`;
 
         processQueue(null, newToken);
 
-        // رجّع الريكوست القديم
+        // retry the original request
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
       } catch (err) {
         processQueue(err, null);
 
-        // ❌ logout
+        // logout
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.replace('/auth/login');
