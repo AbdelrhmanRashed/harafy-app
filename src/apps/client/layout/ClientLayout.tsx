@@ -5,9 +5,9 @@ const ClientLayout = () => {
   // hydrate the store with the data from localStorage
   // useClientProfile();
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="w-full flex-1 overflow-y-auto pb-16 md:pb-0">
+      <main className="w-full flex-1 pb-16 md:pb-0">
         <Outlet />
       </main>
     </div>

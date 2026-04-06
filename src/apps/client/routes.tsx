@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import ProtectedRoute from '@/components/guards/ProtectedRoute';
+import ProtectedRoute from '@/guards/ProtectedRoute';
 // layout
 import ClientLayout from './layout/ClientLayout';
 // pages
@@ -16,13 +16,17 @@ import SettingsLayout from '@/features/profile/layout/SettingsLayout';
 import ProfileSettingsPage from '@/features/profile/pages/ProfileSettingsPage';
 import NotificationsPage from '@/features/profile/pages/NotificationsPage';
 import SecurityPage from '@/features/profile/pages/SecurityPage';
+// guards
+import AppStatusGuard from '@/guards/AppStatusGuard';
 
 const clientRoutes = [
   {
     path: '/app',
     element: (
       <ProtectedRoute allowedRoles={['Client', 'Admin']}>
-        <ClientLayout />
+        <AppStatusGuard>
+          <ClientLayout />
+        </AppStatusGuard>
       </ProtectedRoute>
     ),
     children: [

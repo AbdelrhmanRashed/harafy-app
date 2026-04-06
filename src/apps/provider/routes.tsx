@@ -1,27 +1,17 @@
 import ProviderTest from '@/features/auth/pages/ProviderTest';
-import ProtectedRoute from '@/components/guards/ProtectedRoute';
-import VerificationPage from '@/features/information/pages/VerificationPage';
-import ReviewPage from '@/features/information/pages/ReviewPage';
+import ProtectedRoute from '@/guards/ProtectedRoute';
+import ProviderStatusGuard from '@/guards/ProviderStatusGuard';
 
 const ProviderRoutes = [
   {
     path: '/provider',
     element: (
       <ProtectedRoute allowedRoles={['Provider', 'Admin']}>
-        <ProviderTest />
+        <ProviderStatusGuard>
+          <ProviderTest />
+        </ProviderStatusGuard>
       </ProtectedRoute>
     ),
-
-    children: [
-      {
-        path: 'verify',
-        element: <VerificationPage />,
-      },
-      {
-        path: 'review',
-        element: <ReviewPage />,
-      },
-    ],
   },
 ];
 

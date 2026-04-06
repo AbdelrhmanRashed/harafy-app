@@ -7,7 +7,7 @@ import ReportsPage from '@/features/admin/reports/pages/ReportsPage';
 import SettingsPage from '@/features/admin/settings/pages/SettingsPage';
 import RolesPage from '@/features/admin/roles/pages/RolesPage';
 import { Navigate } from 'react-router-dom';
-import ProtectedRoute from '@/components/guards/ProtectedRoute';
+import ProtectedRoute from '@/guards/ProtectedRoute';
 
 const adminRoutes = [
   {

@@ -1,4 +1,5 @@
 import { useTheme } from '@/hooks/useTheme';
+import { ThemeProvider as NextThemeProvider } from 'next-themes';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -6,7 +7,7 @@ interface ThemeProviderProps {
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
   useTheme();
-  return children;
+  return <NextThemeProvider>{children}</NextThemeProvider>;
 };
 
 export default ThemeProvider;

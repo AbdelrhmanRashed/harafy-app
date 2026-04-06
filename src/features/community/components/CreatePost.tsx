@@ -122,7 +122,7 @@ const CreatePost = ({ user }: Props) => {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="bg-card max-w-xl gap-0 overflow-hidden rounded-2xl border-none p-0 shadow-2xl"
+          className="bg-card mx-auto w-full max-w-2xl! gap-0 overflow-hidden rounded-2xl border-none p-0 shadow-2xl"
           aria-describedby={undefined}
         >
           {/* ── Header ── */}

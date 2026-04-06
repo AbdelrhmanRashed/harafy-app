@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+// Auth-only user shape — profile data lives in React Query, NOT here.
 export interface User {
   fullName: string;
   email: string;
@@ -9,20 +10,21 @@ export interface User {
   providerStatus: string | null;
   accessToken: string;
   isAuthenticated: boolean;
+  /** Numeric status code received from the login response (0=Pending, 1=UnderReview, 2=Approved, 3=Rejected, 4=Suspended, 5=Completed) */
+  status: number;
 }
 
 interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
-  updateUserPartial: (data: Partial<User>) => void;
 
   saveUser: (data: any) => void;
   removeUser: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => {
-  //hydrate the store with the data from localStorage
+  // Hydrate from localStorage on first load
   const storedToken = localStorage.getItem('token');
   const storedUser = localStorage.getItem('user');
   const storedIsAuthenticated = localStorage.getItem('isAuthenticated');
@@ -36,52 +38,28 @@ export const useAuthStore = create<AuthState>((set) => {
       const user: User = {
         fullName: data.fullName,
         email: data.email,
-        pictureUrl: data.pictureUrl,
+        pictureUrl: data.pictureUrl ?? null,
         role: data.role,
         isProvider: data.isProvider,
-        providerStatus: data.providerStatus,
+        providerStatus: data.providerStatus ?? null,
         accessToken: data.accessToken,
         isAuthenticated: data.isAuthenticated,
+        status: data.status,
       };
 
       localStorage.setItem('token', data.accessToken);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('isAuthenticated', data.isAuthenticated);
+      localStorage.setItem('isAuthenticated', String(data.isAuthenticated));
 
-      set({
-        user,
-        token: data.accessToken,
-        isAuthenticated: data.isAuthenticated,
-      });
+      set({ user, token: data.accessToken, isAuthenticated: data.isAuthenticated });
     },
-
-    updateUserPartial: (data: Partial<User>) =>
-      set((state) => {
-        if (!state.user) return state;
-
-        const updatedUser = {
-          ...state.user,
-          ...data,
-        };
-
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-
-        return {
-          ...state,
-          user: updatedUser,
-        };
-      }),
 
     removeUser: () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('isAuthenticated');
 
-      set({
-        user: null,
-        token: null,
-        isAuthenticated: false,
-      });
+      set({ user: null, token: null, isAuthenticated: false });
     },
   };
 });

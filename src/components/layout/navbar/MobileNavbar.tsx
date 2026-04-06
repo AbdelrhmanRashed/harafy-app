@@ -10,8 +10,8 @@ interface MobileNavbarProps {
 
 const MobileNavbar = ({ role }: MobileNavbarProps) => {
   return (
-    <div>
-      <header className="bg-background border-border sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b px-4 font-sans shadow-sm md:hidden">
+    <>
+      <header className="bg-background/80 border-border sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b px-4 font-sans shadow-sm backdrop-blur-md md:hidden">
         <Logo />
         <div className="flex items-center gap-2">
           {role === 'Client' && <ClientActions />}
@@ -20,7 +20,7 @@ const MobileNavbar = ({ role }: MobileNavbarProps) => {
 
       {/* Mobile Bottom Navigation */}
       <NavLinks navLinks={getNavLinks(role)} mobile />
-    </div>
+    </>
   );
 };
 

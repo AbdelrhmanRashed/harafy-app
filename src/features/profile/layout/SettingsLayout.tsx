@@ -3,13 +3,16 @@ import { Outlet } from 'react-router-dom';
 
 const SettingsLayout = () => {
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-12 gap-8 px-4 py-6">
+    <div className="container mx-auto grid grid-cols-12 gap-8 px-4 py-6">
       <div className="col-span-12 lg:col-span-3">
-        <ProfileSidebar />
+        <div className="sticky top-22">
+          <ProfileSidebar />
+        </div>
       </div>
-      <div className="col-span-12 lg:col-span-9">
+
+      <main className="col-span-12 lg:col-span-9">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };

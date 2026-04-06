@@ -1,6 +1,6 @@
 import ProfileFormSettings from '@/features/profile/components/ProfileFormSettings';
 
-const ProfileSettingsPage = () => {
+const UserProfileSettings = () => {
   return (
     <div className="min-w-0 flex-1 space-y-4">
       <div className="pb-4 text-right">
@@ -8,7 +8,7 @@ const ProfileSettingsPage = () => {
           إعدادات الملف الشخصي
         </h1>
         <p className="text-muted-foreground mt-1">
-          قم بإدارة معلوماتك الشخصية وتفضيلات حسابك بكل سهولة
+          أكمل معلوماتك الشخصية لتجربة أفضل
         </p>
       </div>
 
@@ -17,4 +17,4 @@ const ProfileSettingsPage = () => {
   );
 };
 
-export default ProfileSettingsPage;
+export default UserProfileSettings;
