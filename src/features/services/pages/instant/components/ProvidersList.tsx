@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import ProviderCard from "./ProviderCard";
-import type { Provider } from "../pages/instant/types";
+import type { Provider } from "../types/types";
 
 interface ProvidersListProps {
   providers: Provider[];

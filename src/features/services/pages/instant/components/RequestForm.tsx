@@ -1,9 +1,9 @@
 
 import { useEffect, useState } from "react";
-import { Zap, ChevronDown, Send, LocateFixed } from "lucide-react";
+import { Zap, ChevronDown, Send, LocateFixed, SplinePointer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, SERVICES } from "../pages/instant/constants";
+import { CATEGORIES, SERVICES } from "../types/constants";
 
 
 interface RequestFormProps {
@@ -12,23 +12,33 @@ interface RequestFormProps {
   locating: boolean;
   onDetect: () => void;
   onAddressSearch: (query: string) => void;
+  initialService?: string;
+  initialCategory?: string;
 }
 
-export default function RequestForm({ onSend, address, locating, onDetect, onAddressSearch }: RequestFormProps) {
-  const [selectedCategory, setSelectedCategory] = useState("الكل");
-  const [service, setService] = useState("");
+export default function RequestForm({ onSend, address, locating, onDetect, onAddressSearch ,initialService , initialCategory }: RequestFormProps) {
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory||"الكل");
+  const [service, setService] = useState(initialService||"");
   const [description, setDescription] = useState("");
   const [sent, setSent] = useState(false);
-  const [manualAddress, setManualAddress] = useState(address);
-  useEffect(() => {
+const [manualAddress, setManualAddress] = useState(address);
+
+useEffect(() => {
     setManualAddress(address);
   }, [address]);
+
+
   function handleSend() {
     if (!service || service === SERVICES[0] || !description) return;
     onSend?.({ service, description });
     setSent(true);
     setTimeout(() => setSent(false), 3000);
   }
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      onAddressSearch(manualAddress);
+    }
+  };
 
   return (
     <div className="border-b border-border">
@@ -91,14 +101,12 @@ export default function RequestForm({ onSend, address, locating, onDetect, onAdd
                 type="text"
                 value={manualAddress}
                 onChange={(e) => setManualAddress(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") onAddressSearch(manualAddress);
-                }}
+               onKeyDown={handleKeyDown}
                 placeholder="العنوان الحالي أو تلقائي"
                 className="w-full h-12 pr-3 pl-4 text-sm rounded-full border-none bg-muted focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/90"
               />
 
-              {/* زرار الـ detection */}
+              {/*button detect */}
               <button
                 type="button"
                 onClick={onDetect}
@@ -106,11 +114,7 @@ export default function RequestForm({ onSend, address, locating, onDetect, onAdd
                 className="shrink-0 h-12 w-12 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-colors disabled:opacity-50"
                 title="تحديد موقعي تلقائياً"
               >
-                {locating ? (
-                  <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <LocateFixed className="h-5 w-5 text-primary" />
-                )}
+               {locating ? <SplinePointer className="h-5 w-5 text-primary" /> : <LocateFixed className="h-5 w-5 text-primary" />}
               </button>
             </div>
           </div>

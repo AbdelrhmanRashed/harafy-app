@@ -1,7 +1,7 @@
 // hooks/useLocation.ts
 import { useState, useEffect } from "react";
-import type { LatLng } from "../pages/instant/types";
-import { DEFAULT_CENTER } from "../pages/instant/constants";
+import type { LatLng } from "../types/types";
+import { DEFAULT_CENTER } from "../types/constants";
 
 interface UseLocationReturn {
   position: LatLng;
@@ -64,6 +64,7 @@ export function useLocation(): UseLocationReturn {
   setAddress(addr);
 }
 async function searchAddress(query: string) {
+  if (!query) return;
   setLocating(true);
   try {
     const res = await fetch(
@@ -80,7 +81,7 @@ async function searchAddress(query: string) {
 }
 
   // auto-detect on mount
-  useEffect(() => { detect(); }, []);
+  // useEffect(() => { detect(); }, []);
 
 return { position, setPosition: updatePosition, address, locating, denied, detect, searchAddress };
 }

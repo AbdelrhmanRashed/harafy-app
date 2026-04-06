@@ -24,6 +24,7 @@ const clientRoutes = [
       <ProtectedRoute allowedRoles={['Client', 'Admin']}>
         <ClientLayout />
       </ProtectedRoute>
+
     ),
     children: [
       {

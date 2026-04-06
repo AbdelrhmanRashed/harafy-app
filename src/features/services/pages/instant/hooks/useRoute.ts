@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { LatLng } from "../pages/instant/types";
+import type { LatLng } from "../types/types";
 
 async function fetchRoute(from: LatLng, to: LatLng): Promise<LatLng[]> {// Try fetching route from OSRM API
   try {

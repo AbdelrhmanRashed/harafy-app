@@ -1,4 +1,4 @@
-import type { LatLng } from "../pages/instant/types";
+import type { LatLng } from "../types/types";
 
 /**
  * Calculates the distance between two points on Earth using the Haversine formula.

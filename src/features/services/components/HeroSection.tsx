@@ -8,7 +8,7 @@ interface HeroSectionProps {
 const HeroSection = ({ onSearch }: HeroSectionProps) => {
   return (
     <section
-      dir="rtl"
+
       className="w-full flex flex-col items-center text-center gap-6 py-16 px-6"
     >
       {/* Heading */}

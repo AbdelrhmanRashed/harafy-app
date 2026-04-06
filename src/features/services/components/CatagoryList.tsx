@@ -1,4 +1,3 @@
-"use client";
 
 import { cn } from "@/lib/utils";
 import {
@@ -36,7 +35,7 @@ interface CategoryListProps {
 
 export default function CategoryList({ onSelect, selected }: CategoryListProps) {
   return (
-    <div dir="rtl" className="grid grid-cols-2 md:grid-cols-3 justify-items-center lg:grid-cols-5  gap-4  max-w-4xl mx-auto ">
+    <div className="grid grid-cols-2 md:grid-cols-3 justify-items-center lg:grid-cols-5  gap-4  max-w-4xl mx-auto ">
       {CATEGORIES.map(({ label, icon: Icon }) => (
         <button
           key={label}

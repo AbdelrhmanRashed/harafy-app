@@ -1,4 +1,3 @@
-"use client";
 
 import { Search, MapPin, Briefcase } from "lucide-react";
 import { useState } from "react";
@@ -18,7 +17,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   return (
     <div
-      dir="rtl"
+   
       className="flex flex-row items-center h-19 w-full max-w-4xl mx-auto bg-white rounded-4xl shadow-sm overflow-hidden border border-transparent p-2"
     >
       {/* Service input */}

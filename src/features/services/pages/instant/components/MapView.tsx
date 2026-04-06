@@ -7,8 +7,8 @@ import {
   useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { customerIcon, workerIcon } from "../utils/mapIcons";
-import type { LatLng, Provider } from "../pages/instant/types";
+import { customerIcon, workerIcon } from "./../utils/mapIcons.ts";
+import type { LatLng, Provider } from "../types/types";
 
 // ─── Map click handler ────────────────────────────────────────────────────────
 
@@ -74,15 +74,15 @@ export default function MapView({
             }}
             className="flex-1 text-sm bg-transparent outline-none placeholder:text-muted-foreground"
           />
-       {mapSearch && (
-      <button
-        type="button"
-        onClick={() => setMapSearch("")}
-        className="text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <X className="h-4.5 w-4.5" />
-      </button>
-    )}
+          {mapSearch && (
+            <button
+              type="button"
+              onClick={() => setMapSearch("")}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4.5 w-4.5" />
+            </button>
+          )}
         </div>
       </div>
 
