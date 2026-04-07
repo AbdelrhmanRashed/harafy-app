@@ -4,9 +4,9 @@ export const verificationSchema = z.object({
   Bio: z.string().optional(),
   Nickname: z.string().optional(),
 
-  GovernorateId: z.coerce.number().min(1, 'المحافظة مطلوبة'),
+  // GovernorateId: z.coerce.number().min(1, 'المحافظة مطلوبة'),
 
-  RegionId: z.coerce.number().min(1, 'المنطقة مطلوبة'),
+  // RegionId: z.coerce.number().min(1, 'المنطقة مطلوبة'),
 
   BaseLocation: z.object({
     Latitude: z.coerce.number(),

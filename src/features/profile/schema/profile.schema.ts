@@ -68,12 +68,53 @@ export const updateClientProfileSchema = z.object({
   Gender: z.union([z.literal(0), z.literal(1)], {
     message: 'الجنس مطلوب',
   }),
-  DateOfBirth: z.string().min(1, 'تاريخ الميلاد مطلوب'),
+  DateOfBirth: z
+    .string()
+    .min(1, 'تاريخ الميلاد مطلوب')
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: 'تاريخ غير صحيح',
+    })
+    .refine((val) => new Date(val) <= new Date(), {
+      message: 'لا يمكن اختيار تاريخ في المستقبل',
+    })
+    .refine(
+      (val) => {
+        const birth = new Date(val);
+        const today = new Date();
+
+        const age = today.getFullYear() - birth.getFullYear();
+
+        return age >= 16;
+      },
+      {
+        message: 'يجب أن يكون العمر 16 سنة على الأقل',
+      },
+    ),
   Picture: z.instanceof(File).optional(),
   // stored as {value: string}[] so react-hook-form useFieldArray works correctly
   PhoneNumbers: z
-    .array(z.object({ value: z.string().min(1, 'رقم الهاتف مطلوب') }))
-    .min(1, 'يجب إضافة رقم هاتف واحد على الأقل'),
+    .array(
+      z.object({
+        value: z
+          .string()
+          .min(1, 'رقم الهاتف مطلوب')
+          .transform((val) =>
+            val.replace(/\s+/g, '').replace(/^(\+20|0020)/, '0'),
+          )
+          .refine(
+            (val) => /^01[0125][0-9]{8}$/.test(val),
+            'رقم الهاتف غير صحيح',
+          ),
+      }),
+    )
+    .min(1, 'يجب إضافة رقم هاتف واحد على الأقل')
+    .refine(
+      (phones) => {
+        const values = phones.map((p) => p.value);
+        return new Set(values).size === values.length;
+      },
+      { message: 'لا يمكن تكرار نفس رقم الهاتف' },
+    ),
   governorate: z
     .number()
     .min(1, 'المحافظة مطلوبة')

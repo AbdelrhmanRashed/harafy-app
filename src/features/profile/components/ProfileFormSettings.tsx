@@ -82,7 +82,7 @@ const ProfileFormSettings = () => {
       FirstName: profile.firstName,
       LastName: profile.lastName,
       Gender: profile.gender,
-      DateOfBirth: profile.dateOfBirth,
+      DateOfBirth: '',
       Picture: undefined,
       PhoneNumbers:
         profile.phoneNumbers.length > 0
@@ -198,20 +198,38 @@ const ProfileFormSettings = () => {
               <FormField
                 control={form.control}
                 name="DateOfBirth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>تاريخ الميلاد</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        className="py-5"
-                        dir="ltr"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const today = new Date();
+                  const maxDate = today.toISOString().split('T')[0];
+
+                  // لو عايز 18 سنة
+                  const minDateObj = new Date();
+                  minDateObj.setFullYear(today.getFullYear() - 100); // optional
+                  const minDate = minDateObj.toISOString().split('T')[0];
+
+                  return (
+                    <FormItem>
+                      <FormLabel>تاريخ الميلاد</FormLabel>
+
+                      <FormControl>
+                        <Input
+                          type="date"
+                          dir="ltr"
+                          className="py-5"
+                          // 🔥 مهم
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          // 🛑 يمنع المستقبل
+                          max={maxDate}
+                          // 🟡 optional (أقصى عمر)
+                          min={minDate}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </div>
             {/* Governorate + Region */}

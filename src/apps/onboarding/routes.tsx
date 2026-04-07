@@ -37,11 +37,7 @@ const onboardingRoutes = [
       },
       {
         path: 'review',
-        element: (
-          <OnboardingGuard>
-            <ReviewPage />
-          </OnboardingGuard>
-        ),
+        element: <ReviewPage />,
       },
     ],
   },

@@ -4,7 +4,7 @@ import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { UpdateClientProfileFormValues } from '../schema/profile.schema';
-import defaultAvatar from '@/assets/images/profileImage.png';
+import userAvatar from '@/assets/images/profileImage.png';
 import { getImageUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -44,7 +44,7 @@ const ClientAvatarUpload = ({
         <div className="relative inline-block">
           <div className="ring-secondary bg-muted border-secondary flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-0 shadow-md ring-4 select-none">
             <img
-              src={preview ?? defaultAvatar}
+              src={preview ?? userAvatar}
               alt="avatar"
               className="h-full w-full object-cover"
             />
