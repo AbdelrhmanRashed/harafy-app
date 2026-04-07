@@ -1,7 +1,6 @@
 import { Star, MapPin, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Provider } from "../types/types";
-
 interface ProviderCardProps {
   provider: Provider;
   selected: boolean;
@@ -21,13 +20,11 @@ export default function ProviderCard({ provider, selected, onSelect }: ProviderC
           : "border border-transparent hover:border-primary/20 shadow-sm hover:shadow-md"
       )}
     >
-      {/* 1. Rating Badge (Top Left) - بستايل الألوان اللي في الصور */}
       <div className="absolute top-4 left-4 bg-[#F0F0FF] text-primary px-3 py-1 rounded-full flex items-center gap-1 text-sm font-bold">
         <Star className="h-3.5 w-3.5 fill-current" />
         <span className="leading-none">{provider.rating.toFixed(1)}</span>
       </div>
 
-      {/* 2. Avatar Section - تكبير الحجم وتعديل الدوران */}
       <div className="relative shrink-0">
         <div className="w-20 h-20 rounded-[24px] overflow-hidden bg-slate-900 border border-border/50">
           {provider.image ? (
@@ -45,7 +42,6 @@ export default function ProviderCard({ provider, selected, onSelect }: ProviderC
         )} />
       </div>
 
-      {/* 3. Info Section - تحسين توزيع المسافات */}
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         {/* Name & Profession */}
         <h3 className="text-xl font-extrabold text-[#1A1A1A] truncate mb-0.5">

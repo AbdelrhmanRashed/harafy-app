@@ -101,7 +101,7 @@ useEffect(() => {
                 type="text"
                 value={manualAddress}
                 onChange={(e) => setManualAddress(e.target.value)}
-               onKeyDown={handleKeyDown}
+                onKeyDown={handleKeyDown}
                 placeholder="العنوان الحالي أو تلقائي"
                 className="w-full h-12 pr-3 pl-4 text-sm rounded-full border-none bg-muted focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/90"
               />
