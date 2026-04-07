@@ -3,21 +3,25 @@ import CommunityFeed from '../components/CommunityFeed';
 import QuickLinks from '../components/QuickLinks';
 import ProfileCard from '../components/ProfileCard';
 import FooterLinks from '../components/FooterLinks';
+import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
 import { useAuthStore } from '@/store/useAuthStore';
+import CommunitySkeletonPage from '../components/CommunitySkeletonPage';
 
 const CommunityPage = () => {
-  const user = useAuthStore((s) => s.user);
-  console.log(user);
+  const { data: clientProfile, isLoading } = useClientProfile();
+  const roles = useAuthStore((state) => state.user?.role);
+
+  if (isLoading) return <CommunitySkeletonPage />;
 
   return (
-    <main className="container mx-auto px-4 py-6">
+    <main className="mx-auto max-w-7xl px-4 py-6">
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         <div className="hidden lg:sticky lg:top-20 lg:col-span-3 lg:block">
-          <ProfileCard user={user} />
+          <ProfileCard clientProfile={clientProfile} roles={roles} />
         </div>
 
         <div className="col-span-1 space-y-4 lg:col-span-6">
-          <CreatePost user={user} />
+          <CreatePost clientProfile={clientProfile} />
           <CommunityFeed />
         </div>
 

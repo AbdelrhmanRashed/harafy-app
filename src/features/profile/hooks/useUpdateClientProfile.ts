@@ -9,6 +9,7 @@ export const useUpdateClientProfile = () => {
     mutationFn: updateClientProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['client-profile'] });
+      queryClient.invalidateQueries({ queryKey: ['account-status'] });
       toast.success('تم تحديث الملف الشخصي بنجاح');
     },
     onError: () => {

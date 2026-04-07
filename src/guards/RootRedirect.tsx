@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getRedirectPath } from '@/lib/auth/getRedirectPath';
-import LandingPage from './LandingPage';
+import LandingPage from '../pages/LandingPage';
 import { mapUser } from '@/lib/auth/mapUser';
 
 const RootRedirect = () => {

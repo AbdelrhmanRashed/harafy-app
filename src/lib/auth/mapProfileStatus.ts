@@ -1,4 +1,4 @@
-export type ProfileStatus =
+export type status =
   | 'Pending'
   | 'UnderReview'
   | 'Approved'
@@ -6,7 +6,7 @@ export type ProfileStatus =
   | 'Suspended'
   | 'Completed';
 
-export const mapProfileStatus = (status: number): ProfileStatus => {
+export const mapStatus = (status: number): status => {
   switch (status) {
     case 0:
       return 'Pending';

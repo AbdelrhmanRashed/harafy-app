@@ -10,6 +10,11 @@ export const getImageUrl = (imagePath: string | null | undefined) =>
     ? `${import.meta.env.VITE_BASE_URL}/${imagePath}`
     : 'https://github.com/shadcn.png';
 
+export const getFullName = (
+  firstName: string | null | undefined,
+  lastName: string | null | undefined,
+) => `${firstName} ${lastName}`;
+
 export const getRoleName = (role: string[] | null | undefined) => {
   switch (role?.[0]) {
     case 'Client':

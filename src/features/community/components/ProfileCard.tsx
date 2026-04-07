@@ -3,11 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { type User as AuthUser } from '@/store/useAuthStore';
 import { getImageUrl, getRoleName } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import type { ClientProfile } from '@/features/profile/types/client-profile.types';
+import { getFullName } from '@/lib/utils';
 
-const ProfileCard = ({ user }: { user: AuthUser | null }) => {
+const ProfileCard = ({
+  clientProfile,
+  roles,
+}: {
+  clientProfile: ClientProfile | undefined;
+  roles: string[] | undefined;
+}) => {
   const navigate = useNavigate();
   return (
     <Card className="group bg-card w-full max-w-sm overflow-hidden rounded-3xl border-none">
@@ -15,10 +22,13 @@ const ProfileCard = ({ user }: { user: AuthUser | null }) => {
         {/* Header Section with Avatar */}
         <div className="relative mb-6 flex flex-col items-center">
           <div className="relative">
-            <Avatar className="border-background shadow-primary-gradient h-20 w-20 border-4">
+            <Avatar className="border-background h-20 w-20 border-4 shadow-md">
               <AvatarImage
-                src={getImageUrl(user?.pictureUrl)}
-                alt={user?.fullName}
+                src={getImageUrl(clientProfile?.pictureUrl)}
+                alt={getFullName(
+                  clientProfile?.firstName,
+                  clientProfile?.lastName,
+                )}
                 className="object-cover"
               />
               <AvatarFallback className="bg-secondary text-secondary-foreground">
@@ -33,10 +43,10 @@ const ProfileCard = ({ user }: { user: AuthUser | null }) => {
 
           <div className="mt-3 text-center">
             <h3 className="text-foreground text-lg font-bold">
-              {user?.fullName}
+              {getFullName(clientProfile?.firstName, clientProfile?.lastName)}
             </h3>
             <p className="text-muted-foreground text-sm font-medium">
-              {getRoleName(user?.role)}
+              {getRoleName(roles)}
             </p>
           </div>
         </div>

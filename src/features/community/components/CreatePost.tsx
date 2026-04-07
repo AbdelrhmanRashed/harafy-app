@@ -24,18 +24,18 @@ import { Button } from '@/components/ui/button';
 import { createPostSchema, type CreatePostInput } from '../schemas/post.schema';
 import { useAddPost } from '../hooks/useAddPost';
 import CreatePostTrigger from './CreatePostTrigger';
-import type { User as AuthUser } from '@/store/useAuthStore';
 import { getImageUrl } from '@/lib/utils';
+import type { ClientProfile } from '@/features/profile/types/client-profile.types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Props = {
-  user: AuthUser | null;
+  clientProfile: ClientProfile | undefined;
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const CreatePost = ({ user }: Props) => {
+const CreatePost = ({ clientProfile }: Props) => {
   const [open, setOpen] = useState(false);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -116,7 +116,7 @@ const CreatePost = ({ user }: Props) => {
   return (
     <>
       <CreatePostTrigger
-        userImage={getImageUrl(user?.pictureUrl)}
+        userImage={getImageUrl(clientProfile?.pictureUrl)}
         onClick={() => setOpen(true)}
       />
 
@@ -139,9 +139,9 @@ const CreatePost = ({ user }: Props) => {
                 {/* ── User avatar ── */}
                 <div className="flex items-center gap-3">
                   <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
-                    {user?.pictureUrl ? (
+                    {clientProfile?.pictureUrl ? (
                       <img
-                        src={getImageUrl(user.pictureUrl)}
+                        src={getImageUrl(clientProfile.pictureUrl)}
                         alt="user"
                         className="h-full w-full object-cover"
                       />

@@ -7,11 +7,15 @@ import WorkSpace from '../components/WorkSpace';
 import QuickRequest from '../components/QuickRequest';
 import DirectRequest from '../components/DirectRequest';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
+import ProfileCardSkeleton from '@/features/community/components/ProfileCardSkeleton';
 
 const ClientDashboard = () => {
-  const user = useAuthStore((state) => state.user);
+  const { data: clientProfile, isLoading } = useClientProfile();
+  const roles = useAuthStore((state) => state.user?.role);
+
   return (
-    <main className="container mx-auto px-4 py-6" dir="rtl">
+    <main className="mx-auto max-w-7xl px-4 py-6" dir="rtl">
       <h1 className="text-primary mb-6 text-right text-3xl font-bold">
         ابدأ الآن
       </h1>
@@ -26,12 +30,16 @@ const ClientDashboard = () => {
         </div>
 
         <div className="order-4 hidden space-y-4 lg:sticky lg:top-20 lg:order-3 lg:col-span-3 lg:block">
-          <ProfileCard user={user} />
+          {isLoading ? (
+            <ProfileCardSkeleton />
+          ) : (
+            <ProfileCard clientProfile={clientProfile} roles={roles} />
+          )}
           <WorkSpace />
         </div>
 
         <div className="order-3 space-y-4 lg:order-4 lg:col-span-6">
-          <CreatePost user={user} />
+          <CreatePost clientProfile={clientProfile} />
           <CommunityFeed />
         </div>
 

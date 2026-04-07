@@ -1,7 +1,7 @@
-import { mapProfileStatus } from './mapProfileStatus';
+import { mapStatus } from './mapProfileStatus';
 
 export const mapUser = (user: any) => ({
   roles: user.role,
   isProvider: user.isProvider,
-  profileStatus: mapProfileStatus(user.status),
+  status: mapStatus(user.status),
 });

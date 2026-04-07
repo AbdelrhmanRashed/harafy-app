@@ -2,7 +2,7 @@ import type { UserRole } from '@/types/auth.types';
 
 //return main role of user
 export const getMainRole = (
-  roles: string[],
+  roles?: string[],
   isProvider?: boolean,
 ): UserRole => {
   if (!roles || roles.length === 0) return 'Guest';

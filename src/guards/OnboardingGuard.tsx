@@ -1,9 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getMainRole } from '@/lib/auth/getMainRole';
-import { mapProfileStatus } from '@/lib/auth/mapProfileStatus';
+import { mapStatus } from '@/lib/auth/mapProfileStatus';
 import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { useAccountStatus } from '@/features/auth/hooks/useAccountStatus';
+import VerificationSkeleton from '@/features/onboarding/components/VerificationSkeleton';
 
 // ---------------------------------------------------------------------------
 // Profile-completeness check — runs against React Query data, never Zustand.
@@ -34,16 +35,20 @@ const isProfileComplete = (
 // ---------------------------------------------------------------------------
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
+  const { data: accountStatus } = useAccountStatus();
 
   // ── 1. No authenticated user → ProtectedRoute handles this, but be safe. ──
   if (!user) return null;
 
-  const role = getMainRole(user.role, user.isProvider);
-  const profileStatus = mapProfileStatus(user.status);
+  const role = getMainRole(
+    accountStatus?.role ?? user.role,
+    accountStatus?.isProvider ?? user.isProvider,
+  );
+  const status = mapStatus(accountStatus?.status ?? user.status);
 
   // ── 2. Client routing (no profile query needed) ──────────────────────────
   if (role === 'Client') {
-    if (profileStatus === 'Pending') {
+    if (status === 'Pending') {
       return <ClientGuard>{children}</ClientGuard>;
     }
     // Completed / any other status → push out of onboarding
@@ -52,14 +57,14 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
 
   // ── 3. Provider routing (needs profile query for completeness check) ──────
   if (role === 'Provider') {
-    if (profileStatus === 'UnderReview') {
+    if (status === 'UnderReview') {
       return <Navigate to="/onboarding/review" replace />;
     }
-    if (profileStatus === 'Approved') {
+    if (status === 'Approved') {
       return <Navigate to="/provider" replace />;
     }
     // Pending — we need to know if the profile is filled in yet.
-    if (profileStatus === 'Pending') {
+    if (status === 'Pending') {
       return <ProviderPendingGuard>{children}</ProviderPendingGuard>;
     }
   }
@@ -93,11 +98,7 @@ const ProviderPendingGuard = ({ children }: { children: React.ReactNode }) => {
 
   // Still fetching — hold tight, render nothing committed yet.
   if (isLoading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
+    return <VerificationSkeleton />;
   }
 
   // On error, let the user stay where they are (fail open, not loop).

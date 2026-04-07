@@ -1,11 +1,4 @@
-import {
-  BellIcon,
-  ChevronsUpDown,
-  Loader2,
-  LogOutIcon,
-  SettingsIcon,
-  UserIcon,
-} from 'lucide-react';
+import { BellIcon, ChevronsUpDown, SettingsIcon, UserIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,9 +10,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-import { useLogout } from '@/features/auth/hooks/useLogout';
-import { useAuthStore } from '@/store/useAuthStore';
 import LogoutButton from '@/features/auth/components/LogoutButton';
+import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
+import { getFullName } from '@/lib/utils';
 
 interface ProfileMenuProps {
   collapsed: boolean;
@@ -27,7 +20,7 @@ interface ProfileMenuProps {
 }
 
 const AvatarSection = ({ collapsed }: { collapsed?: boolean }) => {
-  const { user } = useAuthStore();
+  const { data: user } = useClientProfile();
   return (
     <div className={`flex items-center ${collapsed ? 'gap-0' : 'gap-2'} py-1`}>
       <Avatar>
@@ -35,11 +28,19 @@ const AvatarSection = ({ collapsed }: { collapsed?: boolean }) => {
           src={user?.pictureUrl || 'https://github.com/shadcn.png'}
           alt="Profile Image"
         />
-        <AvatarFallback>{user?.fullName.split(' ')[0][0]}</AvatarFallback>
+        <AvatarFallback>
+          {
+            getFullName(user?.firstName || '', user?.lastName || '').split(
+              ' ',
+            )[0][0]
+          }
+        </AvatarFallback>
       </Avatar>
       {!collapsed && (
         <div className="flex flex-col items-start">
-          <span className="text-sm font-semibold">{user?.fullName}</span>
+          <span className="text-sm font-semibold">
+            {getFullName(user?.firstName || '', user?.lastName || '')}
+          </span>
           <span className="text-muted-foreground text-xs">مدير النظام</span>
         </div>
       )}

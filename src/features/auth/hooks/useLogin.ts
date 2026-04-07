@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { login } from '../api/login';
 import { useAuthStore } from '@/store/useAuthStore';
 import { toast } from 'sonner';
@@ -6,7 +6,7 @@ import { getLoginErrorMessage } from '@/lib/errors';
 
 import { useNavigate } from 'react-router-dom';
 import { getRedirectPath } from '@/lib/auth/getRedirectPath';
-import { mapProfileStatus } from '@/lib/auth/mapProfileStatus';
+import { mapStatus } from '@/lib/auth/mapProfileStatus';
 
 export const useLogin = () => {
   const { saveUser } = useAuthStore();
@@ -20,24 +20,24 @@ export const useLogin = () => {
       toast.success('تم تسجيل الدخول بنجاح');
 
       //  map status
-      const profileStatus = mapProfileStatus(data.profileStatus);
+      console.log(data);
+      const status = mapStatus(data.status);
 
       //  build user object
       const user = {
         roles: data.role,
         isProvider: data.isProvider,
-        profileStatus,
+        status,
       };
 
       //  Get correct path
       const redirectPath = getRedirectPath(user);
 
-      navigate(redirectPath, { replace: true });
+      navigate(redirectPath);
     },
     // Error handling
     onError: (error: any) => {
       toast.error(getLoginErrorMessage(error));
-      console.log(error);
     },
   });
 };

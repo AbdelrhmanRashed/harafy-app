@@ -1,6 +1,6 @@
 import { getMainRole } from './getMainRole';
 
-type ProfileStatus =
+type status =
   | 'Pending'
   | 'UnderReview'
   | 'Approved'
@@ -11,37 +11,37 @@ type ProfileStatus =
 interface UserData {
   roles: string[];
   isProvider?: boolean;
-  profileStatus: ProfileStatus;
+  status: status;
 }
 
 export const getRedirectPath = (user: UserData) => {
   const role = getMainRole(user.roles, user.isProvider);
 
-  // 🟣 Admin
+  //  Admin
   if (role === 'Admin') return '/admin';
 
-  // 🔴 Suspended
-  if (user.profileStatus === 'Suspended') {
+  //  Suspended
+  if (user.status === 'Suspended') {
     return '/suspended';
   }
 
-  // 🟡 Pending → onboarding
-  if (user.profileStatus === 'Pending') {
+  //  Pending → onboarding
+  if (user.status === 'Pending') {
     return '/onboarding/user-profile';
   }
 
-  // 🟠 UnderReview (Provider only)
-  if (role === 'Provider' && user.profileStatus === 'UnderReview') {
+  //  UnderReview (Provider only)
+  if (role === 'Provider' && user.status === 'UnderReview') {
     return '/onboarding/review';
   }
 
-  // 🔁 Rejected 
-  if (user.profileStatus === 'Rejected') {
+  //  Rejected
+  if (user.status === 'Rejected') {
     return '/onboarding/user-profile';
   }
 
-  // 🟢 Approved / Completed
-  if (user.profileStatus === 'Approved' || user.profileStatus === 'Completed') {
+  //  Approved / Completed
+  if (user.status === 'Approved' || user.status === 'Completed') {
     if (role === 'Provider') return '/provider';
     return '/app'; // Client
   }

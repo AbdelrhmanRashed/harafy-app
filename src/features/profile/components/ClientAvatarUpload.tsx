@@ -36,7 +36,9 @@ const ClientAvatarUpload = ({
 
   return (
     <FormItem>
-      <FormLabel>صورة الملف الشخصي</FormLabel>
+      <FormLabel className="text-base font-semibold">
+        صورة الملف الشخصي
+      </FormLabel>
       <div className="flex items-center gap-6">
         {/* Avatar preview */}
         <div className="relative inline-block">

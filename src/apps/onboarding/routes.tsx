@@ -9,12 +9,9 @@ import ProtectedRoute from '@/guards/ProtectedRoute';
 const onboardingRoutes = [
   {
     path: '/onboarding',
-
     element: (
       <ProtectedRoute>
-        <OnboardingGuard>
-          <OnboardingLayout />
-        </OnboardingGuard>
+        <OnboardingLayout />
       </ProtectedRoute>
     ),
     children: [
@@ -22,18 +19,29 @@ const onboardingRoutes = [
         index: true,
         element: <Navigate to="user-profile" replace />,
       },
-
       {
         path: 'user-profile',
-        element: <UserProfileSettings />,
+        element: (
+          <OnboardingGuard>
+            <UserProfileSettings />
+          </OnboardingGuard>
+        ),
       },
       {
         path: 'verification',
-        element: <VerificationPage />,
+        element: (
+          <OnboardingGuard>
+            <VerificationPage />
+          </OnboardingGuard>
+        ),
       },
       {
         path: 'review',
-        element: <ReviewPage />,
+        element: (
+          <OnboardingGuard>
+            <ReviewPage />
+          </OnboardingGuard>
+        ),
       },
     ],
   },

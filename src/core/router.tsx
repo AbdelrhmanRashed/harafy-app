@@ -13,7 +13,7 @@ import authRoutes from '@/apps/auth/routes';
 import adminRoutes from '@/apps/admin/routes';
 import clientRoutes from '@/apps/client/routes';
 import ProviderRoutes from '@/apps/provider/routes';
-import RootRedirect from '@/pages/RootRedirect';
+import RootRedirect from '@/guards/RootRedirect';
 import onboardingRoutes from '@/apps/onboarding/routes';
 
 const routes = [

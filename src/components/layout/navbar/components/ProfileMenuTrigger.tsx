@@ -8,24 +8,36 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/features/auth/components/LogoutButton';
-import { useAuthStore, type User } from '@/store/useAuthStore';
 import { BellIcon, SettingsIcon, UserIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getImageUrl } from '@/lib/utils';
+import { getFullName, getImageUrl } from '@/lib/utils';
+import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
+import { useAuthStore } from '@/store/useAuthStore';
 
-const AvatarSection = ({ user }: { user: User | null }) => {
+const AvatarSection = ({ user }: { user: any | null }) => {
   const userPicture = getImageUrl(user?.pictureUrl);
   return (
     <Avatar className="cursor-pointer">
       <AvatarImage src={userPicture} alt="User Avatar" />
-      <AvatarFallback>{user?.fullName.split(' ')[0][0]}</AvatarFallback>
+      <AvatarFallback>
+        {getFullName(user?.firstName, user?.lastName).split(' ')[0][0]}
+      </AvatarFallback>
     </Avatar>
   );
 };
 
 const ProfileMenuTrigger = () => {
-  const user = useAuthStore((s) => s.user);
-  console.log(user);
+  const { data: user, isLoading } = useClientProfile();
+  const email = useAuthStore((state) => state.user?.email);
+
+  if (isLoading) {
+    return (
+      <Button variant="ghost" className="size-10 rounded-full border-0 p-0">
+        <AvatarSection user={null} />
+      </Button>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,8 +49,13 @@ const ProfileMenuTrigger = () => {
         <div className="flex items-center gap-2">
           <AvatarSection user={user} />
           <div className="flex flex-col">
-            <p className="text-sm font-semibold">{user?.fullName}</p>
-            <p className="text-muted-foreground text-xs">{user?.email}</p>
+            <p className="text-sm font-semibold">
+              {getFullName(
+                user?.firstName || 'اسم',
+                user?.lastName || 'المستخدم',
+              )}
+            </p>
+            <p className="text-muted-foreground text-xs">{email}</p>
           </div>
         </div>
         <DropdownMenuSeparator />

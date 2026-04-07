@@ -8,12 +8,13 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn, getImageUrl, getRoleName } from '@/lib/utils';
+import { cn, getFullName, getImageUrl, getRoleName } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useClientProfile } from '../hooks/useClientProfile';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,7 +48,9 @@ const NAV_ITEMS: NavItem[] = [
 
 const ProfileSidebar = () => {
   const { mutateAsync: logout, isPending } = useLogout();
-  const user = useAuthStore((s) => s.user);
+  const { data: clientProfile } = useClientProfile();
+  const email = useAuthStore((s) => s.user?.email);
+  const roles = useAuthStore((s) => s.user?.role);
   return (
     <Card className="flex w-full flex-col gap-4 p-4">
       {/* ── User card ── */}
@@ -55,13 +58,15 @@ const ProfileSidebar = () => {
         <div className="size-12 overflow-hidden rounded-xl">
           <img
             className="h-full w-full object-cover"
-            src={getImageUrl(user?.pictureUrl)}
+            src={getImageUrl(clientProfile?.pictureUrl)}
           />
         </div>
         <div className="flex flex-col">
-          <p className="text-md font-bold">{user?.fullName}</p>
-          <p className="text-sm">{user?.email}</p>
-          <p className="text-xs">{getRoleName(user?.role)}</p>
+          <p className="text-md font-bold">
+            {getFullName(clientProfile?.firstName, clientProfile?.lastName)}
+          </p>
+          <p className="text-sm">{email}</p>
+          <p className="text-xs">{getRoleName(roles)}</p>
         </div>
       </div>
 

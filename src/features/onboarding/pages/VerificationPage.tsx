@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
-
-import { registerSchemaVerify } from '@/features/auth/schema/register.schema';
+import { useForm } from 'react-hook-form';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,14 +9,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 import {
   Field,
   FieldDescription,
@@ -32,15 +23,21 @@ import {
   MapPin,
   FileText,
   Info,
-  Map,
   Briefcase,
   IdCard,
   SquareUser,
+  User,
+  AlignLeft,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import ServicesDropdown from '../components/ServicesDropdown';
 
-type VerificationFormData = z.infer<typeof registerSchemaVerify>;
+import { verificationSchema } from '../schemas/verification.schema';
+
+type VerificationFormData = z.infer<typeof verificationSchema>;
 
 const VerificationPage = () => {
   const {
@@ -50,7 +47,7 @@ const VerificationPage = () => {
     setValue,
     formState: { errors },
   } = useForm<VerificationFormData>({
-    resolver: zodResolver(registerSchemaVerify),
+    resolver: zodResolver(verificationSchema),
   });
 
   const onSubmit = (data: VerificationFormData) => {
@@ -59,7 +56,7 @@ const VerificationPage = () => {
 
   return (
     <div>
-      <Card className="rounded-lg shadow-lg lg:w-200">
+      <Card className="rounded-lg shadow-lg">
         <CardContent className="space-y-4 p-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Header */}
@@ -70,8 +67,52 @@ const VerificationPage = () => {
               </h1>
               <p className="text-muted-foreground text-sm">
                 يرجى رفع المستندات المطلوبة لإثبات المهنة والهوية وتحديد نطاق
-                عملك .
+                عملك.
               </p>
+            </div>
+
+            {/* Divider */}
+            <Separator />
+
+            {/* Profile Info */}
+            <div className="space-y-3">
+              <div className="text-md flex items-center gap-2 font-bold">
+                <User size={16} className="text-primary" />
+                المعلومات الشخصية
+              </div>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <Field data-invalid={!!errors.Nickname}>
+                  <FieldLabel>الاسم المستعار (اختياري)</FieldLabel>
+                  <InputGroup className="rounded-lg px-3 py-5">
+                    <InputGroupInput
+                      {...register('Nickname')}
+                      placeholder="مثال: أبو محمد النجار"
+                    />
+                    <InputGroupAddon align="inline-start">
+                      <User className="text-muted-foreground" />
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {errors.Nickname && (
+                    <FieldError>{errors.Nickname.message}</FieldError>
+                  )}
+                </Field>
+              </div>
+
+              <Field data-invalid={!!errors.Bio}>
+                <FieldLabel>نبذة تعريفية (اختياري)</FieldLabel>
+                <div className="relative">
+                  <AlignLeft
+                    size={16}
+                    className="text-muted-foreground absolute start-3 top-3 z-10"
+                  />
+                  <Textarea
+                    {...register('Bio')}
+                    placeholder="اكتب نبذة مختصرة عن خبرتك وأعمالك..."
+                    className="min-h-[80px] resize-none rounded-lg ps-9"
+                  />
+                </div>
+                {errors.Bio && <FieldError>{errors.Bio.message}</FieldError>}
+              </Field>
             </div>
 
             {/* Divider */}
@@ -83,188 +124,33 @@ const VerificationPage = () => {
                 <Briefcase size={16} className="text-primary" />
                 تفاصيل الخدمة
               </div>
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <Field
-                  className="font-semibold"
-                  data-invalid={!!errors.mainJob}
-                >
-                  <FieldLabel className="">اختر الحرفة الأساسية</FieldLabel>
-                  <Controller
-                    name="mainJob"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <Select
-                        dir="rtl"
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger
-                          aria-invalid={!!errors.mainJob}
-                          className="py-5"
-                        >
-                          <SelectValue placeholder="-- اختر الحرفة --" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              خدمات إنشائية وصيانة منزلية
-                            </p>
-                            <SelectItem value="blacksmith">حداد</SelectItem>
-                            <SelectItem value="carpenter">نجار</SelectItem>
-                            <SelectItem value="plumber">سباك</SelectItem>
-                            <SelectItem value="electrician">كهربائي</SelectItem>
-                            <SelectItem value="builder">عامل بناء</SelectItem>
-                            <SelectItem value="plaster">محارة</SelectItem>
-                            <SelectItem value="painter">نقاش</SelectItem>
-                            <SelectItem value="aluminum">
-                              صنايعي ألوميتال
-                            </SelectItem>
-                            <SelectItem value="ceramic">
-                              تركيب سيراميك
-                            </SelectItem>
-                            <SelectItem value="marble">تركيب رخام</SelectItem>
-                            <SelectItem value="glass">تركيب زجاج</SelectItem>
-                            <SelectItem value="gypsum">أعمال جبس</SelectItem>
-                            <SelectItem value="finishing">استرجي</SelectItem>
-                          </SelectGroup>
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              صيانة أجهزة ومرافق
-                            </p>
-
-                            <SelectItem value="home-appliances">
-                              صيانة أجهزة منزلية
-                            </SelectItem>
-                            <SelectItem value="heater">صيانة سخانات</SelectItem>
-                            <SelectItem value="ac-tech">فني تكييفات</SelectItem>
-                            <SelectItem value="dish">صيانة دش</SelectItem>
-                            <SelectItem value="elevator">
-                              صيانة مصاعد
-                            </SelectItem>
-                          </SelectGroup>
-
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              خدمات السيارات
-                            </p>
-
-                            <SelectItem value="mechanic">ميكانيكي</SelectItem>
-                            <SelectItem value="bodywork">
-                              سمكري سيارات
-                            </SelectItem>
-                            <SelectItem value="car-electrician">
-                              كهربائي سيارات
-                            </SelectItem>
-                            <SelectItem value="car-ac">
-                              تكييف السيارات
-                            </SelectItem>
-                          </SelectGroup>
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              خدمات أخرى
-                            </p>
-                            <SelectItem value="other">
-                              أعمال أخرى متنوعة
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  {errors.mainJob && (
-                    <FieldError>{errors.mainJob.message}</FieldError>
-                  )}
-                </Field>
-                <Field className="font-semibold">
-                  <FieldLabel className="">
-                    اختر حرفه ثانويه (اختيارى)
-                  </FieldLabel>
-                  <Controller
-                    name="subJob"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        dir="rtl"
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger
-                          aria-invalid={!!errors.subJob}
-                          className="py-5"
-                        >
-                          <SelectValue placeholder="-- اختر الحرفة --" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              خدمات إنشائية وصيانة منزلية
-                            </p>
-                            <SelectItem value="blacksmith">حداد</SelectItem>
-                            <SelectItem value="carpenter">نجار</SelectItem>
-                            <SelectItem value="plumber">سباك</SelectItem>
-                            <SelectItem value="electrician">كهربائي</SelectItem>
-                            <SelectItem value="builder">عامل بناء</SelectItem>
-                            <SelectItem value="plaster">محارة</SelectItem>
-                            <SelectItem value="painter">نقاش</SelectItem>
-                            <SelectItem value="aluminum">
-                              صنايعي ألوميتال
-                            </SelectItem>
-                            <SelectItem value="ceramic">
-                              تركيب سيراميك
-                            </SelectItem>
-                            <SelectItem value="marble">تركيب رخام</SelectItem>
-                            <SelectItem value="glass">تركيب زجاج</SelectItem>
-                            <SelectItem value="gypsum">أعمال جبس</SelectItem>
-                            <SelectItem value="finishing">استرجي</SelectItem>
-                          </SelectGroup>
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              صيانة أجهزة ومرافق
-                            </p>
-
-                            <SelectItem value="home-appliances">
-                              صيانة أجهزة منزلية
-                            </SelectItem>
-                            <SelectItem value="heater">صيانة سخانات</SelectItem>
-                            <SelectItem value="ac-tech">فني تكييفات</SelectItem>
-                            <SelectItem value="dish">صيانة دش</SelectItem>
-                            <SelectItem value="elevator">
-                              صيانة مصاعد
-                            </SelectItem>
-                          </SelectGroup>
-
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              خدمات السيارات
-                            </p>
-
-                            <SelectItem value="mechanic">ميكانيكي</SelectItem>
-                            <SelectItem value="bodywork">
-                              سمكري سيارات
-                            </SelectItem>
-                            <SelectItem value="car-electrician">
-                              كهربائي سيارات
-                            </SelectItem>
-                            <SelectItem value="car-ac">
-                              تكييف السيارات
-                            </SelectItem>
-                          </SelectGroup>
-                          <SelectGroup>
-                            <p className="text-muted-foreground px-2 py-1 text-xs">
-                              خدمات أخرى
-                            </p>
-                            <SelectItem value="other">
-                              أعمال أخرى متنوعة
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </Field>
-              </div>
+              <Field
+                className="font-semibold"
+                data-invalid={!!errors.ServiceIds}
+              >
+                <FieldLabel>اختر الخدمات التي تقدمها</FieldLabel>
+                <ServicesDropdown
+                  control={control}
+                  errors={errors}
+                  name="ServiceIds"
+                  multiple
+                />
+                {errors.ServiceIds && (
+                  <FieldError>
+                    {Array.isArray(errors.ServiceIds)
+                      ? errors.ServiceIds[0]?.message
+                      : (errors.ServiceIds as { message?: string })?.message}
+                  </FieldError>
+                )}
+                <FieldDescription>
+                  يمكنك اختيار أكثر من خدمة واحدة
+                </FieldDescription>
+              </Field>
             </div>
+
+            {/* Divider */}
+            <Separator />
+
             {/* Location */}
             <div className="space-y-3">
               <div className="text-md flex items-center gap-2 font-bold">
@@ -272,43 +158,64 @@ const VerificationPage = () => {
                 الموقع والنطاق الجغرافي
               </div>
 
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <Field data-invalid={!!errors.location}>
-                  <FieldLabel>الموقع الأساسي (المدينة، الحي) </FieldLabel>
-                  <InputGroup className={'rounded-lg px-3 py-5'}>
+              {/* Base Location */}
+              <div className="space-y-3">
+                <Field data-invalid={!!errors.BaseLocation?.AddressText}>
+                  <FieldLabel>العنوان التفصيلي</FieldLabel>
+                  <InputGroup className="rounded-lg px-3 py-5">
                     <InputGroupInput
-                      {...register('location')}
-                      aria-invalid={!!errors.location}
-                      placeholder="مثال: القاهره, حى عين شمس"
+                      {...register('BaseLocation.AddressText')}
+                      aria-invalid={!!errors.BaseLocation?.AddressText}
+                      placeholder="مثال: شارع الجيش، بجوار مسجد النور"
                     />
                     <InputGroupAddon align="inline-start">
                       <MapPin className="text-muted-foreground" />
                     </InputGroupAddon>
                   </InputGroup>
-                  {errors.location && (
-                    <FieldError>{errors.location.message}</FieldError>
+                  {errors.BaseLocation?.AddressText && (
+                    <FieldError>
+                      {errors.BaseLocation.AddressText.message}
+                    </FieldError>
                   )}
                 </Field>
 
-                <Field data-invalid={!!errors.location}>
-                  <FieldLabel> مناطق الخدمة التي تغطيها</FieldLabel>
-                  <InputGroup className={'rounded-lg px-3 py-5'}>
-                    <InputGroupInput
-                      {...register('serviceAreas')}
-                      aria-invalid={!!errors.serviceAreas}
-                      placeholder="اختر من الخريطه"
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <Field data-invalid={!!errors.BaseLocation?.Latitude}>
+                    <FieldLabel>خط العرض (Latitude)</FieldLabel>
+                    <Input
+                      type="number"
+                      step="any"
+                      {...register('BaseLocation.Latitude')}
+                      placeholder="30.0444"
+                      className="rounded-lg"
                     />
-                    <InputGroupAddon align="inline-start">
-                      <Map className="text-muted-foreground" />
-                    </InputGroupAddon>
-                  </InputGroup>
-                  {errors.serviceAreas && (
-                    <FieldError>{errors.serviceAreas.message}</FieldError>
-                  )}
-                  <FieldDescription>
-                    يمكنك تغيير نطاق الخدمة لاحقاً
-                  </FieldDescription>
-                </Field>
+                    {errors.BaseLocation?.Latitude && (
+                      <FieldError>
+                        {errors.BaseLocation.Latitude.message}
+                      </FieldError>
+                    )}
+                  </Field>
+
+                  <Field data-invalid={!!errors.BaseLocation?.Longitude}>
+                    <FieldLabel>خط الطول (Longitude)</FieldLabel>
+                    <Input
+                      type="number"
+                      step="any"
+                      {...register('BaseLocation.Longitude')}
+                      placeholder="31.2357"
+                      className="rounded-lg"
+                    />
+                    {errors.BaseLocation?.Longitude && (
+                      <FieldError>
+                        {errors.BaseLocation.Longitude.message}
+                      </FieldError>
+                    )}
+                  </Field>
+                </div>
+
+                <FieldDescription>
+                  يمكنك تحديد موقعك على الخريطة لملء الإحداثيات تلقائياً
+                </FieldDescription>
               </div>
             </div>
 
@@ -316,66 +223,73 @@ const VerificationPage = () => {
             <Separator />
 
             {/* Documents */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <FileUploadCard
-                title="صورة شخصية"
-                description="PNG, JPG ≤5MB"
-                icon={SquareUser}
-                accept={{
-                  'image/png': ['.png'],
-                  'image/jpeg': ['.jpg', '.jpeg'],
-                }}
-                onChange={(file) =>
-                  setValue('personalImage', file, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                errorMessage={
-                  typeof errors.personalImage?.message === 'string'
-                    ? errors.personalImage.message
-                    : undefined
-                }
-              />
-              <FileUploadCard
-                title="صورة البطاقة الشخصية"
-                description="PNG, JPG ,PDF ≤5MB"
-                icon={IdCard}
-                accept={{
-                  'image/png': ['.png'],
-                  'image/jpeg': ['.jpg', '.jpeg'],
-                  'application/pdf': ['.pdf'],
-                }}
-                onChange={(file) =>
-                  setValue('nationalId', file, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                errorMessage={
-                  typeof errors.nationalId?.message === 'string'
-                    ? errors.nationalId.message
-                    : undefined
-                }
-              />
-              <FileUploadCard
-                title="صحيفة الحالة الجنائية"
-                description="PNG, JPG, PDF ≤ 5MB"
-                icon={FileText}
-                accept={{
-                  'image/png': ['.png'],
-                  'image/jpeg': ['.jpg', '.jpeg'],
-                  'application/pdf': ['.pdf'],
-                }}
-                onChange={(file) =>
-                  setValue('criminalRecord', file, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                errorMessage={errors.criminalRecord?.message as string}
-              />
+            <div className="space-y-3">
+              <div className="text-md flex items-center gap-2 font-bold">
+                <FileText size={16} className="text-primary" />
+                المستندات المطلوبة
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <FileUploadCard
+                  title="صورة شخصية"
+                  description="PNG, JPG ≤5MB"
+                  icon={SquareUser}
+                  accept={{
+                    'image/png': ['.png'],
+                    'image/jpeg': ['.jpg', '.jpeg'],
+                  }}
+                  onChange={(file) =>
+                    setValue('personalImage', file, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                  errorMessage={
+                    typeof errors.personalImage?.message === 'string'
+                      ? errors.personalImage.message
+                      : undefined
+                  }
+                />
+                <FileUploadCard
+                  title="صورة البطاقة الشخصية"
+                  description="PNG, JPG, PDF ≤5MB"
+                  icon={IdCard}
+                  accept={{
+                    'image/png': ['.png'],
+                    'image/jpeg': ['.jpg', '.jpeg'],
+                    'application/pdf': ['.pdf'],
+                  }}
+                  onChange={(file) =>
+                    setValue('nationalId', file, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                  errorMessage={
+                    typeof errors.nationalId?.message === 'string'
+                      ? errors.nationalId.message
+                      : undefined
+                  }
+                />
+                <FileUploadCard
+                  title="صحيفة الحالة الجنائية"
+                  description="PNG, JPG, PDF ≤5MB"
+                  icon={FileText}
+                  accept={{
+                    'image/png': ['.png'],
+                    'image/jpeg': ['.jpg', '.jpeg'],
+                    'application/pdf': ['.pdf'],
+                  }}
+                  onChange={(file) =>
+                    setValue('criminalRecord', file, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                  errorMessage={errors.criminalRecord?.message as string}
+                />
+              </div>
             </div>
+
             {/* Info Box */}
             <Alert className="bg-primary/10 dark:bg-primary/20 rounded-xl border-none p-4 text-sm">
               <AlertDescription className="flex items-center gap-1 text-sm">

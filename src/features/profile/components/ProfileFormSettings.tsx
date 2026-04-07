@@ -34,7 +34,7 @@ import ProfileFormSkeleton from './ProfileFormSkeleton';
 import { useGovernorate } from '../hooks/useGovernorate';
 
 import PreferenceCard from './PreferenceCard';
-import type { Region } from '@/types/governorate.types';
+import type { Governorate, Region } from '@/types/governorate.types';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -70,7 +70,7 @@ const ProfileFormSettings = () => {
   // Handle Selected Governorate
   const selectedGovernorateId = form.watch('governorate');
   const selectedGovernorate = governoratesData?.find(
-    (gov) => gov.id === selectedGovernorateId,
+    (gov: Governorate) => gov.id === selectedGovernorateId,
   );
   const regions: Region[] = selectedGovernorate?.regions || [];
 
@@ -235,7 +235,7 @@ const ProfileFormSettings = () => {
                       </FormControl>
 
                       <SelectContent>
-                        {governoratesData?.map((gov) => (
+                        {governoratesData?.map((gov: Governorate) => (
                           <SelectItem key={gov.id} value={gov.id.toString()}>
                             {gov.name}
                           </SelectItem>
