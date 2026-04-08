@@ -16,14 +16,16 @@ import SettingsLayout from '@/features/profile/layout/SettingsLayout';
 import ProfileSettingsPage from '@/features/profile/pages/ProfileSettingsPage';
 import NotificationsPage from '@/features/profile/pages/NotificationsPage';
 import SecurityPage from '@/features/profile/pages/SecurityPage';
+import RequestPending from '@/features/services/pages/servicesStatus/RequestPendingPage';
 
 const clientRoutes = [
   {
     path: '/app',
     element: (
       <ProtectedRoute allowedRoles={['Client', 'Admin']}>
-        <ClientLayout />
+         <ClientLayout />
       </ProtectedRoute>
+     
 
     ),
     children: [
@@ -46,6 +48,9 @@ const clientRoutes = [
           { index: true, element: <ServicesPage /> },
           { path: 'instant', element: <InstantServicesPage /> },
           { path: 'direct', element: <DirectServicesPage /> },
+          { path: ':requests/:requestId/pending', element: <RequestPending /> },
+          { path: 'requests', element: <div>Requests List Page</div> },
+          { path: 'requests/:requestId', element: <div>Request Details Page</div> }
         ],
       },
 

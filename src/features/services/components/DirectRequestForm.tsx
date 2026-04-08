@@ -5,9 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star, Send, X, CameraIcon, SplinePointer, LocateFixed } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import { useLocation } from "../pages/instant/hooks/useLocation";
-import {DataTimeInput} from "./DataTimeInput";
+import { DataTimeInput } from "./DataTimeInput";
 import type { Provider } from "../pages/instant/types/types";
-
+import { useNavigate } from "react-router-dom";
 interface DirectRequestFormProps {
   provider: Provider;
   onClose: (data?: any) => void;
@@ -20,6 +20,8 @@ export function DirectRequestForm({ provider, onClose }: DirectRequestFormProps)
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { position: customerPos, setPosition: setCustomerPos, address, locating, detect, searchAddress } = useLocation();
   const [manualAddress, setManualAddress] = useState(address);
+  const navigate = useNavigate();
+
   useEffect(() => {
     setManualAddress(address);
   }, [address]);
@@ -39,24 +41,26 @@ export function DirectRequestForm({ provider, onClose }: DirectRequestFormProps)
     const customerLat = customerPos?.lat ?? 0;
     const customerLng = customerPos?.lng ?? 0;
 
-    const providerLat = provider.position?.lat ?? 0;
-    const providerLng = provider.position?.lng ?? 0;
+  
     const payload = {
-      // providerId: provider.id,
       providerName: provider.name,
       profession: provider.profession,
+      providerImage: provider.image,
       description,
       datetime,
       images,
       location: {
         customer: { lat: customerLat, lng: customerLng },
-        provider: { lat: providerLat, lng: providerLng }
+        provider: { lat: provider.position.lat, lng: provider.position.lng }
       },
       address: manualAddress
     };
     console.log("payload:", payload);
     onClose(payload);
     // TODO: api call
+    const requestId = { id: "12345" }; // mock request ID returned from backend
+    // navigate to pending page with request data
+    navigate(`/app/services/requests/${requestId.id}/pending`, { state: { payload:payload } });
   }
 
   return (
@@ -66,11 +70,11 @@ export function DirectRequestForm({ provider, onClose }: DirectRequestFormProps)
       <DrawerHeader className="border-b border-border flex items-center justify-between px-5 py-4 bg-background shrink-0">
         <div className="flex items-center gap-3">
           <DrawerClose asChild>
-          <button className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors">
-            <X className="h-4 w-4 text-muted-foreground" />
-          </button>
-        </DrawerClose>
-                  <DrawerTitle className="text-lg font-bold text-foreground">طلب خدمة جديد</DrawerTitle>
+            <button className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </DrawerClose>
+          <DrawerTitle className="text-lg font-bold text-foreground">طلب خدمة جديد</DrawerTitle>
         </div>
 
         <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
@@ -78,12 +82,12 @@ export function DirectRequestForm({ provider, onClose }: DirectRequestFormProps)
         </span>
 
       </DrawerHeader>
-       <DrawerDescription className="text-sm text-muted-foreground px-5 pt-2 mt-1">
-          أدخل تفاصيل طلبك لإرساله إلى الفني المختص.
-        </DrawerDescription>
+      <DrawerDescription className="text-sm text-muted-foreground px-5 pt-2 mt-1">
+        أدخل تفاصيل طلبك لإرساله إلى الفني المختص.
+      </DrawerDescription>
       {/* ── Body ── */}
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5">
-       
+
         {/* Provider card */}
         <Card className="rounded-3xl border-border/40 shadow-sm">
           <CardContent className="flex items-center gap-4">
@@ -165,7 +169,7 @@ export function DirectRequestForm({ provider, onClose }: DirectRequestFormProps)
             </MapContainer>
 
           </div> */}
-          
+
         </div>
 
         {/* Image upload */}
