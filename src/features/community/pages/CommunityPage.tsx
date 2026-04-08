@@ -12,7 +12,7 @@ const CommunityPage = () => {
   return (
     <main className="container mx-auto px-4 py-6">
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-        <div className="hidden lg:sticky lg:top-6 lg:col-span-3 lg:block">
+        <div className="hidden lg:sticky lg:top-20 lg:col-span-3 lg:block">
           <ProfileCard user={user} />
         </div>
 
@@ -21,7 +21,7 @@ const CommunityPage = () => {
           <CommunityFeed />
         </div>
 
-        <div className="hidden lg:sticky lg:top-6 lg:col-span-3 lg:block">
+        <div className="hidden lg:sticky lg:top-20 lg:col-span-3 lg:block">
           <QuickLinks />
         </div>
 

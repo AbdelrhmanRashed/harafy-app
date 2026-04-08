@@ -25,7 +25,7 @@ const ClientDashboard = () => {
           <DirectRequest />
         </div>
 
-        <div className="order-4 hidden space-y-4 lg:sticky lg:top-6 lg:order-3 lg:col-span-3 lg:block">
+        <div className="order-4 hidden space-y-4 lg:sticky lg:top-20 lg:order-3 lg:col-span-3 lg:block">
           <ProfileCard user={user} />
           <WorkSpace />
         </div>
@@ -35,7 +35,7 @@ const ClientDashboard = () => {
           <CommunityFeed />
         </div>
 
-        <div className="order-5 hidden space-y-4 lg:sticky lg:top-6 lg:col-span-3 lg:block">
+        <div className="order-5 hidden space-y-4 lg:sticky lg:top-20 lg:col-span-3 lg:block">
           <QuickLinks />
         </div>
 

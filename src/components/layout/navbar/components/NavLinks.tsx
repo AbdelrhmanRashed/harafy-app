@@ -43,7 +43,7 @@ const NavLinks = ({ navLinks, mobile = false }: NavLinkProp) => {
     );
 
   return (
-    <nav className="flex items-center gap-6">
+    <nav className="flex items-center gap-2 lg:gap-6">
       {navLinks.map((link) => (
         <NavLink
           key={link.title}

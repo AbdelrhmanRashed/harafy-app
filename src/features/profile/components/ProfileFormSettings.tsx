@@ -32,9 +32,9 @@ import { useUpdateClientProfile } from '../hooks/useUpdateClientProfile';
 import ClientAvatarUpload from './ClientAvatarUpload';
 import ProfileFormSkeleton from './ProfileFormSkeleton';
 import { useGovernorate } from '../hooks/useGovernorate';
-import { type Governorate } from '@/types/governorate.types';
 
 import PreferenceCard from './PreferenceCard';
+import type { Region } from '@/types/governorate.types';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -42,7 +42,8 @@ const ProfileFormSettings = () => {
   // Handle Data
   const { data: profile, isLoading } = useClientProfile();
   const { mutate: updateProfile, isPending } = useUpdateClientProfile();
-  const { data: governoratesData } = useGovernorate<Governorate[]>();
+  const { governorates: governoratesData, isLoading: governoratesLoading } =
+    useGovernorate();
 
   // Handle Form
   const form = useForm<UpdateClientProfileFormValues>({
@@ -71,11 +72,12 @@ const ProfileFormSettings = () => {
   const selectedGovernorate = governoratesData?.find(
     (gov) => gov.id === selectedGovernorateId,
   );
-  const regions = selectedGovernorate?.regions || [];
+  const regions: Region[] = selectedGovernorate?.regions || [];
 
   // Handle Pre-fill
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || !governoratesData) return;
+
     form.reset({
       FirstName: profile.firstName,
       LastName: profile.lastName,
@@ -89,7 +91,7 @@ const ProfileFormSettings = () => {
       governorate: profile.governorateId,
       region: profile.regionId,
     });
-  }, [profile]);
+  }, [profile, governoratesData]);
 
   // Handle Submit
   const handleSubmit = (values: UpdateClientProfileFormValues) => {
@@ -117,10 +119,9 @@ const ProfileFormSettings = () => {
 
   // ── Loading skeleton ───────────────────────────────────────────────────────
 
-  if (isLoading) {
+  if (isLoading || governoratesLoading) {
     return <ProfileFormSkeleton />;
   }
-
   // ── Form ───────────────────────────────────────────────────────────────────
 
   return (
@@ -223,14 +224,9 @@ const ProfileFormSettings = () => {
                   <FormItem>
                     <FormLabel>المحافظة</FormLabel>
                     <Select
+                      key={field.value}
                       onValueChange={(v) => field.onChange(Number(v))}
-                      value={
-                        field.value
-                          ? String(field.value)
-                          : profile?.governorateId
-                            ? String(profile.governorateId)
-                            : undefined
-                      }
+                      value={field.value ? field.value.toString() : undefined}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full py-5">
@@ -259,14 +255,9 @@ const ProfileFormSettings = () => {
                   <FormItem>
                     <FormLabel>المدينة</FormLabel>
                     <Select
+                      key={field.value}
                       onValueChange={(v) => field.onChange(Number(v))}
-                      value={
-                        field.value
-                          ? String(field.value)
-                          : profile?.regionId
-                            ? String(profile.regionId)
-                            : undefined
-                      }
+                      value={field.value ? field.value.toString() : undefined}
                       disabled={!selectedGovernorateId}
                     >
                       <FormControl>

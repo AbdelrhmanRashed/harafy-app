@@ -3,7 +3,7 @@ import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 
 import { Navigate } from 'react-router-dom';
-import PublicRoute from '@/components/guards/PublicRoute';
+import PublicRoute from '@/guards/PublicRoute';
 
 const authRoutes = [
   {
