@@ -11,7 +11,7 @@ interface DesktopNavbarProps {
 
 const DesktopNavbar = ({ role }: DesktopNavbarProps) => {
   return (
-    <header className="border-border bg-background/80 sticky top-0 z-50 hidden h-16 w-full items-center justify-between border-b px-6 font-sans shadow-sm backdrop-blur-md md:flex">
+    <header className="border-border bg-background/93 sticky top-0 z-50 hidden h-16 w-full items-center justify-between border-b px-6 font-sans backdrop-blur-md md:flex">
       {/* Right Side: Logo & Links */}
       <div className="flex items-center gap-8">
         <Logo />

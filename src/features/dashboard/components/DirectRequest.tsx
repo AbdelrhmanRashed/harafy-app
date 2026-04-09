@@ -4,7 +4,7 @@ import { User } from 'lucide-react';
 
 const DirectRequest = () => {
   return (
-    <Card className="bg-card flex h-[300px] rounded-4xl border-none p-8 shadow-sm transition-all hover:shadow-md">
+    <Card className="bg-card flex h-[300px] rounded-xl border-none p-8 shadow-sm">
       <div className="bg-primary/10 flex size-12 items-center justify-center rounded-full">
         <User className="text-primary h-6 w-6" />
       </div>

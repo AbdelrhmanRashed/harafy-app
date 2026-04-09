@@ -11,7 +11,7 @@ const WorkSpace = () => {
   ];
 
   return (
-    <Card className="bg-card overflow-hidden rounded-3xl border-none shadow-sm">
+    <Card className="bg-card overflow-hidden rounded-xl border-none">
       <CardContent className="space-y-4 p-4">
         {/* Header Section */}
         <div className="flex items-center justify-between px-2">

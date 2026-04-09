@@ -4,7 +4,7 @@ import { Star, ClipboardList, Zap, UserSearch, ArrowLeft } from 'lucide-react';
 
 const QuickLinks = () => {
   return (
-    <Card className="bg-card w-full overflow-hidden rounded-3xl border-none shadow-sm transition-all hover:shadow-md">
+    <Card className="bg-card w-full overflow-hidden rounded-xl border-none transition-all hover:shadow-md">
       <CardContent className="space-y-5 p-6">
         {/* Header */}
         <div className="flex items-center gap-3">

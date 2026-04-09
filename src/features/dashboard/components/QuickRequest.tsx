@@ -4,7 +4,7 @@ import { Zap } from 'lucide-react';
 
 const QuickRequest = () => {
   return (
-    <Card className="bg-primary-gradient shadow-primary-gradient relative flex h-[300px] flex-col items-start justify-between gap-4 overflow-hidden rounded-4xl border-none p-8 md:items-start">
+    <Card className="bg-primary-gradient shadow-primary-gradient relative flex h-[300px] flex-col items-start justify-between gap-4 overflow-hidden rounded-xl border-none p-8 md:items-start">
       <Zap
         className="pointer-events-none absolute top-0 left-0 h-68 w-68 -translate-x-16 -translate-y-16 rotate-12 fill-white/10 text-white/10"
         strokeWidth={1}

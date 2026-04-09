@@ -9,7 +9,7 @@ type Props = {
 
 const CreatePostTrigger = ({ userImage, onClick }: Props) => {
   return (
-    <Card className="bg-card border-border w-full rounded-2xl shadow-sm">
+    <Card className="bg-card border-border w-full rounded-xl">
       <CardContent className="flex flex-col gap-4 p-4 sm:p-6">
         <div className="flex items-center gap-3">
           <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-semibold">

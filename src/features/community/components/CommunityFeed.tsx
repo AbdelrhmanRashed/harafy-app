@@ -1,54 +1,66 @@
+// features/community/components/CommunityFeed.tsx
+import { useEffect, useRef } from 'react';
+import { usePosts } from '../hooks/usePosts';
+import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
+import { useDebounce } from '@/hooks/useDebounce';
 import Post from './Post';
+import PostSkeleton from './PostSkeleton';
+import EmptyState from './EmptyState';
 
-const posts = [
-  {
-    id: 1,
-    user: { name: 'ليلى حسن' },
-    role: 'حرفي',
-    subject:
-      '  ما هي أفضل الأدوات التي تستخدمونها لإدارة المهام في الفرق الصغيرة؟  ',
-    content:
-      'مرحباً جميعاً! أنا جديدة في عالم الحرفيين وأرغب في معرفة كيف تديرون مهامكم اليومية ومشاريعكم. هل تستخدمون تطبيقات معينة أو طرق تقليدية؟ أود سماع تجاربكم ونصائحكم حول هذا الموضوع!',
-    likes: 12,
-    comments: 3,
-    createdAt: 'منذ ساعة',
-  },
-  {
-    id: 2,
-    user: { name: 'د. سمير صبحي' },
-    role: 'سباك',
-    subject: 'نصيحة للمصممين الجدد في مجال الهوية البصرية',
-    content:
-      'لقد أكملت للتو مشروعي الخامس في تصميم الهوية البصرية عبر منصة حِرَفِيّ. النصيحة الأهم التي يمكنني تقديمها للمصممين الجدد هي التركيز على بناء بورتفوليو قوي قبل التقديم على المشاريع الكبيرة. الجودة دائماً تسبق الكمية!',
-    images: ['https://images.unsplash.com/photo-1518770660439-4636190af475'],
-    likes: 40,
-    comments: 8,
-    createdAt: 'منذ يوم',
-  },
-  {
-    id: 3,
-    user: { name: 'سامي الحلبي' },
-    role: 'نجار',
-    subject: 'نصيحة للمصممين الجدد في مجال الهوية البصرية',
-    content:
-      'أنهيت للتو مشروع تركيب نظام ذكي متكامل لأحد العملاء. الجودة والدقة هي مفتاح النجاح في كل حرفة. من يحتاج لاستشارة تقنية؟',
-    images: [
-      'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d',
-      'https://images.unsplash.com/photo-1492724441997-5dc865305da7',
-      'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
-    ],
-    likes: 88,
-    comments: 20,
-    createdAt: 'منذ 3 أيام',
-  },
-];
+const CommunityFeed = ({
+  search,
+  nearby,
+}: {
+  search?: string;
+  nearby?: boolean;
+}) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const { data: profile } = useClientProfile();
 
-const CommunityFeed = () => {
+  const debouncedSearch = useDebounce(search, 500);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    usePosts({
+      search: debouncedSearch,
+      governorateId: nearby ? (profile?.governorateId ?? undefined) : undefined,
+    });
+
+  // Infinite Scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    if (bottomRef.current) observer.observe(bottomRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const posts = data?.pages.flatMap((page) => page.data) ?? [];
+
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        <PostSkeleton />
+        <PostSkeleton />
+        <PostSkeleton />
+      </div>
+    );
+
+  if (posts.length === 0) return <EmptyState isSearch={!!search} />;
+
   return (
     <div className="space-y-4">
       {posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
+
+      {/* Infinite Scroll Trigger */}
+      <div ref={bottomRef} />
+      {isFetchingNextPage && <PostSkeleton />}
     </div>
   );
 };

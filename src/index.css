@@ -57,7 +57,7 @@
 
 :root {
   /* 🌕 Page background (main app background) */
-  --background: oklch(1 0 0);
+  --background: oklch(0.99 0.004 285);
 
   /* 📝 Main text color (default text across app) */
   --foreground: oklch(0.141 0.005 285.823);
@@ -219,5 +219,163 @@
 
   .shadow-primary-gradient {
     box-shadow: var(--gradient-primary-shadow);
+  }
+
+  /* ================= IMAGE ================= */
+  .yarl__slide_image {
+    max-height: 85vh !important;
+    object-fit: contain;
+
+    border-radius: 12px;
+    border: 1px solid hsl(var(--border) / 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+
+    transition: transform 0.3s ease;
+  }
+
+  .yarl__slide_image:hover {
+    transform: scale(1.01);
+  }
+
+  /* ================= CENTER IMAGE ================= */
+  .yarl__slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ================= BACKDROP ================= */
+  .yarl__container {
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  /* ================= TOOLBAR ================= */
+  .yarl__toolbar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    display: flex;
+    gap: 12px;
+
+    padding: 8px 10px;
+
+    border-radius: 999px;
+    border: 1px solid hsl(var(--border) / 0.2);
+  }
+
+  /* buttons */
+  .yarl__toolbar button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: transparent;
+    color: hsl(var(--foreground));
+
+    transition: all 0.25s ease;
+  }
+
+  /* hover */
+  .yarl__toolbar button:hover {
+    background: hsl(var(--primary));
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.4);
+  }
+
+  /* active click */
+  .yarl__toolbar button:active {
+    transform: scale(0.95);
+  }
+
+  /* active (zoom pressed مثلاً) */
+  .yarl__toolbar button[aria-pressed='true'] {
+    background: hsl(var(--primary));
+    color: white;
+  }
+
+  /* icon size */
+  .yarl__toolbar svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* ================= CLOSE BUTTON ================= */
+  .yarl__button_close {
+    top: 20px !important;
+    right: 20px !important;
+
+    width: 42px !important;
+    height: 42px !important;
+
+    border-radius: 50% !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white !important;
+    transition: all 0.25s ease;
+  }
+
+  .yarl__button_close:hover {
+    background: hsl(var(--destructive)) !important;
+    transform: scale(1.1);
+  }
+
+  /* ================= NAVIGATION ARROWS ================= */
+  .yarl__navigation_prev,
+  .yarl__navigation_next {
+    width: 60px;
+    height: 60px;
+
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0.7;
+    transition: all 0.25s ease;
+  }
+
+  .yarl__navigation_prev:hover,
+  .yarl__navigation_next:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: hsl(var(--primary));
+  }
+
+  /* ================= THUMBNAILS ================= */
+  .yarl__thumbnails_container {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+
+    padding: 12px 0;
+  }
+
+  /* thumbnail */
+  .yarl__thumbnails_thumbnail {
+    border-radius: 10px !important;
+    overflow: hidden;
+
+    opacity: 0.5;
+    transition: all 0.2s ease;
+  }
+
+  .yarl__thumbnails_thumbnail:hover {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  /* active thumbnail */
+  .yarl__thumbnails_thumbnail_active {
+    border: 2px solid hsl(var(--primary)) !important;
+    opacity: 1;
   }
 }

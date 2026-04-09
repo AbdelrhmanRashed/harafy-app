@@ -1,34 +1,37 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { getPosts, type GetPostsParams } from '../api/getPosts';
+import { getPosts } from '../api/getPosts';
 
-export const usePosts = (filters: GetPostsParams) => {
+interface UsePostsOptions {
+  search?: string;
+  governorateId?: number;
+  regionId?: number;
+}
+
+const PAGE_SIZE = 10;
+
+export const usePosts = ({
+  search,
+  governorateId,
+  regionId,
+}: UsePostsOptions) => {
   return useInfiniteQuery({
-    queryKey: ['posts', filters],
-
-    queryFn: ({ pageParam }) =>
+    queryKey: ['posts', { search, governorateId, regionId }],
+    queryFn: ({ pageParam = 1 }) =>
       getPosts({
-        pageParam,
-        ...filters,
+        PageIndex: pageParam,
+        PageSize: PAGE_SIZE,
+        Search: search || undefined,
+        GovernorateId: governorateId,
+        RegionId: regionId,
       }),
-
-    initialPageParam: 1,
-
-    getNextPageParam: (lastPage, allPages) => {
-      const pageSize = 10;
-
-      if (!lastPage?.data) return undefined;
-
-      if (lastPage.data.length < pageSize) {
-        return undefined;
+    getNextPageParam: (lastPage) => {
+      const totalPages = Math.ceil(lastPage.count / PAGE_SIZE);
+      if (lastPage.pageIndex < totalPages) {
+        return lastPage.pageIndex + 1;
       }
-
-      return allPages.length + 1;
+      return undefined;
     },
-
-    // staleTime: 1000 * 60,
-    staleTime: 0,
-    // gcTime: 1000 * 60 * 5,
-
-    // retry: 1,
+    initialPageParam: 1,
+    staleTime: 1000 * 60,
   });
 };

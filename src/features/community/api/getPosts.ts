@@ -1,30 +1,16 @@
 import axiosInstance from '@/lib/axios';
 
-export interface GetPostsParams {
-  pageParam?: number;
-  governorateId?: number;
-  regionId?: number;
-  search?: string;
+export interface PostsParams {
+  GovernorateId?: number;
+  RegionId?: number;
+  Search?: string;
+  PageIndex: number;
+  PageSize: number;
 }
 
-export const getPosts = async ({
-  pageParam = 1,
-  governorateId,
-  regionId,
-  search,
-}: GetPostsParams) => {
-  const params: any = {
-    PageIndex: pageParam,
-    PageSize: 10,
-  };
-
-  if (governorateId) params.GovernorateId = governorateId;
-  if (regionId) params.RegionId = regionId;
-  if (search) params.Search = search;
-
-  const res = await axiosInstance.get('/api/Post/get-recent-posts', {
+export const getPosts = async (params: PostsParams) => {
+  const { data } = await axiosInstance.get('/api/Post/get-recent-posts', {
     params,
   });
-
-  return res.data;
+  return data;
 };

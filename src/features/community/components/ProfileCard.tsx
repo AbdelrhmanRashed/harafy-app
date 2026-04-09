@@ -17,7 +17,7 @@ const ProfileCard = ({
 }) => {
   const navigate = useNavigate();
   return (
-    <Card className="group bg-card w-full max-w-sm overflow-hidden rounded-3xl border-none">
+    <Card className="group bg-card w-full max-w-sm overflow-hidden rounded-xl border-none">
       <CardContent className="p-6">
         {/* Header Section with Avatar */}
         <div className="relative mb-6 flex flex-col items-center">

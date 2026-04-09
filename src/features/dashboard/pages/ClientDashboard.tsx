@@ -15,7 +15,7 @@ const ClientDashboard = () => {
   const roles = useAuthStore((state) => state.user?.role);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6" dir="rtl">
+    <main className="container mx-auto px-4 py-6" dir="rtl">
       <h1 className="text-primary mb-6 text-right text-3xl font-bold">
         ابدأ الآن
       </h1>
