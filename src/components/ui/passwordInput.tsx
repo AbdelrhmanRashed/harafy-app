@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Lock } from "lucide-react";
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 
 export const PasswordInput = ({ field, placeholder, ...props }: any) => {
   const [show, setShow] = useState(false);
   return (
     <div className="relative">
-      <Input 
-        {...field} 
+      <Input
+        {...field}
         {...props}
-        type={show ? "text" : "password"} 
-        placeholder={placeholder} 
-        className="pr-10 pl-10 h-12 border-input focus:ring-ring" 
+        type={show ? 'text' : 'password'}
+        placeholder={placeholder}
+        className="border-input focus:ring-ring h-12 pr-10 pl-10"
       />
-      <Lock className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+      <Lock className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
       <button
         type="button"
         onClick={() => setShow(!show)}
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+        className="text-muted-foreground hover:text-primary absolute top-1/2 left-3 -translate-y-1/2 transition-colors"
       >
         {show ? <EyeOff size={18} /> : <Eye size={18} />}
       </button>
