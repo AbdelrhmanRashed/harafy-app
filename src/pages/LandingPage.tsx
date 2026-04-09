@@ -10,10 +10,10 @@ const LandingPage = () => {
       </p>
       <div className="flex gap-4">
         <Button asChild>
-          <Link to="/register/client">حساب عميل</Link>
+          <Link to="/auth/login">حساب عميل</Link>
         </Button>
         <Button asChild>
-          <Link to="/register/provider">حساب مقدم خدمة</Link>
+          <Link to="/auth/login">حساب مقدم خدمة</Link>
         </Button>
       </div>
     </div>
