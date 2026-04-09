@@ -106,10 +106,13 @@ const InstantRequestPage = () => {
           initialService={initialQuery}
           initialCategory={initialCategory}
           address={address}
+          position={customerPos}
           locating={locating}
           onDetect={detect}
           onAddressSearch={searchAddress}
-          onSend={(data) => console.log('request sent:', data)}
+          onSend={(data)=>{
+            console.log(data);
+          }}
         />
         <ProvidersList
           providers={nearbyProviders}

@@ -54,8 +54,7 @@ const MyRequestsView = () => {
     {
         id: "101", title: "تنظيف عميق للمنزل", status: "completed",
         date: "14 أكتوبر", price: 450, icon: ShieldCheck,
-        isRated: false // لم يتم التقييم -> سيظهر الزر
-        ,
+        isRated: false,
         providerName: "",
         providerImage: "",
         profession: ""
@@ -63,8 +62,7 @@ const MyRequestsView = () => {
     {
         id: "102", title: "إصلاح تسربات المياه", status: "completed",
         date: "02 أكتوبر", price: 220, icon: Zap,
-        isRated: true, rating: 5 // تم التقييم -> ستظهر النجوم
-        ,
+        isRated: true, rating: 5,
         providerName: "",
         providerImage: "",
         profession: ""
