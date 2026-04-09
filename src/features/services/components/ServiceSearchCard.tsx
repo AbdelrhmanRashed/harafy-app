@@ -1,7 +1,7 @@
-import { Star, MapPin, MessageSquare, Send, ShieldCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import type { Provider } from "@/features/services/pages/instant/types/types";
+import { Star, MapPin, ShieldCheck, ArrowLeft, Heart } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import type { Provider } from '@/features/services/types/types';
 
 interface ServiceSearchCardProps {
   provider: Provider;
@@ -14,79 +14,88 @@ export default function ServiceSearchCard({
   onServiceRequest,
   onViewProfile,
 }: ServiceSearchCardProps) {
-  const isAvailable = provider.status === "متاح الآن";
+  const isAvailable = provider.status === 'متاح الآن';
 
   return (
-    <div className="group w-full bg-white border border-gray-100 rounded-[32px] p-5 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/10">
-      <div className="flex flex-col gap-5">
+    <div className="group border-border/40 bg-card relative w-full rounded-[2.5rem] border p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_-20px_rgba(79,70,229,0.15)]">
+      {/* 1. Header: Avatar & Status */}
+      <div className="mb-5 flex items-start justify-between">
+        <div className="relative">
+          <div className="bg-secondary border-border/50 flex h-20 w-20 items-center justify-center rounded-3xl border text-4xl shadow-inner transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+            {provider.avatar || '👤'}
+          </div>
+          {/* نقطة الحالة (Live Status Indicator) */}
+          <div
+            className={cn(
+              'border-card absolute -right-1.5 -bottom-1.5 flex h-6 w-6 items-center justify-center rounded-full border-4',
+              isAvailable ? 'bg-green-500' : 'bg-orange-500',
+            )}
+          >
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+          </div>
+        </div>
 
-        <div className="flex items-start justify-between flex-row-reverse">
-          <span className={cn(
-            "text-[10px] font-bold px-3 py-1 rounded-full",
-            isAvailable ? "bg-green-50 text-green-600" : "bg-orange-50 text-orange-600"
-          )}>
+        <div className="flex flex-col items-end gap-2">
+          <span
+            className={cn(
+              'rounded-full px-4 py-1.5 text-[11px] font-black tracking-wider uppercase shadow-sm',
+              isAvailable
+                ? 'border border-green-500/20 bg-green-500/10 text-green-600'
+                : 'border border-orange-500/20 bg-orange-500/10 text-orange-600',
+            )}
+          >
             {provider.status}
           </span>
-          <div className="flex items-center gap-4 flex-row-reverse text-right">
-            {/* name and profession */}
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-1 flex-row">
-                <ShieldCheck className="h-4 w-4 text-blue-500" />
-                <h3 className="font-extrabold text-lg text-gray-900">{provider.name}</h3>
-              </div>
-              <p className="text-sm text-muted-foreground font-medium">{provider.profession}</p>
+          <button className="hover:bg-destructive/5 text-muted-foreground/40 hover:text-destructive rounded-full p-2 transition-colors">
+            <Heart className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
 
-              <div className="flex items-center gap-3 mt-1 flex-row-reverse">
-                <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
-                  <Star className="h-3 w-3 fill-current" />
-                  {provider.rating.toFixed(1)}
-                </div>
-                <div className="flex items-center gap-1 text-gray-400 text-[10px] font-bold">
-                  <MapPin className="h-3 w-3 text-primary" />
-                  {provider.distance} كم بعيد عنك
-                </div>
-              </div>
-            </div>
-            {/* Avatar */}
-            <div className="relative">
-              <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center text-3xl border border-primary/10 group-hover:scale-105 transition-transform">
-                {provider.avatar || "👤"}
-              </div>
-              <div className={cn(
-                "absolute -bottom-1 -right-1 w-4 h-4 border-2 border-white rounded-full",
-                isAvailable ? "bg-green-500" : "bg-orange-500"
-              )} />
-            </div>
-
-
+      {/* 2. Body: Info */}
+      <div className="space-y-3 text-right">
+        <div>
+          <div className="mb-1 flex flex-row-reverse items-center gap-1.5">
+            <h3 className="text-foreground group-hover:text-primary text-xl font-black transition-colors">
+              {provider.name}
+            </h3>
+            <ShieldCheck className="h-5 w-5 fill-blue-500/10 text-blue-500" />
           </div>
-
-
+          <p className="text-muted-foreground text-sm font-bold">
+            {provider.profession}
+          </p>
         </div>
 
-        {/* line between cards */}
-        <div className="h-px w-full bg-gray-50" />
-
-        {/*Buttons*/}
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="gradient"
-            onClick={() => onServiceRequest(provider)}
-            className="rounded-2xl px-10 py-4 h-12 gap-2 text-lg font-bold"
-          >
-
-            <Send className="h-4 w-4 rotate-180" />
-            اطلب خدمة
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => onViewProfile(provider)}
-            className="flex-1 rounded-2xl h-12 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-bold gap-2"
-          >
-            عرض الملف الشخصي
-          </Button>
+        {/* Stats Row */}
+        <div className="flex flex-row-reverse items-center gap-4 pt-1">
+          <div className="flex items-center gap-1.5 rounded-2xl bg-yellow-500/10 px-3 py-1 text-xs font-black text-yellow-700">
+            <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+            {provider.rating.toFixed(1)}
+          </div>
+          <div className="text-muted-foreground flex items-center gap-1.5 text-xs font-bold">
+            <MapPin className="text-primary/60 h-4 w-4" />
+            {provider.distance} كم
+          </div>
         </div>
+      </div>
+
+      {/* 3. Footer: Buttons */}
+      <div className="mt-8 flex gap-3">
+        <Button
+          onClick={() => onServiceRequest(provider)}
+          className="bg-primary-gradient text-md shadow-primary-gradient h-14 flex-[1.5] gap-3 rounded-[1.5rem] font-black text-white transition-all hover:scale-[1.02] active:scale-95"
+        >
+          اطلب الآن
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={() => onViewProfile(provider)}
+          className="border-border bg-secondary/30 text-foreground hover:bg-secondary h-14 flex-1 rounded-[1.5rem] font-black transition-all"
+        >
+          الملف
+        </Button>
       </div>
     </div>
   );

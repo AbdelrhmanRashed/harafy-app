@@ -11,7 +11,7 @@ interface MobileNavbarProps {
 const MobileNavbar = ({ role }: MobileNavbarProps) => {
   return (
     <>
-      <header className="bg-background/93 border-border sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b px-4 font-sans backdrop-blur-md md:hidden">
+      <header className="bg-background/93 border-border sticky top-0 z-900 flex h-16 w-full items-center justify-between border-b px-4 font-sans backdrop-blur-md md:hidden">
         <Logo />
         <div className="flex items-center gap-2">
           {role === 'Client' && <ClientActions />}

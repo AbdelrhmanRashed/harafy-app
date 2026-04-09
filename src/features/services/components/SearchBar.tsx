@@ -1,15 +1,15 @@
-
-import { Search, MapPin, Briefcase } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Search, MapPin, Briefcase } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface SearchBarProps {
   onSearch?: (query: string, location: string) => void;
 }
 
-const SearchBar = ({ onSearch }: SearchBarProps) => { 
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("");
+const SearchBar = ({ onSearch }: SearchBarProps) => {
+  const [query, setQuery] = useState('');
+  const [location, setLocation] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   function handleSearch() {
     onSearch?.(query, location);
@@ -17,45 +17,67 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   return (
     <div
-   
-      className="flex flex-row items-center h-19 w-full max-w-4xl mx-auto bg-white rounded-4xl shadow-sm overflow-hidden border border-transparent p-2"
+      className={`group relative mx-auto w-full max-w-4xl transition-all duration-500 ease-out ${isFocused ? 'scale-[1.02]' : 'scale-100'}`}
     >
-      {/* Service input */}
-      <div className="flex items-center basis-1/2 gap-3 flex-1 px-4 py-3 border-l border-border/50">
-        <Briefcase className="h-5 w-4 text-primary shrink-0" />
-        <input
-          type="text"
-          placeholder="ما هي الخدمة التي تبحث عنها؟"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full font-medium bg-transparent outline-none text-foreground placeholder:text-muted-foreground/60"
-        />
-      </div>
-
-      {/* Location input */}
-      <div className="flex items-center basis-1/2 gap-3 px-4 py-3">
-        <MapPin className="h-5 w-4 text-primary shrink-0" />
-        <input
-          type="text"
-          placeholder="المدينة أو المنطقة"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full font-medium bg-transparent outline-none text-foreground placeholder:text-muted-foreground/60"
-        />
-      </div>
-
-      {/* Search button */}
-      <Button
-        type="button"
-  variant="gradient"
-  onClick={handleSearch}
-  className="rounded-4xl px-10 py-4 h-full gap-2 text-lg font-bold"
+      <div
+        className={`dark:bg-card/90 relative flex w-full flex-col items-center rounded-[2.2rem] bg-white/80 p-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-2 backdrop-blur-xl transition-all duration-300 md:flex-row ${isFocused ? 'ring-primary shadow-primary/10' : 'ring-border/50'}`}
       >
-        <Search className="h-4.5 w-4.5" />
-        بحث
-      </Button>
-    
+        <div className="border-border/40 group/input flex w-full flex-1 items-center gap-3 border-l-0 px-6 py-4 md:border-l">
+          <div className="bg-primary/10 text-primary rounded-xl p-2 transition-transform group-hover/input:scale-110">
+            <Briefcase className="h-5 w-5" />
+          </div>
+          <input
+            type="text"
+            placeholder="ما هي الخدمة التي تبحث عنها؟"
+            value={query}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onChange={(e) => setQuery(e.target.value)}
+            className="text-foreground placeholder:text-muted-foreground/50 w-full bg-transparent text-sm font-semibold outline-none md:text-lg"
+          />
+        </div>
+
+        <div className="group/input flex w-full flex-1 items-center gap-3 px-6 py-4">
+          <div className="bg-primary/10 text-primary rounded-xl p-2 transition-transform group-hover/input:scale-110">
+            <MapPin className="h-5 w-5" />
+          </div>
+          <input
+            type="text"
+            placeholder="المدينة أو المنطقة"
+            value={location}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onChange={(e) => setLocation(e.target.value)}
+            className="text-foreground placeholder:text-muted-foreground/50 w-full bg-transparent text-sm font-semibold outline-none md:text-lg"
+          />
+        </div>
+
+        <Button
+          type="button"
+          variant={'gradient'}
+          onClick={handleSearch}
+          className="shadow-primary-gradient w-full gap-3 rounded-[1.8rem] px-12 py-7 text-lg font-black transition-all active:scale-95 md:me-2 md:w-auto"
+        >
+          <Search className="h-5 w-5 stroke-[3px]" />
+          بحث
+        </Button>
+      </div>
+
+      <div className="mt-4 flex justify-center gap-4 px-6 md:justify-start">
+        <span className="text-muted-foreground/70 text-xs font-bold tracking-widest uppercase">
+          شائع:
+        </span>
+        {['سباك', 'كهربائي', 'نجار'].map((tag) => (
+          <button
+            key={tag}
+            className="text-primary text-xs font-bold underline-offset-4 hover:underline"
+          >
+            #{tag}
+          </button>
+        ))}
+      </div>
     </div>
   );
-}
+};
+
 export default SearchBar;
