@@ -21,20 +21,22 @@ import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import Download from 'yet-another-react-lightbox/plugins/download';
+import { useReactToPost } from '../hooks/useReactToPost';
 const Post = ({ post }: { post: PostType }) => {
-  const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.topReactions.length);
+  const likesCount =
+    post.topReactions.find((r) => r.reactionType === 1)?.count || 0;
+  const liked = true;
   const [showComments, setShowComments] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const { mutate: deletePost, isPending: isDeletingPost } = useDeletePost();
+  // get current client id
   const currentClientId = getIdFromToken();
+  // delete post
+  const { mutate: deletePost, isPending: isDeletingPost } = useDeletePost();
+  // react to post
+  const { mutate: reactToPost, isPending: isReactingToPost } = useReactToPost();
 
-  const toggleLike = () => {
-    setLiked((prev) => !prev);
-    setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
-  };
-
+  console.log(post.topReactions);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const images = post.imageUrls.map((url) => ({
@@ -123,8 +125,12 @@ const Post = ({ post }: { post: PostType }) => {
           <div className="flex items-center justify-between border-t pt-2 text-sm">
             <div className="flex items-center gap-4">
               <button
-                onClick={toggleLike}
-                className={`flex items-center gap-1 transition ${liked ? 'text-primary' : 'text-gray-500'}`}
+                onClick={() =>
+                  reactToPost({ postId: post.id, reactionType: 1 })
+                }
+                className={`flex items-center gap-1 ${
+                  liked ? 'text-primary' : 'text-gray-500'
+                }`}
               >
                 <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
                 {likesCount}
