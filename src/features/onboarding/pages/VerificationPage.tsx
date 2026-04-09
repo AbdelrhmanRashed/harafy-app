@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/field';
 
 import FileUploadCard from '../components/FileUploadCard';
-import { LocationSection } from '../components/Locationsection';
+import { LocationSection } from '../components/LocationSection';
 
 import {
   FileText,

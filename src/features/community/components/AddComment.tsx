@@ -3,7 +3,7 @@ import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
 import { useAddComment } from '../hooks/useAddComment';
 import { Loader2, Send } from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+
 import TextareaAutosize from 'react-textarea-autosize';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 

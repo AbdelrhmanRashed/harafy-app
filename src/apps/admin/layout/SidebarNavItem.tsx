@@ -5,16 +5,9 @@ import {
   SidebarMenuItem,
 } from '../../../components/ui/sidebar';
 import { ChevronLeft } from 'lucide-react';
-import type { navLink } from '@/features/admin/types/navLink';
 import { useLocation } from 'react-router-dom';
 
-const SidebarNavItem = ({
-  item,
-  tooltip,
-}: {
-  item: navLink;
-  tooltip: string;
-}) => {
+const SidebarNavItem = ({ item, tooltip }: { item: any; tooltip: string }) => {
   const location = useLocation();
   const Icon = item.icon;
   return (

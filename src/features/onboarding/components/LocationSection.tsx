@@ -18,19 +18,11 @@ export function LocationSection() {
   const {
     register,
     setValue,
-    watch,
     formState: { errors },
   } = useFormContext();
 
-  const {
-    position,
-    setPosition,
-    address,
-    locating,
-    denied,
-    detect,
-    searchAddress,
-  } = useLocation();
+  const { position, address, locating, denied, detect, searchAddress } =
+    useLocation();
 
   // ── keep form in sync whenever the hook resolves a new position ──
   useEffect(() => {
