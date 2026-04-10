@@ -46,7 +46,7 @@ export default function ServicesPage() {
         </section>
 
         <section className="mt-8 px-4 pb-20">
-          {/* قائمة التصنيفات: تأكد أنها Scrollable على الموبايل داخل مكونها */}
+          {/* categories list */}
           <div className="mb-10">
             <CategoryList
               selected={selectedCategory}
@@ -55,7 +55,7 @@ export default function ServicesPage() {
           </div>
 
           <div className="mx-auto mt-12 max-w-5xl">
-            {/* Header القسم: تحسين الـ Typography والـ Spacing */}
+            {/* header of the section */}
             <div className="mb-8 flex flex-col gap-2 px-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
                 {selectedCategory && selectedCategory !== 'الكل'
@@ -67,7 +67,7 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            {/* Grid الفنيين: Responsive Grid 1 -> 2 -> 3 */}
+            {/* grid of providers */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {filteredProviders.map((provider) => (
                 <div key={provider.id} className="h-full">
@@ -82,7 +82,7 @@ export default function ServicesPage() {
               ))}
             </div>
 
-            {/* حالة عدم وجود نتائج: تصميم متناسق مع الـ Card System */}
+            {/* No results */}
             {filteredProviders.length === 0 && (
               <div className="border-border bg-card/50 flex flex-col items-center justify-center rounded-3xl border border-dashed py-24 text-center shadow-sm">
                 <div className="bg-muted mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3xl">
@@ -98,11 +98,10 @@ export default function ServicesPage() {
         </section>
       </main>
 
-      {/* Drawer: تحسين الـ Responsiveness للموبايل */}
+      {/* Drawer*/}
       <Drawer
         open={isDrawerOpen}
         onOpenChange={setIsDrawerOpen}
-        // في الموبايل الـ Drawer يفتح من تحت (default) وفي الـ Desktop من اليمين
         direction={window.innerWidth > 768 ? 'right' : 'bottom'}
       >
         <DrawerContent className="mx-auto h-[90vh] md:h-screen md:w-[450px] md:max-w-md">
