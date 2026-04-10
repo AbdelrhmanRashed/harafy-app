@@ -12,6 +12,7 @@ const CommentsSection = ({ postId }: { postId: number }) => {
 
   const comments = data?.pages.flatMap((page) => page.data) ?? [];
 
+  console.log(comments);
   if (isLoading) return <CommentsSkeleton />;
 
   return (

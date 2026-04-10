@@ -22,11 +22,16 @@ import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import Download from 'yet-another-react-lightbox/plugins/download';
 import { useReactToPost } from '../hooks/useReactToPost';
+import EditPostDialog from './EditPostDialog';
 const Post = ({ post }: { post: PostType }) => {
   const likesCount =
     post.topReactions.find((r) => r.reactionType === 1)?.count || 0;
   const liked = true;
+
   const [showComments, setShowComments] = useState(false);
+  // edit post
+  const [editPostOpen, setEditPostOpen] = useState(false);
+
   const [saved, setSaved] = useState(false);
 
   // get current client id
@@ -34,9 +39,8 @@ const Post = ({ post }: { post: PostType }) => {
   // delete post
   const { mutate: deletePost, isPending: isDeletingPost } = useDeletePost();
   // react to post
-  const { mutate: reactToPost, isPending: isReactingToPost } = useReactToPost();
+  const { mutate: reactToPost } = useReactToPost();
 
-  console.log(post.topReactions);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const images = post.imageUrls.map((url) => ({
@@ -64,6 +68,7 @@ const Post = ({ post }: { post: PostType }) => {
             </div>
             {post.clientId === currentClientId && (
               <ActionsDropdown
+                onEdit={() => setEditPostOpen(true)}
                 onDelete={() => deletePost(post.id)}
                 isDeleting={isDeletingPost}
               >
@@ -79,9 +84,11 @@ const Post = ({ post }: { post: PostType }) => {
           </div>
 
           {/* Title & Description */}
-          <p className="text-sm font-bold">{post.title}</p>
+          <p className="text-sm font-bold wrap-break-word">{post.title}</p>
           {post.description && (
-            <p className="text-sm leading-6">{post.description}</p>
+            <p className="text-sm leading-6 wrap-break-word">
+              {post.description}
+            </p>
           )}
 
           {/* Images */}
@@ -109,7 +116,7 @@ const Post = ({ post }: { post: PostType }) => {
                       setSelectedImage(i);
                       setLightboxOpen(true);
                     }}
-                    className={`w-full cursor-pointer transition-transform duration-300 hover:scale-105 ${
+                    className={`w-full cursor-pointer ${
                       images.length === 1
                         ? 'h-auto object-contain'
                         : 'h-full object-cover'
@@ -158,6 +165,13 @@ const Post = ({ post }: { post: PostType }) => {
           {showComments && <CommentsSection postId={post.id} />}
         </CardContent>
       </Card>
+      {/* edit post dialog */}
+      <EditPostDialog
+        post={post}
+        open={editPostOpen}
+        onClose={() => setEditPostOpen(false)}
+      />
+      {/* lightbox */}
       <Lightbox
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}

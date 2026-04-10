@@ -378,4 +378,88 @@
     border: 2px solid hsl(var(--primary)) !important;
     opacity: 1;
   }
+
+  /* ================= Emoji Picker Scrollbar ================= */
+
+  .epr-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .epr-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .epr-body::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+  }
+
+  .epr-body::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
+
+  /* Firefox */
+  .epr-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+  :root .epr-body {
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  :root .epr-body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  /* ===================== */
+  /*  GLOBAL SCROLLBAR  */
+  /* ===================== */
+
+  /* Chrome, Edge, Safari */
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Dark Mode */
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .dark *:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  /*  Light Mode */
+  :root *::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  :root *:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+  }
+
+  /* Dark */
+  .dark * {
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+
+  /* Light */
+  :root * {
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
 }

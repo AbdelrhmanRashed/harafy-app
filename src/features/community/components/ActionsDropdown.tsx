@@ -14,19 +14,21 @@ const ActionsDropdown = ({
   children,
   open,
   setOpen,
+  onEdit,
 }: {
   onDelete: () => void;
   isDeleting: boolean;
   children: React.ReactNode;
   open?: boolean;
   setOpen?: (open: boolean) => void;
+  onEdit?: () => void;
 }) => {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent className="bg-card">
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={onEdit}>
             <PencilIcon />
             تعديل
           </DropdownMenuItem>

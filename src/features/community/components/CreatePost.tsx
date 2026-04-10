@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Image as ImageIcon, Megaphone, User, X, Loader2 } from 'lucide-react';
+import {
+  Image as ImageIcon,
+  Megaphone,
+  User,
+  X,
+  Loader2,
+  Smile,
+} from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -26,6 +33,7 @@ import { useAddPost } from '../hooks/useAddPost';
 import CreatePostTrigger from './CreatePostTrigger';
 import { getImageUrl } from '@/lib/utils';
 import type { ClientProfile } from '@/features/profile/types/client-profile.types';
+import EmojiContainer from './EmojiContainer';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -110,6 +118,8 @@ const CreatePost = ({ clientProfile }: Props) => {
       },
     });
   };
+
+  const [showEmoji, setShowEmoji] = useState(false);
 
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -241,21 +251,55 @@ const CreatePost = ({ clientProfile }: Props) => {
                   />
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={isPending}
-                  variant="gradient"
-                  className="shadow-primary-gradient rounded-full px-8 disabled:opacity-50 disabled:shadow-none"
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      جاري النشر...
-                    </>
-                  ) : (
-                    'نشر'
-                  )}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowEmoji(!showEmoji);
+                      }}
+                      className="text-primary hover:bg-primary/10 hover:text-primary bg-primary/5 rounded-full transition-colors"
+                      aria-label="إضافة إيموجي"
+                    >
+                      <Smile size={20} />
+                    </Button>
+                    {/* emoji */}
+                    {showEmoji && (
+                      <div className="absolute bottom-0 left-0 mb-2">
+                        <EmojiContainer
+                          showEmoji={showEmoji}
+                          className="max-sm:-left-25 max-sm:translate-x-0"
+                          setShowEmoji={setShowEmoji}
+                          onEmojiClick={(emoji) => {
+                            const currentVal =
+                              form.getValues('Description') || '';
+                            form.setValue('Description', currentVal + emoji, {
+                              shouldValidate: true,
+                            });
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    variant="gradient"
+                    className="shadow-primary-gradient rounded-full px-8 disabled:opacity-50 disabled:shadow-none"
+                  >
+                    {isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        جاري النشر...
+                      </>
+                    ) : (
+                      'نشر'
+                    )}
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>

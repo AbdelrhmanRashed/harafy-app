@@ -1,22 +1,64 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getImageUrl, getTimeAgo } from '@/lib/utils';
-import { Clock, Ellipsis } from 'lucide-react';
+import { Clock, Ellipsis, Loader2, Smile, SquarePen } from 'lucide-react';
 import { useDeleteComment } from '../hooks/useDeleteComment';
 import { getIdFromToken } from '@/lib/auth/getIdFromToken';
+import TextareaAutosize from 'react-textarea-autosize';
 
 import ActionsDropdown from './ActionsDropdown';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 
 import { cn } from '@/lib/utils';
+import type { CommentResponse } from '../types/comment.type';
+import { useUpdateComment } from '../hooks/useUpdateComment';
+import EmojiContainer from './EmojiContainer';
 
-const Comment = ({ comment }: { comment: any }) => {
+const Comment = ({ comment }: { comment: CommentResponse }) => {
+  // Get Current Client Id
+  const currentClientId = getIdFromToken();
+
+  // Delete Comment Hook
   const { mutate: deleteComment, isPending: isDeletingComment } =
     useDeleteComment(comment.postId);
-  const currentClientId = getIdFromToken();
-  const [open, setOpen] = useState(false);
 
+  // Update Comment Hook
+  const { mutate: updateComment, isPending: isUpdatingComment } =
+    useUpdateComment(comment.postId);
+
+  // States
+  const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [message, setMessage] = useState(comment.message);
+
+  // Time Ago
   const timeAgo = getTimeAgo(new Date(comment.createdAt));
+
+  // Handle Key Down
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleUpdateComment();
+    }
+  };
+
+  // Emoji Picker State
+  const [showEmoji, setShowEmoji] = useState(false);
+
+  // Handle Update Comment
+  const handleUpdateComment = () => {
+    updateComment(
+      {
+        commentId: comment.id,
+        Message: message,
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+        },
+      },
+    );
+  };
 
   return (
     <div className="flex min-w-0 gap-2">
@@ -27,14 +69,101 @@ const Comment = ({ comment }: { comment: any }) => {
         </Avatar>
       </div>
 
-      <div className="group flex max-w-full items-start gap-2">
-        <div className="flex max-w-[95%] min-w-0 flex-col">
-          <div className="bg-muted w-fit min-w-[250px] overflow-hidden rounded-xl px-3 py-2 wrap-break-word">
-            <p className="text-md truncate font-bold">{comment.clientName}</p>
+      <div className="group flex max-w-full flex-1 items-start gap-2">
+        <div
+          className={cn(
+            'flex max-w-[95%] min-w-0 flex-col',
+            isEditing ? 'flex-1' : 'w-fit',
+          )}
+        >
+          <div
+            className={cn(
+              'bg-muted space-y-1 rounded-xl px-3 py-2 wrap-break-word',
+              isEditing ? 'w-full' : 'w-fit min-w-[250px]',
+              isEditing && 'border-primary border-2',
+            )}
+          >
+            <p className="text-sm font-semibold">{comment.clientName}</p>
 
-            <p className="text-sm leading-5 [word-break:break-word] whitespace-pre-wrap">
-              {comment.message}
-            </p>
+            {isEditing ? (
+              <div className="relative flex w-full flex-col gap-4">
+                <div className="relative">
+                  {/* emoji */}
+                  {showEmoji && (
+                    <div className="absolute bottom-0 left-0 z-50 mb-2">
+                      <EmojiContainer
+                        showEmoji={showEmoji}
+                        setShowEmoji={setShowEmoji}
+                        setMessage={setMessage}
+                      />
+                    </div>
+                  )}
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="absolute bottom-0 left-2 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowEmoji((prev) => !prev);
+                    }}
+                  >
+                    <Smile className="size-4" />
+                  </Button>
+                  <TextareaAutosize
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="اكتب تعليقاً..."
+                    minRows={2}
+                    maxRows={10}
+                    disabled={isUpdatingComment}
+                    dir="rtl"
+                    className={cn(
+                      'border-input bg-background ring-offset-background flex w-full resize-none rounded-md border px-4 py-3 text-sm wrap-break-word transition-all duration-200',
+                      'placeholder:text-muted-foreground/60 leading-relaxed',
+                      'focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none',
+                      'disabled:cursor-not-allowed disabled:opacity-50',
+                      'scrollbar-thin scrollbar-thumb-muted-foreground/20',
+                      'pl-10',
+                    )}
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="cursor-pointer"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    إلغاء
+                  </Button>
+                  <Button
+                    variant="gradient"
+                    size="sm"
+                    className="px-4"
+                    disabled={isUpdatingComment}
+                    onClick={handleUpdateComment}
+                  >
+                    {isUpdatingComment ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        جاري الحفظ...
+                      </>
+                    ) : (
+                      <>
+                        <SquarePen className="size-4" />
+                        حفظ
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm leading-5 [word-break:break-word] whitespace-pre-wrap">
+                {comment.message}
+              </p>
+            )}
           </div>
 
           <p className="text-muted-foreground mt-1 flex items-center gap-1 px-1 text-xs">
@@ -50,6 +179,7 @@ const Comment = ({ comment }: { comment: any }) => {
               isDeleting={isDeletingComment}
               open={open}
               setOpen={setOpen}
+              onEdit={() => setIsEditing(true)}
             >
               <Button
                 variant="link"

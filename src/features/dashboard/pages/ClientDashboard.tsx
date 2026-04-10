@@ -9,11 +9,14 @@ import DirectRequest from '../components/DirectRequest';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
 import ProfileCardSkeleton from '@/features/community/components/ProfileCardSkeleton';
+import PostsFilter from '@/features/community/components/PostsFilter';
+import { useState } from 'react';
 
 const ClientDashboard = () => {
   const { data: clientProfile, isLoading } = useClientProfile();
   const roles = useAuthStore((state) => state.user?.role);
-
+  const [search, setSearch] = useState('');
+  const [nearby, setNearby] = useState(false);
   return (
     <main className="container mx-auto px-4 py-6" dir="rtl">
       <h1 className="text-primary mb-6 text-right text-3xl font-bold">
@@ -40,10 +43,11 @@ const ClientDashboard = () => {
 
         <div className="order-3 space-y-4 lg:order-4 lg:col-span-6">
           <CreatePost clientProfile={clientProfile} />
-          <CommunityFeed />
+          <CommunityFeed search={search} nearby={nearby} />
         </div>
 
         <div className="order-5 hidden space-y-4 lg:sticky lg:top-20 lg:col-span-3 lg:block">
+          <PostsFilter setSearch={setSearch} setNearby={setNearby} />
           <QuickLinks />
         </div>
 

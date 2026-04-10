@@ -14,7 +14,12 @@ export interface PostType {
   createdAt: string;
   imageUrls: string[];
   commentsCount: number;
-  topReactions: any[];
+  topReactions: TopReactionType[];
   clientName: string;
   clientPictureUrl: string;
+}
+
+export interface TopReactionType {
+  reactionType: number;
+  count: number;
 }
