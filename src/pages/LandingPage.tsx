@@ -1,21 +1,19 @@
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import AppBanner from './landingComponent/AppBanner';
+import Community from './landingComponent/Community';
+import Details from './landingComponent/Details';
+import Footer from './landingComponent/Footer';
+import Hero from './landingComponent/Hero';
+import WhyUs from './landingComponent/WhyUs';
 
 const LandingPage = () => {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
-      <h1 className="text-4xl font-bold">مرحبا بك في حرفي</h1>
-      <p className="text-muted-foreground text-lg">
-        اختر نوع الحساب الذي تريد إنشاءه
-      </p>
-      <div className="flex gap-4">
-        <Button asChild>
-          <Link to="/auth/login">حساب عميل</Link>
-        </Button>
-        <Button asChild>
-          <Link to="/auth/login">حساب مقدم خدمة</Link>
-        </Button>
-      </div>
+    <div className="bg-background text-foreground min-h-screen w-full font-sans">
+      <Hero />
+      <WhyUs />
+      <Details />
+      <Community />
+      <AppBanner />
+      <Footer />
     </div>
   );
 };
