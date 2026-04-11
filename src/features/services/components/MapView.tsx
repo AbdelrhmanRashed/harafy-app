@@ -44,6 +44,7 @@ interface MapViewProps {
   providers: Provider[];
   selectedProvider: Provider | null;
   route: LatLng[];
+  allowMapPickLocation?: boolean;
   onLocationSelect: (pos: LatLng) => void;
   onProviderSelect: (provider: Provider) => void;
   onAddressSearch: (query: string) => void;
@@ -57,6 +58,7 @@ export default function MapView({
   providers = [],
   selectedProvider = null,
   route = [],
+  allowMapPickLocation = true,
   onLocationSelect = () => { },
   onProviderSelect = () => { },
   onAddressSearch = () => { },
@@ -130,7 +132,9 @@ export default function MapView({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
 
-        <MapClickHandler onLocationSelect={onLocationSelect} />
+        {allowMapPickLocation && (
+          <MapClickHandler onLocationSelect={onLocationSelect} />
+        )}
 
         {/* Customer marker */}
         <Marker

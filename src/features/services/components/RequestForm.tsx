@@ -38,6 +38,7 @@ interface RequestFormProps {
   onAddressSearch: (query: string) => void;
   initialService?: string;
   initialCategory?: string;
+  navigateOnSuccess?: boolean;
   onSend?: (id: number | string) => void;
   onServiceChange?: (id: number) => void;
 }
@@ -51,6 +52,7 @@ export default function RequestForm({
   onDetect,
   onAddressSearch,
   initialService: _initialService,
+  navigateOnSuccess = true,
   onSend,
   onServiceChange,
 }: RequestFormProps) {
@@ -138,17 +140,18 @@ export default function RequestForm({
         // Let the parent component know the request was sent (we will handle the nearby providers next time)
         onSend?.(newRequestId);
 
-        // Navigate to the success/details page
-        navigate(`/app/services/requests/${newRequestId}/instant`, {
-          state: {
-            serviceName: services?.find((s: any) => s.id === values.ServiceId)?.name,
-            description: values.Description,
-            address: manualAddress,
-            position,
-            tags: ["فوري"],
-            requestId: newRequestId,
-          }
-        });
+        if (navigateOnSuccess) {
+          navigate(`/app/services/requests/${newRequestId}/instant`, {
+            state: {
+              serviceName: services?.find((s: any) => s.id === values.ServiceId)?.name,
+              description: values.Description,
+              address: manualAddress,
+              position,
+              tags: ["فوري"],
+              requestId: newRequestId,
+            },
+          });
+        }
       },
       onError: (err: any) => {
         console.error('❌ Request failed:', err?.message ?? err);
