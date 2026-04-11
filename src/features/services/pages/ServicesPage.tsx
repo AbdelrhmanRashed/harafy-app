@@ -15,6 +15,8 @@ export default function ServicesPage() {
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+
+
   const navigate = useNavigate();
 
   function handleSearch(query: string, location: string) {

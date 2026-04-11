@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const QuickRequest = () => {
+  const navigate = useNavigate();///app/services/instant
   return (
     <Card className="bg-primary-gradient shadow-primary-gradient relative flex h-[300px] flex-col items-start justify-between gap-4 overflow-hidden rounded-xl border-none p-8 md:items-start">
       <Zap
@@ -26,6 +28,7 @@ const QuickRequest = () => {
         <Button
           variant="secondary"
           className="text-primary bg-secondary hover:bg-secondary/90 cursor-pointer rounded-2xl px-8 py-7 text-xl font-bold transition-transform active:scale-95"
+          onClick={() => navigate('/app/services/instant')}
         >
           ابدأ الطلب الفوري
         </Button>

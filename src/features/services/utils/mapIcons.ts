@@ -24,7 +24,7 @@ export const customerIcon = L.divIcon({
   iconSize: [16, 16],
 });
 
-export const workerIcon = (name: string, rating: number, profession: string) =>
+export const workerIcon = (name: string, profession: string) =>
   L.divIcon({
     className: "custom-worker-marker",
     html: `
@@ -59,8 +59,7 @@ export const workerIcon = (name: string, rating: number, profession: string) =>
         margin-top: 4px;
         text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white; 
       ">
-       (<span style="color: #FFB800;">⭐</span>
-        <span>${rating.toFixed(1)}</span>) 
+      
         ${profession}
       </div>
     </div>
@@ -68,3 +67,5 @@ export const workerIcon = (name: string, rating: number, profession: string) =>
     iconAnchor: [0, 0], 
     iconSize: [0, 0],
   });
+//  (<span style="color: #FFB800;">⭐</span>
+      //   <span>${rating.toFixed(1)}</span>) 

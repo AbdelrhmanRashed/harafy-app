@@ -26,6 +26,7 @@ import {
 import { useCreateServiceReq } from '../hooks/useCreateServiceReq';
 import { type CreateServiceReqInput, createServiceReqSchema } from '../schemas/serviceReq.schema';
 import { useServices } from '@/features/onboarding/hooks/useServices';
+import { useNavigate } from 'react-router-dom';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,7 +38,8 @@ interface RequestFormProps {
   onAddressSearch: (query: string) => void;
   initialService?: string;
   initialCategory?: string;
-  onSend?: (data: FormData) => void;
+  onSend?: (id: number | string) => void;
+  onServiceChange?: (id: number) => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -50,6 +52,7 @@ export default function RequestForm({
   onAddressSearch,
   initialService: _initialService,
   onSend,
+  onServiceChange,
 }: RequestFormProps) {
   const [manualAddress, setManualAddress] = useState(address);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -60,6 +63,7 @@ export default function RequestForm({
 
   const { data: services, isLoading: isLoadingServices } = useServices();
 
+  const navigate = useNavigate();
   // ── Form (must be declared before useEffects that call form.setValue) ──────
   const form = useForm<CreateServiceReqInput>({
     resolver: zodResolver(createServiceReqSchema),
@@ -125,12 +129,26 @@ export default function RequestForm({
     imageFiles.forEach((file) => formData.append('Images', file));
 
     createServiceReq(formData as any, {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        const newRequestId = data?.id || data?.requestId; // Handle both possibilities
         form.reset();
         setImageFiles([]);
         setImagePreviews([]);
-        onSend?.(formData);
-        console.log('✅ Request sent successfully');
+
+        // Let the parent component know the request was sent (we will handle the nearby providers next time)
+        onSend?.(newRequestId);
+
+        // Navigate to the success/details page
+        navigate(`/app/services/requests/${newRequestId}/instant`, {
+          state: {
+            serviceName: services?.find((s: any) => s.id === values.ServiceId)?.name,
+            description: values.Description,
+            address: manualAddress,
+            position,
+            tags: ["فوري"],
+            requestId: newRequestId,
+          }
+        });
       },
       onError: (err: any) => {
         console.error('❌ Request failed:', err?.message ?? err);
@@ -154,7 +172,7 @@ export default function RequestForm({
           طلب فوري
         </h1>
         <p className="text-muted-foreground text-xs sm:text-sm">
-          احصل على عروض من أفضل الحرفيين القريبين منك
+          أخبرنا بما تحتاجه، وسنقوم بربطك بأفضل الحرفيين المتاحين فوراً في منطقتك.
         </p>
       </div>
 
@@ -185,8 +203,11 @@ export default function RequestForm({
                     <div className="relative">
                       <select
                         value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        disabled={isLoadingServices}
+                        onChange={(e) => {
+                          const id = Number(e.target.value);
+                          field.onChange(id);
+                          onServiceChange?.(id);
+                        }} disabled={isLoadingServices}
                         className="bg-muted focus:ring-primary/20 h-11 w-full appearance-none rounded-2xl pr-3 pl-8 text-right text-sm focus:ring-2 focus:outline-none disabled:opacity-60 sm:h-12 sm:rounded-3xl"
                       >
                         <option value={0} disabled>
@@ -258,9 +279,8 @@ export default function RequestForm({
                       placeholder="اشرح لنا ما تحتاجه باختصار لضمان عروض دقيقة..."
                       rows={3}
                       dir="rtl"
-                      className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm focus:ring-2 focus:outline-none sm:rounded-3xl ${
-                        form.formState.errors.Description ? 'ring-2 ring-destructive/70' : ''
-                      }`}
+                      className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm focus:ring-2 focus:outline-none sm:rounded-3xl ${form.formState.errors.Description ? 'ring-2 ring-destructive/70' : ''
+                        }`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -271,8 +291,7 @@ export default function RequestForm({
             {/* ── Image upload ── */}
             <div className="space-y-2">
               <label className="text-foreground block text-xs font-bold sm:text-sm">
-                الصور التوضيحية (اختياري)
-              </label>
+                صور توضيحية (اختياري)              </label>
 
               {/* Previews */}
               {imagePreviews.length > 0 && (
@@ -283,7 +302,7 @@ export default function RequestForm({
                       className="border-border group relative overflow-hidden rounded-xl border"
                     >
                       <img
-                
+
                         src={src}
                         alt={`uploaded ${i}`}
                         className="h-20 w-full object-cover transition-transform group-hover:scale-105"
@@ -301,7 +320,7 @@ export default function RequestForm({
               )}
 
               {/* Upload button */}
-              
+
               {imagePreviews.length < 5 && (
                 <button
                   type="button"

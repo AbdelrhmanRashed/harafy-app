@@ -4,17 +4,15 @@ import MapView from '../../components/MapView';
 import RequestForm from '../../components/RequestForm';
 import ProvidersList from '../../components/ProvidersList';
 import { useRoute } from '../../hooks/useRoute';
-import { MOCK_PROVIDERS } from '../../types/constants';
 import type { Provider } from '../../types/types';
-import { getNearbyProviders } from '../../utils/distance';
 import { useLocation } from '../../hooks/useLocation';
-import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useGetNearbyProviders } from '../../hooks/useNearbyProviders';
+import { useDebounce } from '@/hooks/useDebounce';
+
 
 const InstantRequestPage = () => {
-  const [searchParams] = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const {
     position: customerPos,
     setPosition: setCustomerPos,
@@ -24,32 +22,37 @@ const InstantRequestPage = () => {
     searchAddress,
   } = useLocation();
 
-  const initialQuery = searchParams.get('q') || '';
-  const initialLocation = searchParams.get('loc') || '';
-  const initialCategory = searchParams.get('cat') || 'الكل';
-
-  useEffect(() => {
-    if (initialLocation) {
-      searchAddress(initialLocation);
-    } else {
-      detect();
-    }
-  }, [initialLocation]);
-
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
     null,
   );
 
-  const nearbyProviders = useMemo(() => {
-    let filtered = MOCK_PROVIDERS;
-    if (initialCategory && initialCategory !== 'الكل') {
-      filtered = filtered.filter((p) => p.profession.includes(initialCategory));
-    }
-    return getNearbyProviders(filtered, customerPos, 10);
-  }, [customerPos, initialCategory]);
+const [selectedServiceId, setSelectedServiceId] = useState<number>(0);
+
+const debouncedPos = customerPos;//500ms delay
+  const { data: nearbyProviders, isFetching: nearbyProvidersLoading } = useGetNearbyProviders(
+    debouncedPos?.lat.toString(),
+  debouncedPos?.lng.toString(),
+  selectedServiceId,
+  );
+
+ const validProviders = useMemo(() => {
+  const rawData = Array.isArray(nearbyProviders) ? nearbyProviders : (nearbyProviders?.data ?? []);
+  
+  return rawData.map((p: any) => ({
+    ...p,
+    baseLocation: p.baseLocation || {
+      latitude: p.position?.lat,
+      longitude: p.position?.lng,
+      addressText: p.status || "موقع غير محدد" 
+    },
+    services: p.services || [{ id: p.profession, name: "خدمة" }] 
+  }));
+}, [nearbyProviders]);
+
+
 
   const { route } = useRoute(
-    selectedProvider?.position ?? null,
+    selectedProvider?.baseLocation.latitude ? {lat: selectedProvider?.baseLocation.latitude, lng: selectedProvider?.baseLocation.longitude} : null,
     selectedProvider ? customerPos : null,
   );
 
@@ -61,12 +64,17 @@ const InstantRequestPage = () => {
     }
   }
 
+  
   // Close sidebar when provider is selected on mobile
   useEffect(() => {
     if (selectedProvider && window.innerWidth < 768) {
       setSidebarOpen(false);
     }
   }, [selectedProvider]);
+
+  console.log("serviceId:", selectedServiceId);
+console.log("pos:", debouncedPos);
+console.log("enabled?", !!debouncedPos?.lat && !!debouncedPos?.lng && selectedServiceId !== 0);
 
   return (
     <div className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden font-[Cairo,sans-serif] md:flex-row">
@@ -102,9 +110,6 @@ const InstantRequestPage = () => {
 
         {/* Form and list */}
         <RequestForm
-          key={`${initialCategory}-${initialQuery}-${initialLocation}`}
-          initialService={initialQuery}
-          initialCategory={initialCategory}
           address={address}
           position={customerPos}
           locating={locating}
@@ -113,11 +118,14 @@ const InstantRequestPage = () => {
           onSend={(data)=>{
             console.log(data);
           }}
+          onServiceChange={(id) => setSelectedServiceId(id)}
+
         />
         <ProvidersList
-          providers={nearbyProviders}
+          providers={validProviders}
           selectedId={selectedProvider?.id ?? null}
           onSelect={handleProviderSelect}
+          isLoading={nearbyProvidersLoading}
         />
       </aside>
 
@@ -131,12 +139,12 @@ const InstantRequestPage = () => {
 
       {/* Map */}
       <MapView
+      onLocationSelect={setCustomerPos}
         center={customerPos}
         customerPos={customerPos}
-        providers={nearbyProviders}
+        providers={validProviders}
         selectedProvider={selectedProvider}
         route={route}
-        onLocationSelect={setCustomerPos}
         onProviderSelect={handleProviderSelect}
         onAddressSearch={searchAddress}
       />

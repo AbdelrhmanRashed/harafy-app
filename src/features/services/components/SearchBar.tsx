@@ -11,9 +11,9 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [location, setLocation] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  function handleSearch() {
-    onSearch?.(query, location);
-  }
+  // function handleSearch() {
+  //   onSearch?.(query, location);
+  // }
 
   return (
     <div
@@ -55,7 +55,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         <Button
           type="button"
           variant={'gradient'}
-          onClick={handleSearch}
+          // onClick={handleSearch}
           className="shadow-primary-gradient w-full gap-3 rounded-[1.8rem] px-12 py-7 text-lg font-black transition-all active:scale-95 md:me-2 md:w-auto"
         >
           <Search className="h-5 w-5 stroke-[3px]" />

@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  // baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL:'https://iti-final-project.runasp.net/',
   withCredentials: true,
+  timeout: 30000,
 });
 
 // flag to prevent loop
@@ -54,9 +56,7 @@ axiosInstance.interceptors.response.use(
 
     // if token expired or invalid
     if (
-      (error.response?.status === 401 ||
-        error.response?.status === 400 ||
-        error.response?.status === 404) &&
+      error.response?.status === 401 &&
       !originalRequest._retry &&
       !isAuthRoute &&
       originalRequest.headers?.Authorization

@@ -6,12 +6,14 @@ interface ProvidersListProps {
   providers: Provider[];
   selectedId: number | null;
   onSelect: (provider: Provider) => void;
+  isLoading: boolean;
 }
 
 export default function ProvidersList({
   providers,
   selectedId,
   onSelect,
+  isLoading,
 }: ProvidersListProps) {
   return (
     <div className="flex-1 px-5 py-4">
@@ -30,7 +32,7 @@ export default function ProvidersList({
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 gap-3">
+      <div className={`grid grid-cols-1 gap-3 transition-all duration-300 ${isLoading ? 'opacity-50 pointer-events-none scale-[0.98] blur-[1px]' : 'opacity-100'}`}>
         {providers.map((provider) => (
           <ProviderCard
             key={provider.id}
