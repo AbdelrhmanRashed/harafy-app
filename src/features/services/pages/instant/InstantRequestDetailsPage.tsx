@@ -176,7 +176,7 @@ export default function InstantRequestDetailsPage() {
                 variant="secondary"
                 className="text-xs font-bold text-primary bg-primary/10 rounded-full"
               >
-                في انتظار عروض المحترفين
+                في انتظار عروض الحرفيين
               </Badge>
               <span className="text-sm font-bold text-muted-foreground">
                 #{id}
@@ -201,7 +201,7 @@ export default function InstantRequestDetailsPage() {
             <div className="flex-1 text-right space-y-2">
               <h2 className="text-xl font-black">تم نشر طلبك بنجاح!</h2>
               <p className="text-sm text-white/80 leading-relaxed">
-                المحترفون في منطقتك يراجعون طلبك الآن لإرسال أفضل عروضهم.
+                الحرفيين في منطقتك يراجعون طلبك الآن لإرسال أفضل عروضهم.
                 ستصلك إشعارات فورية عند توفر عروض جديدة.
               </p>
             </div>
@@ -220,9 +220,9 @@ export default function InstantRequestDetailsPage() {
           {requestOffers?.length > 0 ? (<div>
             {requestOffers?.map((offer:any) => (
               <div key={offer.id}>
-                {/* <p>{offer.provider.name}</p>
-                <p>{offer.provider.nickname}</p>
-                <p>{offer.provider.baseLocation.addressText}</p> */}
+                <p>{offer.providerName}</p>
+               <span>{offer.createdAt}</span>
+                <img src={offer.providerPictureUrl} alt={offer.providerName} />
                 <p>{offer.price}</p>
                 <p>{offer.message}</p>
               </div>
@@ -241,7 +241,7 @@ export default function InstantRequestDetailsPage() {
                   ستظهر العروض هنا قريباً
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
-                  يقوم النظام حالياً بمطابقة طلبك مع المحترفين الموثوقين.
+                  يقوم النظام حالياً بمطابقة طلبك مع الحرفيين الموثوقين.
                   عادة ما يستغرق أول عرض من 5 إلى 15 دقيقة.
                 </p>
               </div>
@@ -249,7 +249,7 @@ export default function InstantRequestDetailsPage() {
               {/* Online providers */}
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-border">
                 <span className="text-sm font-bold text-foreground">
-                  {onlineProviders} محترفين متصلين الآن في منطقتك
+                  {onlineProviders} حرفيين متصلين الآن في منطقتك
                 </span>
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0" />
               </div>

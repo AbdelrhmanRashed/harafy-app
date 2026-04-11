@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const DirectRequest = () => {
+  const navigate = useNavigate();
   return (
     <Card className="bg-card flex h-[300px] rounded-xl border-none p-8 shadow-sm">
       <div className="bg-primary/10 flex size-12 items-center justify-center rounded-full">
@@ -18,6 +20,7 @@ const DirectRequest = () => {
       <Button
         variant="secondary"
         className="text-primary bg-primary/5 hover:bg-primary/10 mt-auto w-full cursor-pointer rounded-2xl border-none py-6 text-lg font-bold transition-colors"
+        onClick={()=>{navigate('/app/services')}}
       >
         تصفح الحرفيين
       </Button>
