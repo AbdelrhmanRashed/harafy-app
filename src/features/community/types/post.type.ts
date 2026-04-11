@@ -17,7 +17,7 @@ export interface PostType {
   topReactions: TopReactionType[];
   clientName: string;
   clientPictureUrl: string;
-  isReacted: boolean;
+  userReaction: number | null;
 }
 
 export interface TopReactionType {

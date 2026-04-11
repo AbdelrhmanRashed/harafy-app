@@ -1,7 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import {
   MoreHorizontal,
-  Heart,
   MessageSquare,
   Bookmark,
   Clock,
@@ -24,7 +23,7 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import Download from 'yet-another-react-lightbox/plugins/download';
 import { useReactToPost } from '../hooks/useReactToPost';
 import EditPostDialog from './EditPostDialog';
-import { motion } from 'framer-motion';
+import ReactionPicker from './ReactionPicker';
 
 const Post = ({ post }: { post: PostType }) => {
   // comments
@@ -42,12 +41,7 @@ const Post = ({ post }: { post: PostType }) => {
   // saved
   const [saved, setSaved] = useState(false);
 
-  // likes count
-  const likesCount =
-    post.topReactions.find((r) => r.reactionType === 0)?.count || 0;
-
-  // liked
-  const liked = post.isReacted;
+  const totalReactions = post.topReactions.reduce((sum, r) => sum + r.count, 0);
 
   // comment icon
   const Comment = showComments ? MessageSquareText : MessageSquare;
@@ -148,32 +142,16 @@ const Post = ({ post }: { post: PostType }) => {
           {/* Footer */}
           <div className="flex items-center justify-between border-t pt-2 text-sm">
             <div className="flex items-center gap-1">
-              {/* Like */}
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() =>
-                  reactToPost({ postId: post.id, reactionType: 0 })
+              <ReactionPicker
+                id={post.id}
+                type="post"
+                userReaction={post.userReaction}
+                totalCount={totalReactions}
+                topReactions={post.topReactions}
+                onReact={(reactionType) =>
+                  reactToPost({ postId: post.id, reactionType })
                 }
-                className={cn(
-                  'group flex h-9 items-center gap-1.5 rounded-lg px-3 transition-all duration-200',
-                  'hover:bg-muted/60 hover:text-primary cursor-pointer',
-                  liked ? 'text-primary' : 'text-muted-foreground',
-                )}
-              >
-                <motion.div
-                  animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center justify-center"
-                >
-                  <Heart
-                    size={18}
-                    className="transition-colors duration-200"
-                    fill={liked ? 'currentColor' : 'none'}
-                  />
-                </motion.div>
-
-                <span className="text-sm font-semibold">{likesCount}</span>
-              </motion.button>
+              />
 
               {/* Comments */}
               <Button

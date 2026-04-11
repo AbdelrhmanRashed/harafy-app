@@ -4,11 +4,12 @@ export const updateReactToComment = async (
   commentId: number,
   reactionType: number,
 ) => {
-  const response = await axiosInstance.put(
+  const { data } = await axiosInstance.put(
     `/api/CommentReaction/react-to-comment/${commentId}`,
+    null,
     {
-      reactionType,
+      params: { reaction: reactionType },
     },
   );
-  return response.data;
+  return data;
 };

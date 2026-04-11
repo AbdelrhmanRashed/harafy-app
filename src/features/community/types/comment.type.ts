@@ -9,7 +9,7 @@ export interface CommentResponse {
   clientPictureUrl: string | null;
   isProvider: boolean;
   providerId: number | null;
-  isReacted: boolean;
+  userReaction: number | null;
 }
 
 export interface CommentReactionType {

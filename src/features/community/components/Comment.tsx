@@ -1,53 +1,38 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getImageUrl, getTimeAgo } from '@/lib/utils';
-import {
-  Clock,
-  Ellipsis,
-  Heart,
-  Loader2,
-  Smile,
-  SquarePen,
-} from 'lucide-react';
+import { Clock, Ellipsis, Loader2, Smile, SquarePen } from 'lucide-react';
 import { useDeleteComment } from '../hooks/useDeleteComment';
 import { getIdFromToken } from '@/lib/auth/getIdFromToken';
 import TextareaAutosize from 'react-textarea-autosize';
-
 import ActionsDropdown from './ActionsDropdown';
 import { Button } from '@/components/ui/button';
 import { useState, type KeyboardEvent } from 'react';
-
 import { cn } from '@/lib/utils';
 import type { CommentResponse } from '../types/comment.type';
 import { useUpdateComment } from '../hooks/useUpdateComment';
 import EmojiContainer from './EmojiContainer';
 import { useReactToComment } from '../hooks/useReactToComment';
-
-import { motion } from 'framer-motion';
+import ReactionPicker from './ReactionPicker';
 
 const Comment = ({ comment }: { comment: CommentResponse }) => {
-  // States
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState(comment.message);
+  const [showEmoji, setShowEmoji] = useState(false);
 
-  // Get Current Client Id
   const currentClientId = getIdFromToken();
+  const timeAgo = getTimeAgo(new Date(comment.createdAt));
 
-  // Delete Comment Hook
   const { mutate: deleteComment, isPending: isDeletingComment } =
     useDeleteComment(comment.postId);
 
-  // Update Comment Hook
   const { mutate: updateComment, isPending: isUpdatingComment } =
     useUpdateComment(comment.postId);
 
-  // React to Comment Hook
   const { mutate: reactToComment } = useReactToComment(comment.postId);
 
-  // Time Ago
-  const timeAgo = getTimeAgo(new Date(comment.createdAt));
+  const totalReactions = comment.reactions.reduce((sum, r) => sum + r.count, 0);
 
-  // Handle Key Down
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -55,25 +40,10 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
     }
   };
 
-  // Emoji Picker State
-  const [showEmoji, setShowEmoji] = useState(false);
-
-  const isReacted = comment.isReacted;
-  const reactCount =
-    comment.reactions.find((r) => r.reactionType === 0)?.count || 0;
-
-  // Handle Update Comment
   const handleUpdateComment = () => {
     updateComment(
-      {
-        commentId: comment.id,
-        Message: message,
-      },
-      {
-        onSuccess: () => {
-          setIsEditing(false);
-        },
-      },
+      { commentId: comment.id, Message: message },
+      { onSuccess: () => setIsEditing(false) },
     );
   };
 
@@ -105,7 +75,6 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
             {isEditing ? (
               <div className="relative flex w-full flex-col gap-4">
                 <div className="relative">
-                  {/* emoji */}
                   {showEmoji && (
                     <div className="absolute bottom-0 left-0 z-50 mb-2">
                       <EmojiContainer
@@ -140,7 +109,6 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
                       'placeholder:text-muted-foreground/60 leading-relaxed',
                       'focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none',
                       'disabled:cursor-not-allowed disabled:opacity-50',
-                      'scrollbar-thin scrollbar-thumb-muted-foreground/20',
                       'pl-10',
                     )}
                   />
@@ -184,37 +152,24 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
           </div>
 
           {/* Reactions */}
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-1 flex items-center gap-1">
             {/* Time */}
-            <p className="text-muted-foreground flex items-center gap-1 text-xs">
-              <Clock className="size-3 opacity-70" />
+            <p className="text-muted-foreground flex items-center gap-1 px-2 text-xs">
+              <Clock className="size-3" />
               <span>{timeAgo}</span>
             </p>
 
-            {/* Like */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={() =>
-                reactToComment({ commentId: comment.id, reactionType: 0 })
+            {/* ✅ ReactionPicker */}
+            <ReactionPicker
+              id={comment.id}
+              type="comment"
+              userReaction={comment.userReaction}
+              totalCount={totalReactions}
+              topReactions={comment.reactions}
+              onReact={(reactionType) =>
+                reactToComment({ commentId: comment.id, reactionType })
               }
-              className={cn(
-                'group flex items-center gap-1 rounded-md px-2 py-1 transition-all duration-200',
-                'hover:bg-muted/60 cursor-pointer',
-                isReacted ? 'text-primary' : 'text-muted-foreground',
-              )}
-            >
-              <motion.div
-                animate={isReacted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-                transition={{ duration: 0.25 }}
-              >
-                <Heart
-                  className="size-4 transition-colors duration-200"
-                  fill={isReacted ? 'currentColor' : 'none'}
-                />
-              </motion.div>
-
-              <span className="text-xs font-medium">{reactCount}</span>
-            </motion.button>
+            />
           </div>
         </div>
 
@@ -232,11 +187,8 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
                 size="sm"
                 className={cn(
                   'text-muted-foreground h-8 w-8 cursor-pointer p-0 transition-all duration-200',
-
                   'md:pointer-events-none md:opacity-0',
-
                   'md:group-hover:pointer-events-auto md:group-hover:opacity-100',
-
                   open && 'pointer-events-auto! opacity-100!',
                 )}
               >

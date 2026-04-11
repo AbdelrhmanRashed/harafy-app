@@ -26,28 +26,44 @@ export const useReactToComment = (postId: number) => {
             data: page.data.map((comment: any) => {
               if (comment.id !== commentId) return comment;
 
-              const wasLiked = comment.isReacted;
-              toastMsg = wasLiked ? 'تم إلغاء الإعجاب' : 'تم الإعجاب بالتعليق';
+              const prevReactionType = comment.userReaction;
+              const wasLiked =
+                prevReactionType !== 0 && prevReactionType !== null; // ✅
+              const isSameReaction =
+                wasLiked && prevReactionType === reactionType; // ✅
 
-              const existingReaction = comment.reactions.find(
-                (r: any) => r.reactionType === reactionType,
-              );
-              const currentCount = existingReaction?.count ?? 0;
+              toastMsg = isSameReaction
+                ? 'تم إلغاء الإعجاب'
+                : 'تم الإعجاب بالتعليق';
 
-              const updatedReactions = existingReaction
-                ? comment.reactions.map((r: any) =>
-                    r.reactionType === reactionType
-                      ? {
-                          ...r,
-                          count: wasLiked ? currentCount - 1 : currentCount + 1,
-                        }
+              let updatedReactions = [...comment.reactions];
+
+              if (wasLiked) {
+                updatedReactions = updatedReactions
+                  .map((r: any) =>
+                    r.reactionType === prevReactionType
+                      ? { ...r, count: r.count - 1 }
                       : r,
                   )
-                : [...comment.reactions, { reactionType, count: 1 }];
+                  .filter((r: any) => r.count > 0);
+              }
+
+              if (!isSameReaction) {
+                const existing = updatedReactions.find(
+                  (r: any) => r.reactionType === reactionType,
+                );
+                updatedReactions = existing
+                  ? updatedReactions.map((r: any) =>
+                      r.reactionType === reactionType
+                        ? { ...r, count: r.count + 1 }
+                        : r,
+                    )
+                  : [...updatedReactions, { reactionType, count: 1 }];
+              }
 
               return {
                 ...comment,
-                isReacted: !wasLiked,
+                userReaction: isSameReaction ? 0 : reactionType,
                 reactions: updatedReactions,
               };
             }),

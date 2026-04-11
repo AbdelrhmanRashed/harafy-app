@@ -26,28 +26,44 @@ export const useReactToPost = () => {
             data: page.data.map((post: any) => {
               if (post.id !== postId) return post;
 
-              const wasLiked = post.isReacted;
-              toastMsg = wasLiked ? 'تم إلغاء الإعجاب' : 'تم الإعجاب';
+              const prevReactionType = post.userReaction; // 0 = مفيش reaction
+              const wasLiked =
+                prevReactionType !== 0 && prevReactionType !== null;
+              const isSameReaction =
+                wasLiked && prevReactionType === reactionType;
 
-              const existingReaction = post.topReactions.find(
-                (r: any) => r.reactionType === reactionType,
-              );
-              const currentCount = existingReaction?.count ?? 0;
+              toastMsg = isSameReaction ? 'تم إلغاء الإعجاب' : 'تم الإعجاب';
 
-              const updatedReactions = existingReaction
-                ? post.topReactions.map((r: any) =>
-                    r.reactionType === reactionType
-                      ? {
-                          ...r,
-                          count: wasLiked ? currentCount - 1 : currentCount + 1,
-                        }
+              let updatedReactions = [...post.topReactions];
+
+              // 1. نقص القديم لو كان فيه reaction
+              if (wasLiked) {
+                updatedReactions = updatedReactions
+                  .map((r: any) =>
+                    r.reactionType === prevReactionType
+                      ? { ...r, count: r.count - 1 }
                       : r,
                   )
-                : [...post.topReactions, { reactionType, count: 1 }];
+                  .filter((r: any) => r.count > 0);
+              }
+
+              // 2. زود الجديد لو مش نفس الـ reaction
+              if (!isSameReaction) {
+                const existing = updatedReactions.find(
+                  (r: any) => r.reactionType === reactionType,
+                );
+                updatedReactions = existing
+                  ? updatedReactions.map((r: any) =>
+                      r.reactionType === reactionType
+                        ? { ...r, count: r.count + 1 }
+                        : r,
+                    )
+                  : [...updatedReactions, { reactionType, count: 1 }];
+              }
 
               return {
                 ...post,
-                isReacted: !wasLiked,
+                userReaction: isSameReaction ? 0 : reactionType, // ✅ 0 بدل null
                 topReactions: updatedReactions,
               };
             }),
