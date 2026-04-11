@@ -1,6 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getImageUrl, getTimeAgo } from '@/lib/utils';
-import { Clock, Ellipsis, Loader2, Smile, SquarePen } from 'lucide-react';
+import {
+  Clock,
+  Ellipsis,
+  Heart,
+  Loader2,
+  Smile,
+  SquarePen,
+} from 'lucide-react';
 import { useDeleteComment } from '../hooks/useDeleteComment';
 import { getIdFromToken } from '@/lib/auth/getIdFromToken';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -13,8 +20,16 @@ import { cn } from '@/lib/utils';
 import type { CommentResponse } from '../types/comment.type';
 import { useUpdateComment } from '../hooks/useUpdateComment';
 import EmojiContainer from './EmojiContainer';
+import { useReactToComment } from '../hooks/useReactToComment';
+
+import { motion } from 'framer-motion';
 
 const Comment = ({ comment }: { comment: CommentResponse }) => {
+  // States
+  const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [message, setMessage] = useState(comment.message);
+
   // Get Current Client Id
   const currentClientId = getIdFromToken();
 
@@ -26,10 +41,8 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
   const { mutate: updateComment, isPending: isUpdatingComment } =
     useUpdateComment(comment.postId);
 
-  // States
-  const [open, setOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [message, setMessage] = useState(comment.message);
+  // React to Comment Hook
+  const { mutate: reactToComment } = useReactToComment(comment.postId);
 
   // Time Ago
   const timeAgo = getTimeAgo(new Date(comment.createdAt));
@@ -44,6 +57,10 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
 
   // Emoji Picker State
   const [showEmoji, setShowEmoji] = useState(false);
+
+  const isReacted = comment.isReacted;
+  const reactCount =
+    comment.reactions.find((r) => r.reactionType === 0)?.count || 0;
 
   // Handle Update Comment
   const handleUpdateComment = () => {
@@ -166,10 +183,39 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
             )}
           </div>
 
-          <p className="text-muted-foreground mt-1 flex items-center gap-1 px-1 text-xs">
-            <Clock className="size-3" />
-            <span>{timeAgo}</span>
-          </p>
+          {/* Reactions */}
+          <div className="mt-2 flex items-center gap-2">
+            {/* Time */}
+            <p className="text-muted-foreground flex items-center gap-1 text-xs">
+              <Clock className="size-3 opacity-70" />
+              <span>{timeAgo}</span>
+            </p>
+
+            {/* Like */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() =>
+                reactToComment({ commentId: comment.id, reactionType: 0 })
+              }
+              className={cn(
+                'group flex items-center gap-1 rounded-md px-2 py-1 transition-all duration-200',
+                'hover:bg-muted/60 cursor-pointer',
+                isReacted ? 'text-primary' : 'text-muted-foreground',
+              )}
+            >
+              <motion.div
+                animate={isReacted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Heart
+                  className="size-4 transition-colors duration-200"
+                  fill={isReacted ? 'currentColor' : 'none'}
+                />
+              </motion.div>
+
+              <span className="text-xs font-medium">{reactCount}</span>
+            </motion.button>
+          </div>
         </div>
 
         {currentClientId === comment.clientId && (

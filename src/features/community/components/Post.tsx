@@ -5,6 +5,7 @@ import {
   MessageSquare,
   Bookmark,
   Clock,
+  MessageSquareText,
 } from 'lucide-react';
 import { useState } from 'react';
 import type { PostType } from '../types/post.type';
@@ -23,16 +24,38 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import Download from 'yet-another-react-lightbox/plugins/download';
 import { useReactToPost } from '../hooks/useReactToPost';
 import EditPostDialog from './EditPostDialog';
-const Post = ({ post }: { post: PostType }) => {
-  const likesCount =
-    post.topReactions.find((r) => r.reactionType === 1)?.count || 0;
-  const liked = true;
+import { motion } from 'framer-motion';
 
+const Post = ({ post }: { post: PostType }) => {
+  // comments
   const [showComments, setShowComments] = useState(false);
+
   // edit post
   const [editPostOpen, setEditPostOpen] = useState(false);
 
+  // lightbox
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // selected image
+  const [selectedImage, setSelectedImage] = useState(0);
+
+  // saved
   const [saved, setSaved] = useState(false);
+
+  // likes count
+  const likesCount =
+    post.topReactions.find((r) => r.reactionType === 0)?.count || 0;
+
+  // liked
+  const liked = post.isReacted;
+
+  // comment icon
+  const Comment = showComments ? MessageSquareText : MessageSquare;
+
+  // images
+  const images = post.imageUrls.map((url) => ({
+    src: getImageUrl(url),
+  }));
 
   // get current client id
   const currentClientId = getIdFromToken();
@@ -40,12 +63,6 @@ const Post = ({ post }: { post: PostType }) => {
   const { mutate: deletePost, isPending: isDeletingPost } = useDeletePost();
   // react to post
   const { mutate: reactToPost } = useReactToPost();
-
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const images = post.imageUrls.map((url) => ({
-    src: getImageUrl(url),
-  }));
 
   return (
     <>
@@ -130,28 +147,49 @@ const Post = ({ post }: { post: PostType }) => {
 
           {/* Footer */}
           <div className="flex items-center justify-between border-t pt-2 text-sm">
-            <div className="flex items-center gap-4">
-              <button
+            <div className="flex items-center gap-1">
+              {/* Like */}
+              <motion.button
+                whileTap={{ scale: 0.9 }}
                 onClick={() =>
-                  reactToPost({ postId: post.id, reactionType: 1 })
+                  reactToPost({ postId: post.id, reactionType: 0 })
                 }
-                className={`flex items-center gap-1 ${
-                  liked ? 'text-primary' : 'text-gray-500'
-                }`}
-              >
-                <Heart size={16} fill={liked ? 'currentColor' : 'none'} />
-                {likesCount}
-              </button>
-              <Button
-                variant={'ghost'}
-                onClick={() => setShowComments(!showComments)}
                 className={cn(
-                  'hover:text-primary flex cursor-pointer items-center gap-1 text-gray-500 transition hover:bg-transparent',
-                  showComments && 'text-primary',
+                  'group flex h-9 items-center gap-1.5 rounded-lg px-3 transition-all duration-200',
+                  'hover:bg-muted/60 hover:text-primary cursor-pointer',
+                  liked ? 'text-primary' : 'text-muted-foreground',
                 )}
               >
-                <MessageSquare />
-                {post.commentsCount}
+                <motion.div
+                  animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center justify-center"
+                >
+                  <Heart
+                    size={18}
+                    className="transition-colors duration-200"
+                    fill={liked ? 'currentColor' : 'none'}
+                  />
+                </motion.div>
+
+                <span className="text-sm font-semibold">{likesCount}</span>
+              </motion.button>
+
+              {/* Comments */}
+              <Button
+                variant="ghost"
+                onClick={() => setShowComments(!showComments)}
+                className={cn(
+                  'group flex h-9 items-center gap-1.5 rounded-lg px-3 transition-all duration-200',
+                  'hover:bg-muted/60 hover:text-primary cursor-pointer',
+                  showComments ? 'text-primary' : 'text-muted-foreground',
+                )}
+              >
+                <Comment size={18} className="transition-colors duration-200" />
+
+                <span className="text-sm font-semibold">
+                  {post.commentsCount}
+                </span>
               </Button>
             </div>
             <button
