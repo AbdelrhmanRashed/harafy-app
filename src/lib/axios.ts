@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE } from './apiBase';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: API_BASE,
   withCredentials: true,
   timeout: 30000,
 });
@@ -78,7 +79,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/Account/refresh-token`,
+          `${API_BASE}/api/Account/refresh-token`,
           null,
           { withCredentials: true },
         );
