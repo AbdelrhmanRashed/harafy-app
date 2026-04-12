@@ -68,7 +68,7 @@ export default function MapView({
   return (
     <div className="relative h-full w-full">
       {/* Search bar - Mobile optimized */}
-      <div className="absolute top-2 right-2 left-1/2 z-900 w-80 -translate-x-1/2 px-2 sm:top-4 sm:right-auto sm:left-1/2 sm:w-96 sm:px-0">
+      <div className="absolute top-2 right-2 left-1/2 z-[900] w-80 -translate-x-1/2 px-2 sm:top-4 sm:right-auto sm:left-1/2 sm:w-96 sm:px-0">
         <div className="flex h-11 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-md sm:h-13.5 sm:gap-3 sm:px-6 sm:py-3">
           <Search className="text-muted-foreground h-4 w-4 shrink-0 sm:h-4.5 sm:w-4.5" />
           <input

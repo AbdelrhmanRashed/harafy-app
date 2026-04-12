@@ -28,8 +28,8 @@ function providerFromRequestDetails(
     (req.providerLocation as Record<string, unknown> | undefined) ||
     (req.ProviderLocation as Record<string, unknown> | undefined);
 
-  const loc = (req.serviceRequestLocation as Record<string, unknown> | undefined) || 
-              (req.ServiceRequestLocation as Record<string, unknown> | undefined);
+  const loc = (req.serviceRequestLocation as Record<string, unknown> | undefined) ||
+    (req.ServiceRequestLocation as Record<string, unknown> | undefined);
 
   const parseCoord = (val: unknown) => {
     if (typeof val === 'number') return val;
@@ -170,14 +170,14 @@ const InstantRequestPage = () => {
       setSidebarOpen(false);
     }
   }, [selectedProvider]);
- const resetFlow = useCallback(() => {
+  const resetFlow = useCallback(() => {
     setStep("REQUEST");
     setActiveRequestId(null);
     setSelectedProvider(null);
     setNearbyForMap([]);
   }, []);
 
-    const handleCancelRequest = useCallback(() => {
+  const handleCancelRequest = useCallback(() => {
     if (!activeRequestId) return;
     cancelMutate(activeRequestId, {
       onSuccess: () => {
@@ -220,7 +220,7 @@ const InstantRequestPage = () => {
       <button
         type="button"
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="absolute top-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-transform hover:scale-105 md:hidden"
+        className="fixed top-4 left-4 z-[1001] flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-105 md:hidden"
       >
         {sidebarOpen ? (
           <X className="text-foreground h-5 w-5" />
@@ -246,7 +246,7 @@ const InstantRequestPage = () => {
       <aside
         dir="rtl"
         className={cn(
-          "border-border bg-sidebar absolute inset-y-0 right-0 z-30 flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none",
+          "border-border bg-sidebar absolute inset-y-0 right-0 z-[1050] flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none",
           sidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0",
         )}
       >
