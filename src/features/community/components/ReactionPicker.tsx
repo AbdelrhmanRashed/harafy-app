@@ -34,7 +34,6 @@ const ReactionPicker = ({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ✅ 0 = مفيش reaction
   const hasReaction = userReaction !== 0 && userReaction !== null;
 
   const top3 = [...topReactions].sort((a, b) => b.count - a.count).slice(0, 3);
