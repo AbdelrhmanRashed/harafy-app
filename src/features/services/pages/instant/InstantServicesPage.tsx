@@ -13,6 +13,7 @@ import { useLocation } from "../../hooks/useLocation";
 import { cn } from "@/lib/utils";
 import { useAssignServiceReq } from "../../hooks/useAssignServiceReq";
 import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
+import { useSetReqCancelled } from "../../hooks/useSetReqCancelled";
 
 /** Map provider marker for TRACKING when API returns coords on the request payload. */
 function providerFromRequestDetails(
@@ -24,20 +25,38 @@ function providerFromRequestDetails(
 
   const nested =
     (req.providerBaseLocation as Record<string, unknown> | undefined) ||
-    (req.providerLocation as Record<string, unknown> | undefined);
-  const loc = req.serviceRequestLocation as
-    | { latitude?: number; longitude?: number }
-    | undefined;
+    (req.providerLocation as Record<string, unknown> | undefined) ||
+    (req.ProviderLocation as Record<string, unknown> | undefined);
+
+  const loc = (req.serviceRequestLocation as Record<string, unknown> | undefined) || 
+              (req.ServiceRequestLocation as Record<string, unknown> | undefined);
+
+  const parseCoord = (val: unknown) => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'string') {
+      const n = parseFloat(val);
+      if (!isNaN(n)) return n;
+    }
+    return undefined;
+  };
+
   const lat =
-    (typeof nested?.latitude === "number" ? nested.latitude : undefined) ??
-    (typeof nested?.Latitude === "number" ? nested.Latitude : undefined) ??
-    (typeof req.providerLatitude === "number" ? req.providerLatitude : undefined) ??
-    loc?.latitude;
+    parseCoord(nested?.lat) ??
+    parseCoord(nested?.latitude) ??
+    parseCoord(nested?.Latitude) ??
+    parseCoord(req?.providerLatitude) ??
+    parseCoord(req?.ProviderLatitude) ??
+    parseCoord(loc?.latitude) ??
+    parseCoord(loc?.Latitude);
+
   const lng =
-    (typeof nested?.longitude === "number" ? nested.longitude : undefined) ??
-    (typeof nested?.Longitude === "number" ? nested.Longitude : undefined) ??
-    (typeof req.providerLongitude === "number" ? req.providerLongitude : undefined) ??
-    loc?.longitude;
+    parseCoord(nested?.lng) ??
+    parseCoord(nested?.longitude) ??
+    parseCoord(nested?.Longitude) ??
+    parseCoord(req?.providerLongitude) ??
+    parseCoord(req?.ProviderLongitude) ??
+    parseCoord(loc?.longitude) ??
+    parseCoord(loc?.Longitude);
 
   if (lat == null || lng == null || Number.isNaN(lat) || Number.isNaN(lng)) {
     return null;
@@ -46,7 +65,7 @@ function providerFromRequestDetails(
   const name =
     (req.providerName as string) ||
     (req.providerFullName as string) ||
-    `محترف #${pid}`;
+    `حرفي #${pid}`;
 
   return {
     id: pid,
@@ -92,8 +111,13 @@ const InstantRequestPage = () => {
   const { mutate: assignMutate, isPending: assignPending } =
     useAssignServiceReq();
 
+  const { mutate: cancelMutate, isPending: cancelPending } = useSetReqCancelled();
+
+
+
   const { data: trackingReq } = useGetServiceReqById(activeRequestId ?? "", {
     enabled: step === "TRACKING" && !!activeRequestId,
+    refetchInterval: step === "TRACKING" ? 5000 : false,
   });
 
   const assignedForMap = useMemo(
@@ -114,12 +138,12 @@ const InstantRequestPage = () => {
 
   const routeEnd =
     mapSelectedProvider &&
-    mapSelectedProvider.baseLocation?.latitude != null &&
-    mapSelectedProvider.baseLocation?.longitude != null
+      mapSelectedProvider.baseLocation?.latitude != null &&
+      mapSelectedProvider.baseLocation?.longitude != null
       ? {
-          lat: mapSelectedProvider.baseLocation.latitude,
-          lng: mapSelectedProvider.baseLocation.longitude,
-        }
+        lat: mapSelectedProvider.baseLocation.latitude,
+        lng: mapSelectedProvider.baseLocation.longitude,
+      }
       : null;
 
   const { route } = useRoute(routeEnd, customerPos);
@@ -146,13 +170,21 @@ const InstantRequestPage = () => {
       setSidebarOpen(false);
     }
   }, [selectedProvider]);
-
-  const resetFlow = useCallback(() => {
+ const resetFlow = useCallback(() => {
     setStep("REQUEST");
     setActiveRequestId(null);
     setSelectedProvider(null);
     setNearbyForMap([]);
   }, []);
+
+    const handleCancelRequest = useCallback(() => {
+    if (!activeRequestId) return;
+    cancelMutate(activeRequestId, {
+      onSuccess: () => {
+        resetFlow();
+      }
+    });
+  }, [activeRequestId, cancelMutate, resetFlow]);
 
   const handleRequestCreated = useCallback((requestId: string) => {
     setActiveRequestId(requestId);
@@ -248,6 +280,8 @@ const InstantRequestPage = () => {
             requestId={activeRequestId}
             onAccept={handleAcceptOffer}
             isAssigning={assignPending}
+            onCancel={handleCancelRequest}
+            isCancelling={cancelPending}
           />
         )}
 

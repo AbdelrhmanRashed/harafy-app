@@ -1,19 +1,69 @@
-import { CheckCircle2, Loader2 } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  Truck,
+  MapPin,
+  Wrench,
+  Phone,
+  MessageSquare,
+  Star,
+  Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
 import { useSetReqCompleted } from "../../hooks/useSetReqCompleted";
+import { cn } from "@/lib/utils";
 
-const REQUEST_STATUS_LABEL: Record<number, string> = {
-  0: "طلب مرسل — في انتظار عروض",
-  1: "تم اختيار حرفي",
-  2: "قيد التنفيذ",
-  3: "مكتمل",
-};
+// ─── Tracking steps ───────────────────────────────────────────────────────────
+
+const TRACKING_STEPS = [
+  {
+    id: 1,
+    label: "تم قبول العرض",
+    sublabel: "10:30 صباحاً",
+    icon: CheckCircle2,
+  },
+  {
+    id: 2,
+    label: "في الطريق إليك",
+    sublabel: "جاري تتبع الموقع الآن",
+    icon: Truck,
+  },
+  {
+    id: 3,
+    label: "وصل للموقع",
+    sublabel: "",
+    icon: MapPin,
+  },
+  {
+    id: 4,
+    label: "جاري العمل",
+    sublabel: "",
+    icon: Wrench,
+  },
+  {
+    id: 5,
+    label: "مكتمل",
+    sublabel: "",
+    icon: CheckCircle2,
+  },
+];
+
+// requestStatus → which tracking step is active
+function getTrackingStep(requestStatus: number): number {
+  if (requestStatus === 3) return 5;
+  if (requestStatus === 2) return 2;
+  return 1;
+}
+
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 type Step3TrackingSidebarProps = {
   requestId: string;
   onCompleteSuccess: () => void;
 };
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Step3TrackingSidebar({
   requestId,
@@ -21,91 +71,242 @@ export default function Step3TrackingSidebar({
 }: Step3TrackingSidebarProps) {
   const { data, isFetching } = useGetServiceReqById(requestId, {
     enabled: !!requestId,
+    refetchInterval: 8000,
   });
-  const { mutate: completeMutate, isPending: completing } =
-    useSetReqCompleted();
+
+  const { mutate: completeMutate, isPending: completing } = useSetReqCompleted();
 
   const req = data as Record<string, unknown> | undefined;
-  const requestStatus = req?.requestStatus as number | undefined;
+  const requestStatus = (req?.requestStatus as number) ?? 1;
   const providerName =
     (req?.providerName as string) ||
-    (typeof req?.providerId === "number"
-      ? `محترف #${req.providerId}`
-      : "—");
+    (typeof req?.providerId === "number" ? `حرفي #${req.providerId}` : "—");
+  const providerPic = req?.providerPictureUrl as string | null | undefined;
+  const providerProfession = (req?.providerProfession as string) || "حرفي متخصص";
+  const providerRating = (req?.providerRating as number) || 4.9;
   const finalPrice = req?.finalPrice as number | null | undefined;
+  const serviceId = req?.serviceId as number | undefined;
+
+  const currentTrackingStep = getTrackingStep(requestStatus);
+  const isCompleted = requestStatus === 3;
 
   const handleComplete = () => {
     completeMutate(requestId, {
-      onSuccess: () => {
-        onCompleteSuccess();
-      },
+      onSuccess: () => onCompleteSuccess(),
     });
   };
 
-  return (
-    <div className="flex flex-col gap-4 px-4 py-4 sm:px-5">
-      <div className="text-right">
-        <h2 className="text-foreground text-lg font-black">متابعة الطلب</h2>
-        <p className="text-muted-foreground mt-1 text-xs">طلب #{requestId}</p>
+  // ── Loading state ──────────────────────────────────────────────────────────
+  if (isFetching && !req) {
+    return (
+      <div className="flex flex-1 items-center justify-center gap-2 py-20 text-sm text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        جاري تحميل التفاصيل...
       </div>
+    );
+  }
 
-      {isFetching && !req ? (
-        <div className="text-muted-foreground flex items-center justify-center gap-2 py-10 text-sm">
-          <Loader2 className="text-primary h-6 w-6 animate-spin" />
-          جاري تحميل التفاصيل...
-        </div>
-      ) : (
-        <>
-          {requestStatus !== undefined && (
-            <p className="text-primary text-sm font-bold">
-              الحالة:{" "}
-              {REQUEST_STATUS_LABEL[requestStatus] ?? `رمز ${requestStatus}`}
-            </p>
-          )}
+  return (
+    <div className="flex flex-col h-full" dir="rtl">
 
-          <div className="border-border bg-card rounded-2xl border p-4 text-right">
-            <p className="text-muted-foreground text-xs">المحترف</p>
-            <p className="text-foreground text-lg font-extrabold">
-              {providerName}
-            </p>
-            <p className="text-muted-foreground mt-3 text-xs">السعر</p>
-            <p className="text-primary text-base font-bold">
-              {finalPrice != null ? `${finalPrice} ج.م` : "—"}
-            </p>
+      {/* ── 1. Provider card ── */}
+      <div className="px-5 py-5 border-b border-border">
+        <div className="flex items-center gap-4">
+          {/* Avatar */}
+          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-800 shrink-0 flex items-center justify-center">
+            {providerPic ? (
+              <img
+                src={providerPic}
+                alt={providerName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-2xl font-bold text-white">
+                {providerName.charAt(0)}
+              </span>
+            )}
           </div>
 
-          <p className="text-muted-foreground text-xs leading-relaxed">
-            يمكنك إتمام الخدمة من هنا عند الانتهاء. الخريطة تعرض موقعك؛ موقع
-            الحرفي يظهر عند توفره من الخادم.
-          </p>
-
-          <Button
-            type="button"
-            variant="default"
-            className="w-full rounded-xl font-bold"
-            disabled={completing || requestStatus === 3}
-            onClick={handleComplete}
-          >
-            {completing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                جاري الإتمام...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                إتمام الخدمة
-              </>
-            )}
-          </Button>
-
-          {requestStatus === 3 && (
-            <p className="text-center text-sm font-bold text-green-700">
-              الطلب مكتمل.
+          {/* Info */}
+          <div className="flex-1 text-right space-y-0.5">
+            {/* Rating */}
+            <div className="flex items-center justify-end gap-1 mb-1">
+              <span className="text-xs font-bold text-foreground">
+                {providerRating.toFixed(1)}
+              </span>
+              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+            </div>
+            <p className="text-lg font-extrabold text-foreground leading-tight">
+              {providerName}
             </p>
+            <p className="text-sm text-muted-foreground">{providerProfession}</p>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <Button
+            variant="gradient"
+            className="h-11 rounded-2xl font-bold gap-2"
+            onClick={() => {/* TODO: call */}}
+          >
+            <Phone className="h-4 w-4" />
+            اتصال
+          </Button>
+          <Button
+            variant="outline"
+            className="h-11 rounded-2xl font-bold gap-2 border-border"
+            onClick={() => {/* TODO: chat */}}
+          >
+            <MessageSquare className="h-4 w-4" />
+            محادثة
+          </Button>
+        </div>
+      </div>
+
+      {/* ── 2. Request details ── */}
+      <div className="px-5 py-4 border-b border-border">
+        <p className="text-xs text-muted-foreground text-right mb-3">
+          تفاصيل الطلب
+        </p>
+
+        <div className="bg-muted/40 rounded-2xl p-4 space-y-3">
+          {/* Service name + request id */}
+          <div className="flex items-center justify-between">
+            {/* Request ID badge */}
+            <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+              #{requestId}
+            </span>
+
+            {/* Service name */}
+            <div className="flex items-center gap-2 text-right">
+              <span className="text-sm font-extrabold text-foreground">
+                {serviceId ? `خدمة #${serviceId}` : "خدمة فورية"}
+              </span>
+              <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Zap className="h-3.5 w-3.5 text-primary" />
+              </div>
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-center justify-between pt-1 border-t border-border/50">
+            <span className="text-base font-black text-primary">
+              {finalPrice != null ? `${finalPrice} ريال` : "—"}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              السعر المتفق عليه
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 3. Vertical status timeline ── */}
+      <div className="px-5 py-4 flex-1 overflow-y-auto">
+        <p className="text-xs text-muted-foreground text-right mb-4">
+          حالة الطلب
+        </p>
+
+        <div className="relative">
+          {TRACKING_STEPS.map((step, index) => {
+            const isStepCompleted = step.id < currentTrackingStep;
+            const isStepActive    = step.id === currentTrackingStep;
+            const isStepPending   = step.id > currentTrackingStep;
+            const isLast          = index === TRACKING_STEPS.length - 1;
+            const Icon            = step.icon;
+
+            return (
+              <div key={step.id} className="flex gap-4 relative">
+                {/* Left: circle + line */}
+                <div className="flex flex-col items-center">
+                  {/* Circle */}
+                  <div
+                    className={cn(
+                      "w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 border-2 transition-all",
+                      isStepCompleted
+                        ? "bg-primary border-primary text-white"
+                        : isStepActive
+                        ? "bg-white border-primary text-primary shadow-md shadow-primary/20"
+                        : "bg-muted border-border text-muted-foreground"
+                    )}
+                  >
+                    {isStepActive && (
+                      <span className="absolute w-9 h-9 rounded-full bg-primary/20 animate-ping" />
+                    )}
+                    <Icon className="h-4 w-4 relative z-10" />
+                  </div>
+
+                  {/* Vertical line */}
+                  {!isLast && (
+                    <div
+                      className={cn(
+                        "w-0.5 flex-1 min-h-[28px] mt-1",
+                        isStepCompleted ? "bg-primary" : "bg-border"
+                      )}
+                    />
+                  )}
+                </div>
+
+                {/* Right: text */}
+                <div className="flex-1 text-right pb-6">
+                  <p
+                    className={cn(
+                      "text-sm font-bold leading-tight",
+                      isStepActive
+                        ? "text-primary"
+                        : isStepCompleted
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {step.label}
+                  </p>
+                  {(isStepActive || isStepCompleted) && step.sublabel && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {step.sublabel}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── 4. Complete button ── */}
+      <div className="px-5 py-4 border-t border-border shrink-0">
+        <Button
+          type="button"
+          variant="outline"
+          className={cn(
+            "w-full h-14 rounded-2xl font-bold text-base border-2 transition-all",
+            isCompleted
+              ? "border-green-500 text-green-600 bg-green-50"
+              : "border-border text-foreground hover:border-primary hover:text-primary"
           )}
-        </>
-      )}
+          disabled={completing || isCompleted}
+          onClick={handleComplete}
+        >
+          {completing ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin ml-2" />
+              جاري الإتمام...
+            </>
+          ) : isCompleted ? (
+            <>
+              <CheckCircle2 className="h-5 w-5 ml-2 text-green-500" />
+              تم إتمام العمل
+            </>
+          ) : (
+            "تأكيد إتمام العمل"
+          )}
+        </Button>
+
+        <p className="text-center text-[11px] text-muted-foreground mt-2 leading-relaxed px-2">
+          يمكنك تأكيد إتمام العمل فقط بعد وصول المحترف وقيامه بالخدمة المطلوبة.
+        </p>
+      </div>
+
     </div>
   );
 }

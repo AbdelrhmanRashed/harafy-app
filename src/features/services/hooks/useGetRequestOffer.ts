@@ -16,5 +16,9 @@ export const useGetRequestOffer = (
     enabled,
     refetchInterval: options?.refetchInterval,
     refetchOnWindowFocus: options?.refetchOnWindowFocus,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404) return false;
+      return failureCount < 3;
+    },
   });
 };
