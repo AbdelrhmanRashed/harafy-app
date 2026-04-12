@@ -6,7 +6,7 @@ export interface LatLng {
 export interface Provider {
   id: number;
   name: string;
-  pictureUrl: string | null;
+  pictureUrl?: string | null;
   bio: string;
   nickname: string;
   rating: number | null;
@@ -21,10 +21,7 @@ export interface Provider {
     addressText: string;
     providerId: number;
   };
-  services: {
-    id: number;
-    name: string;
-  }[];
+  services: { id: number; name: string }[];
 }
 
 // //{

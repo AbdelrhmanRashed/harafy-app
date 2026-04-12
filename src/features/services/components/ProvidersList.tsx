@@ -1,6 +1,7 @@
 import { MapPin } from 'lucide-react';
 import ProviderCard from './ProviderCard';
 import type { Provider } from '../types/types';
+import { cn } from '@/lib/utils';
 
 interface ProvidersListProps {
   providers: Provider[];
@@ -18,21 +19,26 @@ export default function ProvidersList({
   return (
     <div className="flex-1 px-5 py-4">
       {/* Header */}
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-4 text-[#842CD3]" />
-          <span className="text-foreground text-lg font-bold">
+          <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+             <MapPin className="h-4 w-4 text-primary" />
+          </div>
+          <span className="text-foreground text-lg font-black tracking-tight">
             محترفون متاحون الآن
           </span>
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
+          <div className="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
         </div>
-        <span className="text-primary text-sm font-bold">
+        <span className="text-muted-foreground text-xs font-bold bg-secondary px-3 py-1 rounded-full">
           {providers.length} مزود قريب
         </span>
       </div>
 
-      {/* Grid */}
-      <div className={`grid grid-cols-1 gap-3 transition-all duration-300 ${isLoading ? 'opacity-50 pointer-events-none scale-[0.98] blur-[1px]' : 'opacity-100'}`}>
+      {/* List Container */}
+      <div className={cn(
+        "grid grid-cols-1 gap-4 transition-all duration-500",
+        isLoading ? "opacity-40 pointer-events-none blur-[2px]" : "opacity-100"
+      )}>
         {providers.map((provider) => (
           <ProviderCard
             key={provider.id}
@@ -41,6 +47,16 @@ export default function ProvidersList({
             onSelect={() => onSelect(provider)}
           />
         ))}
+
+        {/* Empty State - إذا لم يوجد مزودين */}
+        {!isLoading && providers.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <div className="bg-muted mb-3 flex h-12 w-12 items-center justify-center rounded-full">
+              <MapPin className="text-muted-foreground h-6 w-6" />
+            </div>
+            <p className="text-muted-foreground text-sm font-medium">لا يوجد محترفون متاحون في منطقتك حالياً</p>
+          </div>
+        )}
       </div>
     </div>
   );

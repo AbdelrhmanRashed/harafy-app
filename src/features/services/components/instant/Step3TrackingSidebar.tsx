@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
 import { useSetReqCompleted } from "../../hooks/useSetReqCompleted";
 import { cn } from "@/lib/utils";
-
+import { useGetProviderData } from "../../hooks/useGetProviderData";
 // ─── Tracking steps ───────────────────────────────────────────────────────────
 
 const TRACKING_STEPS = [
@@ -69,35 +69,81 @@ export default function Step3TrackingSidebar({
   requestId,
   onCompleteSuccess,
 }: Step3TrackingSidebarProps) {
-  const { data, isFetching } = useGetServiceReqById(requestId, {
+  const { data: reqData, isFetching: fetchingReq } = useGetServiceReqById(requestId, {
     enabled: !!requestId,
     refetchInterval: 8000,
   });
+  // {
+  //     "id": 63,
+  //     "requestStatus": 2,
+  //     "description": "شصيشصيشصيشصيشصي",
+  //     "finalPrice": null,
+  //     "createdAt": "2026-04-12T23:51:14.0430056",
+  //     "preferredTime": null,
+  //     "clientId": 142,
+  //     "providerId": 72,
+  //     "serviceRequestLocation": {
+  //         "latitude": 30.589011538430825,
+  //         "longitude": 31.5223503112793
+  //     },
+  //     "serviceId": 1,
+  //     "imageUrls": []
+  // }
+
+  const req = reqData as Record<string, unknown> | undefined;
+
+  const assignedId = req?.providerId?.toString();
+
+  const { data: providerData, isLoading: loadingProvider } = useGetProviderData(assignedId);
 
   const { mutate: completeMutate, isPending: completing } = useSetReqCompleted();
 
-  const req = data as Record<string, unknown> | undefined;
+  // export interface Provider {
+  //   id: number;
+  //   name: string;
+  //   pictureUrl?: string | null;
+  //   bio: string;
+  //   nickname: string;
+  //   rating: number | null;
+  //   reviewsCount: number;
+  //   jobsCount: number;
+  //   governorateId: number;
+  //   regionId: number;
+  //   baseLocation: {
+  //     id: number;
+  //     latitude: number;
+  //     longitude: number;
+  //     addressText: string;
+  //     providerId: number;
+  //   };
+  //   services: {
+  //     id: number;
+  //     name: string;
+  //   }[];
+  // }
+
+  const providerName = providerData?.name || (req?.providerName as string) || "حرفي متخصص";
+  const providerPic = providerData?.pictureUrl || (req?.providerPictureUrl as string);
+  const providerProfession = providerData?.services[0]?.name || (req?.providerProfession as string) || "حرفي متخصص"; const providerRating = providerData?.rating || (req?.providerRating as number) || 4.9;
+  const phoneNumber = providerData?.phoneNumber || "0123456789";
+
+
   const requestStatus = (req?.requestStatus as number) ?? 1;
-  const providerName =
-    (req?.providerName as string) ||
-    (typeof req?.providerId === "number" ? `حرفي #${req.providerId}` : "—");
-  const providerPic = req?.providerPictureUrl as string | null | undefined;
-  const providerProfession = (req?.providerProfession as string) || "حرفي متخصص";
-  const providerRating = (req?.providerRating as number) || 4.9;
   const finalPrice = req?.finalPrice as number | null | undefined;
   const serviceId = req?.serviceId as number | undefined;
-
   const currentTrackingStep = getTrackingStep(requestStatus);
   const isCompleted = requestStatus === 3;
+
 
   const handleComplete = () => {
     completeMutate(requestId, {
       onSuccess: () => onCompleteSuccess(),
     });
   };
-
+  console.log("Assigned ID:", assignedId);
+  console.log("Provider Data from API:", providerData);
   // ── Loading state ──────────────────────────────────────────────────────────
-  if (isFetching && !req) {
+  if (fetchingReq && !req) {
     return (
       <div className="flex flex-1 items-center justify-center gap-2 py-20 text-sm text-muted-foreground">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -113,16 +159,14 @@ export default function Step3TrackingSidebar({
       <div className="px-5 py-5 border-b border-border">
         <div className="flex items-center gap-4">
           {/* Avatar */}
-          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-800 shrink-0 flex items-center justify-center">
-            {providerPic ? (
-              <img
-                src={providerPic}
-                alt={providerName}
-                className="w-full h-full object-cover"
-              />
+          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center border border-border">
+            {loadingProvider ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : providerPic ? (
+              <img src={providerPic} alt={providerName} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-2xl font-bold text-white">
-                {providerName.charAt(0)}
+              <span className="text-2xl font-bold text-primary">
+                {providerName?.charAt(0) || "P"}
               </span>
             )}
           </div>
@@ -148,7 +192,8 @@ export default function Step3TrackingSidebar({
           <Button
             variant="gradient"
             className="h-11 rounded-2xl font-bold gap-2"
-            onClick={() => {/* TODO: call */}}
+            onClick={() => phoneNumber && (window.location.href = `tel:${phoneNumber}`)}
+            disabled={!phoneNumber}
           >
             <Phone className="h-4 w-4" />
             اتصال
@@ -156,7 +201,7 @@ export default function Step3TrackingSidebar({
           <Button
             variant="outline"
             className="h-11 rounded-2xl font-bold gap-2 border-border"
-            onClick={() => {/* TODO: chat */}}
+            onClick={() => {/* TODO: chat */ }}
           >
             <MessageSquare className="h-4 w-4" />
             محادثة
@@ -181,8 +226,7 @@ export default function Step3TrackingSidebar({
             {/* Service name */}
             <div className="flex items-center gap-2 text-right">
               <span className="text-sm font-extrabold text-foreground">
-                {serviceId ? `خدمة #${serviceId}` : "خدمة فورية"}
-              </span>
+                {providerData?.services?.find((s: any) => s.id === serviceId)?.name || "خدمة فورية"}              </span>
               <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Zap className="h-3.5 w-3.5 text-primary" />
               </div>
@@ -192,7 +236,7 @@ export default function Step3TrackingSidebar({
           {/* Price */}
           <div className="flex items-center justify-between pt-1 border-t border-border/50">
             <span className="text-base font-black text-primary">
-              {finalPrice != null ? `${finalPrice} ريال` : "—"}
+              {finalPrice != null ? `${finalPrice} جنيه` : "—"}
             </span>
             <span className="text-xs text-muted-foreground">
               السعر المتفق عليه
@@ -210,10 +254,10 @@ export default function Step3TrackingSidebar({
         <div className="relative">
           {TRACKING_STEPS.map((step, index) => {
             const isStepCompleted = step.id < currentTrackingStep;
-            const isStepActive    = step.id === currentTrackingStep;
-            const isStepPending   = step.id > currentTrackingStep;
-            const isLast          = index === TRACKING_STEPS.length - 1;
-            const Icon            = step.icon;
+            const isStepActive = step.id === currentTrackingStep;
+            const isStepPending = step.id > currentTrackingStep;
+            const isLast = index === TRACKING_STEPS.length - 1;
+            const Icon = step.icon;
 
             return (
               <div key={step.id} className="flex gap-4 relative">
@@ -226,8 +270,8 @@ export default function Step3TrackingSidebar({
                       isStepCompleted
                         ? "bg-primary border-primary text-white"
                         : isStepActive
-                        ? "bg-white border-primary text-primary shadow-md shadow-primary/20"
-                        : "bg-muted border-border text-muted-foreground"
+                          ? "bg-white border-primary text-primary shadow-md shadow-primary/20"
+                          : "bg-muted border-border text-muted-foreground"
                     )}
                   >
                     {isStepActive && (
@@ -255,8 +299,8 @@ export default function Step3TrackingSidebar({
                       isStepActive
                         ? "text-primary"
                         : isStepCompleted
-                        ? "text-foreground"
-                        : "text-muted-foreground"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                     )}
                   >
                     {step.label}

@@ -14,81 +14,12 @@ import { cn } from "@/lib/utils";
 import { useAssignServiceReq } from "../../hooks/useAssignServiceReq";
 import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
 import { useSetReqCancelled } from "../../hooks/useSetReqCancelled";
+import { useGetProviderData } from "../../hooks/useGetProviderData";
 
-/** Map provider marker for TRACKING when API returns coords on the request payload. */
-function providerFromRequestDetails(
-  req: Record<string, unknown> | undefined,
-): Provider | null {
-  if (!req) return null;
-  const pid = Number(req.providerId);
-  if (!Number.isFinite(pid) || pid <= 0) return null;
 
-  const nested =
-    (req.providerBaseLocation as Record<string, unknown> | undefined) ||
-    (req.providerLocation as Record<string, unknown> | undefined) ||
-    (req.ProviderLocation as Record<string, unknown> | undefined);
 
-  const loc = (req.serviceRequestLocation as Record<string, unknown> | undefined) ||
-    (req.ServiceRequestLocation as Record<string, unknown> | undefined);
 
-  const parseCoord = (val: unknown) => {
-    if (typeof val === 'number') return val;
-    if (typeof val === 'string') {
-      const n = parseFloat(val);
-      if (!isNaN(n)) return n;
-    }
-    return undefined;
-  };
-
-  const lat =
-    parseCoord(nested?.lat) ??
-    parseCoord(nested?.latitude) ??
-    parseCoord(nested?.Latitude) ??
-    parseCoord(req?.providerLatitude) ??
-    parseCoord(req?.ProviderLatitude) ??
-    parseCoord(loc?.latitude) ??
-    parseCoord(loc?.Latitude);
-
-  const lng =
-    parseCoord(nested?.lng) ??
-    parseCoord(nested?.longitude) ??
-    parseCoord(nested?.Longitude) ??
-    parseCoord(req?.providerLongitude) ??
-    parseCoord(req?.ProviderLongitude) ??
-    parseCoord(loc?.longitude) ??
-    parseCoord(loc?.Longitude);
-
-  if (lat == null || lng == null || Number.isNaN(lat) || Number.isNaN(lng)) {
-    return null;
-  }
-
-  const name =
-    (req.providerName as string) ||
-    (req.providerFullName as string) ||
-    `حرفي #${pid}`;
-
-  return {
-    id: pid,
-    name,
-    pictureUrl: (req.providerPictureUrl as string | null) ?? null,
-    bio: "",
-    nickname: name.slice(0, 12),
-    rating: null,
-    reviewsCount: 0,
-    jobsCount: 0,
-    governorateId: 0,
-    regionId: 0,
-    baseLocation: {
-      id: 0,
-      latitude: lat,
-      longitude: lng,
-      addressText: (req.providerAddress as string) || "موقع المحترف",
-      providerId: pid,
-    },
-    services: [{ id: 0, name: "خدمة" }],
-  };
-}
-
+//main page for instant services
 const InstantRequestPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [step, setStep] = useState<InstantStep>("REQUEST");
@@ -114,37 +45,44 @@ const InstantRequestPage = () => {
   const { mutate: cancelMutate, isPending: cancelPending } = useSetReqCancelled();
 
 
+  
 
   const { data: trackingReq } = useGetServiceReqById(activeRequestId ?? "", {
     enabled: step === "TRACKING" && !!activeRequestId,
     refetchInterval: step === "TRACKING" ? 5000 : false,
   });
 
-  const assignedForMap = useMemo(
-    () =>
-      providerFromRequestDetails(trackingReq as Record<string, unknown> | undefined),
-    [trackingReq],
-  );
+  const assignedProviderId = useMemo(() => {
+  return (trackingReq as any)?.providerId?.toString();
+}, [trackingReq]);
 
-  const mapProviders = useMemo(() => {
-    if (step === "TRACKING") {
-      return assignedForMap ? [assignedForMap] : [];
-    }
-    return nearbyForMap;
-  }, [step, nearbyForMap, assignedForMap]);
+const targetProviderId = step === "TRACKING" ? assignedProviderId : selectedProvider?.id;
+  const { data:providerData }:any = useGetProviderData(targetProviderId);
+  console.log(providerData?.baseLocation); //to use it for route 
+  
 
-  const mapSelectedProvider =
-    step === "TRACKING" ? assignedForMap : selectedProvider;
 
-  const routeEnd =
-    mapSelectedProvider &&
-      mapSelectedProvider.baseLocation?.latitude != null &&
-      mapSelectedProvider.baseLocation?.longitude != null
-      ? {
-        lat: mapSelectedProvider.baseLocation.latitude,
-        lng: mapSelectedProvider.baseLocation.longitude,
-      }
-      : null;
+const mapProviders = useMemo(() => {
+  if (step === "TRACKING") {
+    return providerData ? [providerData] : [];
+  }
+  return nearbyForMap;
+}, [step, nearbyForMap, providerData]);
+
+ const mapSelectedProvider = useMemo(() => {
+  if (step === "TRACKING") {
+    return providerData;
+  }
+  return selectedProvider;
+}, [step, providerData, selectedProvider]);
+
+
+const routeEnd = useMemo(() => {
+  return providerData?.baseLocation 
+    ? { lat: providerData.baseLocation.latitude, lng: providerData.baseLocation.longitude }
+    : null;
+}, [providerData]);
+
 
   const { route } = useRoute(routeEnd, customerPos);
 
@@ -152,6 +90,10 @@ const InstantRequestPage = () => {
     setNearbyForMap(list);
   }, []);
 
+
+
+  // if step is request and provider is selected 
+  // pass as props for map to show route and selected provider
   const handleProviderSelect = useCallback(
     (provider: Provider) => {
       if (step !== "REQUEST") return;
