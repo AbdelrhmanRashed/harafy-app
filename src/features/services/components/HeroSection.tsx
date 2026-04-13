@@ -1,10 +1,11 @@
 import SearchBar from './SearchBar';
 
 interface HeroSectionProps {
-  onSearch?: (query: string, location: string) => void;
+  onSearch?(query: string, location: string): void | Promise<void>;
+  isSearching?: boolean;
 }
 
-const HeroSection = ({ onSearch }: HeroSectionProps) => {
+const HeroSection = ({ onSearch, isSearching = false }: HeroSectionProps) => {
   return (
     <section className="flex w-full flex-col items-center gap-6 px-6 py-16 text-center">
       {/* Heading */}
@@ -21,7 +22,7 @@ const HeroSection = ({ onSearch }: HeroSectionProps) => {
 
       {/* Search */}
       <div className="animate-in fade-in zoom-in mt-4 w-full duration-700">
-        <SearchBar onSearch={onSearch} />
+        <SearchBar onSearch={onSearch} isSearching={isSearching} />
       </div>
     </section>
   );

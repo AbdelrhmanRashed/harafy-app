@@ -1,19 +1,20 @@
-import { Search, MapPin, Briefcase } from 'lucide-react';
+import { Search, MapPin, Briefcase, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface SearchBarProps {
-  onSearch?: (query: string, location: string) => void;
+  onSearch?(query: string, location: string): void | Promise<void>;
+  isSearching?: boolean;
 }
 
-const SearchBar = ({ onSearch }: SearchBarProps) => {
+const SearchBar = ({ onSearch, isSearching = false }: SearchBarProps) => {
   const [query, setQuery] = useState('');
   const [location, setLocation] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  function handleSearch() {
+  async function handleSearch() {
     if (!query?.trim()) return;
-    onSearch?.(query.trim(), location.trim());
+    await onSearch?.(query.trim(), location.trim());
   }
 
   return (
@@ -37,7 +38,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
-                handleSearch();
+                void handleSearch();
               }
             }}
             className="text-foreground placeholder:text-muted-foreground/50 w-full bg-transparent text-sm font-semibold outline-none md:text-lg"
@@ -55,6 +56,12 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onChange={(e) => setLocation(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                void handleSearch();
+              }
+            }}
             className="text-foreground placeholder:text-muted-foreground/50 w-full bg-transparent text-sm font-semibold outline-none md:text-lg"
           />
         </div>
@@ -62,11 +69,16 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         <Button
           type="button"
           variant={'gradient'}
-          onClick={handleSearch}
+          onClick={() => void handleSearch()}
+          disabled={isSearching}
           className="shadow-primary-gradient w-full gap-3 rounded-[1.8rem] px-12 py-7 text-lg font-black transition-all active:scale-95 md:me-2 md:w-auto"
         >
-          <Search className="h-5 w-5 stroke-[3px]" />
-          بحث
+          {isSearching ? (
+            <Loader2 className="h-5 w-5 animate-spin stroke-[3px]" />
+          ) : (
+            <Search className="h-5 w-5 stroke-[3px]" />
+          )}
+          {isSearching ? 'جاري التحديد...' : 'بحث'}
         </Button>
       </div>
 

@@ -99,13 +99,7 @@ export const getJobsCount = (provider: Provider): number => {
  * Validate provider has required fields
  */
 export const isProviderValid = (provider: Provider): boolean => {
-  return !!(
-    provider &&
-    provider.id &&
-    provider.name &&
-    provider.baseLocation &&
-    hasValidLocation(provider)
-  );
+  return !!(provider && provider.id && provider.name);
 };
 
 /**
@@ -113,7 +107,10 @@ export const isProviderValid = (provider: Provider): boolean => {
  * Adds validation and fills in defaults
  */
 export const normalizeProvider = (data: any): Provider | null => {
-  if (!data || !data.id || !data.name) {
+  const providerName =
+    data?.name || data?.full_name || data?.fullName || data?.nickname;
+
+  if (!data || !data.id || !providerName) {
     console.warn('❌ Invalid provider data:', data);
     return null;
   }
@@ -121,8 +118,8 @@ export const normalizeProvider = (data: any): Provider | null => {
   try {
     const normalized: Provider = {
       id: data.id,
-      name: data.name,
-      pictureUrl: data.pictureUrl ?? null,
+      name: providerName,
+      pictureUrl: data.pictureUrl ?? data.image ?? null,
       bio: data.bio || '',
       nickname: data.nickname || '',
       rating: data.rating ?? null,
@@ -132,9 +129,26 @@ export const normalizeProvider = (data: any): Provider | null => {
       regionId: data.regionId ?? 0,
       baseLocation: {
         id: data.baseLocation?.id ?? 0,
-        latitude: parseFloat(data.baseLocation?.latitude) || 0,
-        longitude: parseFloat(data.baseLocation?.longitude) || 0,
-        addressText: data.baseLocation?.addressText || '',
+        latitude:
+          parseFloat(
+            String(
+              data.baseLocation?.latitude ??
+                data.position?.lat ??
+                data.latitude ??
+                0,
+            ),
+          ) || 0,
+        longitude:
+          parseFloat(
+            String(
+              data.baseLocation?.longitude ??
+                data.position?.lng ??
+                data.longitude ??
+                0,
+            ),
+          ) || 0,
+        addressText:
+          data.baseLocation?.addressText || data.addressText || 'موقع غير محدد',
         providerId: data.baseLocation?.providerId ?? data.id,
       },
       services: Array.isArray(data.services)
