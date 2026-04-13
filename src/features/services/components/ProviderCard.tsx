@@ -1,20 +1,22 @@
 import { Star, MapPin, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Provider } from '../types/types';
-import { Users, Loader2 } from 'lucide-react';
+import { formatRating, getServicesList, getProviderInitials, getProviderImageUrl } from '../utils/providerUtils';
+
 interface ProviderCardProps {
   provider: Provider;
   selected: boolean;
   onSelect: () => void;
-
 }
 export default function ProviderCard({
   provider,
   selected,
   onSelect,
 }: ProviderCardProps) {
-
-
+  const imageUrl = getProviderImageUrl(provider);
+  const initials = getProviderInitials(provider);
+  const rating = formatRating(provider.rating);
+  const servicesList = getServicesList(provider);
 
   return (
     <button
@@ -36,11 +38,20 @@ export default function ProviderCard({
           "h-16 w-16 overflow-hidden rounded-2xl border-2 transition-all duration-500 sm:h-20 sm:w-20",
           selected ? "border-primary scale-105" : "border-border/50"
         )}>
-          {provider.pictureUrl ? (
-            <img src={provider.pictureUrl} alt={provider.name} className="h-full w-full object-cover" />
-          ) : (
+          {imageUrl ? (
+            <img 
+              src={imageUrl} 
+              alt={provider.name} 
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : null}
+          {!imageUrl && (
             <div className="bg-primary-gradient flex h-full w-full items-center justify-center text-xl font-bold text-white">
-              {provider.nickname?.charAt(0) || provider.name.charAt(0)}            </div>
+              {initials}
+            </div>
           )}
         </div>
         {selected && (
@@ -64,7 +75,7 @@ export default function ProviderCard({
               "bg-primary/10 text-primary dark:bg-primary/20"
             )}>
               <Star className="h-3 w-3 fill-primary text-primary" />
-              <span className="leading-none">{provider?.rating?.toFixed(1) || "0.0"}</span>
+              <span className="leading-none">{rating}</span>
               <span className="text-[10px] opacity-60 font-medium border-r border-primary/30 pr-1.5 mr-0.5">
                 ( {provider?.reviewsCount || 0} )
               </span>
@@ -74,7 +85,7 @@ export default function ProviderCard({
         </div>
 
         <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs font-medium sm:text-sm">
-          {provider.services.map((s) => s.name).join(' • ')}
+          {servicesList}
         </p>
 
         <div className="mt-2.5 flex items-center justify-start gap-2 border-t border-border/40 pt-2.5">

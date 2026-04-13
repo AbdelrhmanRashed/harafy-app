@@ -11,9 +11,10 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [location, setLocation] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
-  // function handleSearch() {
-  //   onSearch?.(query, location);
-  // }
+  function handleSearch() {
+    if (!query?.trim()) return;
+    onSearch?.(query.trim(), location.trim());
+  }
 
   return (
     <div
@@ -33,6 +34,12 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSearch();
+              }
+            }}
             className="text-foreground placeholder:text-muted-foreground/50 w-full bg-transparent text-sm font-semibold outline-none md:text-lg"
           />
         </div>
@@ -55,7 +62,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         <Button
           type="button"
           variant={'gradient'}
-          // onClick={handleSearch}
+          onClick={handleSearch}
           className="shadow-primary-gradient w-full gap-3 rounded-[1.8rem] px-12 py-7 text-lg font-black transition-all active:scale-95 md:me-2 md:w-auto"
         >
           <Search className="h-5 w-5 stroke-[3px]" />
