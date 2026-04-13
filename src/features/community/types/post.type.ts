@@ -18,6 +18,8 @@ export interface PostType {
   clientName: string;
   clientPictureUrl: string;
   userReaction: number | null;
+  isProvider: boolean;
+  providerId: number | null;
 }
 
 export interface TopReactionType {

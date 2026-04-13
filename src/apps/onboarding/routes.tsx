@@ -35,6 +35,7 @@ const onboardingRoutes = [
           </OnboardingGuard>
         ),
       },
+      // ✅ review برا الـ Guard خالص
       {
         path: 'review',
         element: <ReviewPage />,
@@ -42,5 +43,4 @@ const onboardingRoutes = [
     ],
   },
 ];
-
 export default onboardingRoutes;

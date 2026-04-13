@@ -52,6 +52,7 @@ const CommunityFeed = ({
 
   if (posts.length === 0) return <EmptyState isSearch={!!search} />;
 
+  console.log(posts);
   return (
     <div className="space-y-4">
       {posts.map((post) => (

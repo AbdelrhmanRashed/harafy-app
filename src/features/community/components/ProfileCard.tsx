@@ -84,7 +84,7 @@ const ProfileCard = ({
         <Button
           variant="gradient"
           className="shadow-primary-gradient mt-6 w-full cursor-pointer gap-2 rounded-xl py-6 font-bold transition-transform active:scale-95"
-          onClick={() => navigate('/app/profile/settings/info')}
+          onClick={() => navigate('/app/settings/info')}
         >
           <Settings size={18} className="animate-spin-slow" />
           إعدادات الحساب

@@ -24,6 +24,7 @@ import Download from 'yet-another-react-lightbox/plugins/download';
 import { useReactToPost } from '../hooks/useReactToPost';
 import EditPostDialog from './EditPostDialog';
 import ReactionPicker from './ReactionPicker';
+import { Link } from 'react-router-dom';
 
 const Post = ({ post }: { post: PostType }) => {
   // comments
@@ -65,18 +66,43 @@ const Post = ({ post }: { post: PostType }) => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-3">
-              <Avatar size="lg">
-                <AvatarImage src={getImageUrl(post.clientPictureUrl)} />
-                <AvatarFallback>{post.clientName[0]}</AvatarFallback>
-              </Avatar>
+              {post.isProvider ? (
+                <Link to={`/app/profile/provider/${post.providerId}`}>
+                  <Avatar
+                    size="lg"
+                    className="ring-primary ring-2 ring-offset-2"
+                  >
+                    <AvatarImage src={getImageUrl(post.clientPictureUrl)} />
+                    <AvatarFallback>{post.clientName[0]}</AvatarFallback>
+                  </Avatar>
+                </Link>
+              ) : (
+                <Avatar size="lg">
+                  <AvatarImage src={getImageUrl(post.clientPictureUrl)} />
+                  <AvatarFallback>{post.clientName[0]}</AvatarFallback>
+                </Avatar>
+              )}
               <div>
-                <p className="text-[16px] font-bold">{post.clientName}</p>
+                {post.isProvider ? (
+                  <Link to={`/app/profile/provider/${post.providerId}`}>
+                    <p className="text-primary text-[16px] font-bold">
+                      {post.clientName}
+                    </p>
+                  </Link>
+                ) : (
+                  <p className="text-[16px] font-bold">{post.clientName}</p>
+                )}
                 <p className="flex items-center gap-1 text-xs text-gray-500">
                   <Clock className="size-3.5" />
                   {getTimeAgo(new Date(post.createdAt))}
                 </p>
               </div>
             </div>
+            {post.isProvider && (
+              <Button variant="gradient" size="sm" className="cursor-pointer">
+                طلب خدمه
+              </Button>
+            )}
             {post.clientId === currentClientId && (
               <ActionsDropdown
                 onEdit={() => setEditPostOpen(true)}

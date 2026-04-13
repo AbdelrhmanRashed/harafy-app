@@ -8,6 +8,7 @@ import SettingsPage from '@/features/admin/settings/pages/SettingsPage';
 import RolesPage from '@/features/admin/roles/pages/RolesPage';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/guards/ProtectedRoute';
+import CraftsmenDetailsPage from '@/features/admin/craftsmen/pages/CraftsmenDetailsPage';
 
 const adminRoutes = [
   {
@@ -29,6 +30,10 @@ const adminRoutes = [
       {
         path: 'craftsmen',
         element: <CraftsmenPage />,
+      },
+      {
+        path: 'craftsmen/:id',
+        element: <CraftsmenDetailsPage />,
       },
       {
         path: 'clients',

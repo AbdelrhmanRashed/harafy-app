@@ -28,6 +28,8 @@ const AvatarSection = ({ user }: { user: any | null }) => {
 
 const ProfileMenuTrigger = () => {
   const { data: user, isLoading } = useClientProfile();
+  const data = useAuthStore((state) => state.user);
+
   const email = useAuthStore((state) => state.user?.email);
 
   if (isLoading) {
@@ -60,18 +62,20 @@ const ProfileMenuTrigger = () => {
         </div>
         <DropdownMenuSeparator />
 
+        {data?.role.includes('Provider') && (
+          <DropdownMenuItem asChild>
+            <Link
+              to="/app/profile"
+              className="flex cursor-pointer items-center gap-2"
+            >
+              <UserIcon className="h-4 w-4" />
+              الملف الشخصي
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link
-            to="/app/profile"
-            className="flex cursor-pointer items-center gap-2"
-          >
-            <UserIcon className="h-4 w-4" />
-            الملف الشخصي
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link
-            to="/app/profile/settings/notifications"
+            to="/app/settings/notifications"
             className="flex cursor-pointer items-center gap-2"
           >
             <BellIcon className="h-4 w-4" />
@@ -80,7 +84,7 @@ const ProfileMenuTrigger = () => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link
-            to="/app/profile/settings"
+            to="/app/settings"
             className="flex cursor-pointer items-center gap-2"
           >
             <SettingsIcon className="h-4 w-4" />

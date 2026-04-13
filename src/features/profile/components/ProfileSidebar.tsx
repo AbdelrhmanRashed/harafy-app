@@ -30,17 +30,17 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'الملف الشخصي',
     icon: User,
-    to: '/app/profile/settings/info',
+    to: '/app/settings/info',
   },
   {
     label: 'الإشعارات',
     icon: Bell,
-    to: '/app/profile/settings/notifications',
+    to: '/app/settings/notifications',
   },
   {
     label: 'الأمان',
     icon: ShieldUser,
-    to: '/app/profile/settings/security',
+    to: '/app/settings/security',
   },
 ];
 

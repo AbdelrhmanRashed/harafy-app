@@ -11,6 +11,6 @@ export const useAccountStatus = () => {
   return useQuery<AccountStatus>({
     queryKey: ['account-status'],
     queryFn: getStatus,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 };

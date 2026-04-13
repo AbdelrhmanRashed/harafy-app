@@ -10,7 +10,7 @@ import ServicesPage from '@/features/services/pages/ServicesPage';
 import InstantServicesPage from '@/features/services/pages/instant/InstantServicesPage';
 import DirectServicesPage from '@/features/services/pages/direct/DirectServicesPage';
 // profile
-import ProfilePage from '@/features/profile/pages/ProfilePage';
+import ProviderProfilePage from '@/features/profile/pages/ProviderProfilePage';
 // profile settings
 import SettingsLayout from '@/features/profile/layout/SettingsLayout';
 import ProfileSettingsPage from '@/features/profile/pages/ProfileSettingsPage';
@@ -59,27 +59,23 @@ const clientRoutes = [
         ],
       },
 
-      // profile routes
+      // Settings routes
       {
-        path: 'profile',
+        path: 'settings',
+        element: <SettingsLayout />,
         children: [
-          {
-            index: true,
-            element: <ProfilePage />,
-          },
-          {
-            path: 'settings',
-            element: <SettingsLayout />,
-            children: [
-              { index: true, element: <Navigate to="info" replace /> },
-              { path: 'info', element: <ProfileSettingsPage /> },
-              { path: 'notifications', element: <NotificationsPage /> },
-              { path: 'security', element: <SecurityPage /> },
-            ],
-          },
+          { index: true, element: <Navigate to="info" replace /> },
+          { path: 'info', element: <ProfileSettingsPage /> },
+          { path: 'notifications', element: <NotificationsPage /> },
+          { path: 'security', element: <SecurityPage /> },
         ],
       },
 
+      // profile routes
+      {
+        path: 'profile/provider/:providerId',
+        element: <ProviderProfilePage />,
+      },
       // {
       //   path: "requests",
       //   element: <RequestsPage />,
