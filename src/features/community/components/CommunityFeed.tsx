@@ -1,11 +1,12 @@
 // features/community/components/CommunityFeed.tsx
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePosts } from '../hooks/usePosts';
 import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
 import { useDebounce } from '@/hooks/useDebounce';
 import Post from './Post';
 import PostSkeleton from './PostSkeleton';
 import EmptyState from './EmptyState';
+import DirectServiceDrawer from '@/features/services/components/DirectServiceDrawer';
 
 const CommunityFeed = ({
   search,
@@ -14,6 +15,12 @@ const CommunityFeed = ({
   search?: string;
   nearby?: boolean;
 }) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [providerId, setProviderId] = useState<number | undefined>(undefined);
+  const handleOpenRequest = (providerId: number) => {
+    setProviderId(providerId);
+    setIsDrawerOpen(true);
+  };
   const bottomRef = useRef<HTMLDivElement>(null);
   const { data: profile } = useClientProfile();
 
@@ -54,15 +61,27 @@ const CommunityFeed = ({
 
   console.log(posts);
   return (
-    <div className="space-y-4">
-      {posts.map((post) => (
-        <Post key={post.id} post={post} />
-      ))}
+    <>
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <Post
+            key={post.id}
+            post={post}
+            handleOpenRequest={handleOpenRequest}
+          />
+        ))}
 
-      {/* Infinite Scroll Trigger */}
-      <div ref={bottomRef} />
-      {isFetchingNextPage && <PostSkeleton />}
-    </div>
+        {/* Infinite Scroll Trigger */}
+        <div ref={bottomRef} />
+        {isFetchingNextPage && <PostSkeleton />}
+      </div>
+
+      <DirectServiceDrawer
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+        ProviderId={providerId}
+      />
+    </>
   );
 };
 

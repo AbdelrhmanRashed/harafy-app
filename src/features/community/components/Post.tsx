@@ -26,7 +26,13 @@ import EditPostDialog from './EditPostDialog';
 import ReactionPicker from './ReactionPicker';
 import { Link } from 'react-router-dom';
 
-const Post = ({ post }: { post: PostType }) => {
+const Post = ({
+  post,
+  handleOpenRequest,
+}: {
+  post: PostType;
+  handleOpenRequest: (providerId: number) => void;
+}) => {
   // comments
   const [showComments, setShowComments] = useState(false);
 
@@ -99,7 +105,12 @@ const Post = ({ post }: { post: PostType }) => {
               </div>
             </div>
             {post.isProvider && (
-              <Button variant="gradient" size="sm" className="cursor-pointer">
+              <Button
+                variant="gradient"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => handleOpenRequest(post.providerId!)}
+              >
                 طلب خدمه
               </Button>
             )}

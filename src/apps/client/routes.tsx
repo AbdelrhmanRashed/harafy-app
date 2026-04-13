@@ -8,7 +8,7 @@ import CommunityPage from '@/features/community/pages/CommunityPage';
 // services
 import ServicesPage from '@/features/services/pages/ServicesPage';
 import InstantServicesPage from '@/features/services/pages/instant/InstantServicesPage';
-import DirectServicesPage from '@/features/services/pages/direct/DirectServicesPage';
+
 // profile
 import ProviderProfilePage from '@/features/profile/pages/ProviderProfilePage';
 // profile settings
@@ -50,11 +50,10 @@ const clientRoutes = [
         children: [
           { index: true, element: <ServicesPage /> },
           { path: 'instant', element: <InstantServicesPage /> },
-          { path: 'direct', element: <DirectServicesPage /> },
           { path: 'requests/:requestId/pending', element: <RequestPending /> },
           { path: 'requests', element: <div>Requests List Page</div> },
           {
-            path: "requests/:requestId/instant",
+            path: 'requests/:requestId/instant',
             element: <InstantRequestDetailsPage />,
           },
           {

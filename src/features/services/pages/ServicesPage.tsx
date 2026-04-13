@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Loader2, SearchX } from 'lucide-react';
 
 import HeroSection from '../components/HeroSection';
 import CategoryList from '../components/CatagoryList';
-import { DirectRequestForm } from '../components/DirectRequestForm';
 
 import { useLocation } from '../hooks/useLocation';
 import { useGetNearbyProviders } from '../hooks/useNearbyProviders';
@@ -13,6 +11,7 @@ import type { Provider } from '../types/types';
 import ProvidersSearchList from '../components/ProvidersSearchList';
 import { useNavigate } from 'react-router-dom';
 import { normalizeProviders } from '../utils/providerUtils';
+import DirectServiceDrawer from '../components/DirectServiceDrawer';
 
 type ServiceCategory = {
   id: number;
@@ -49,7 +48,9 @@ export default function ServicesPage() {
   const [selectedServiceId, setSelectedServiceId] = useState<number>(0);
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
+    null,
+  );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchFeedback, setSearchFeedback] = useState('');
   const [activeLocationLabel, setActiveLocationLabel] = useState('');
@@ -70,16 +71,19 @@ export default function ServicesPage() {
 
   const categories = useMemo(() => {
     // الـ response اللي أنت بعته عبارة عن Array مباشر
-    return Array.isArray(categoriesData) ? (categoriesData as ServiceCategory[]) : [];
+    return Array.isArray(categoriesData)
+      ? (categoriesData as ServiceCategory[])
+      : [];
   }, [categoriesData]);
 
   // 2. جلب الفنيين بناءً على القسم المختار والموقع
   // الـ Hook ده مش هيشتغل (Enabled) إلا لو selectedServiceId أكبر من 0
-  const { data: nearbyData, isLoading: isProvidersLoading } = useGetNearbyProviders(
-    String(position.lat),
-    String(position.lng),
-    selectedServiceId,
-  );
+  const { data: nearbyData, isLoading: isProvidersLoading } =
+    useGetNearbyProviders(
+      String(position.lat),
+      String(position.lng),
+      selectedServiceId,
+    );
 
   const handleOpenRequest = (provider: Provider) => {
     setSelectedProvider(provider);
@@ -91,33 +95,39 @@ export default function ServicesPage() {
     if (!nearbyData) return [];
     const rawData = Array.isArray(nearbyData)
       ? nearbyData
-      : (
-          (nearbyData as {
+      : ((
+          nearbyData as {
             data?: unknown[];
             items?: unknown[];
             providers?: unknown[];
             results?: unknown[];
-          }).data ??
-          (nearbyData as {
+          }
+        ).data ??
+        (
+          nearbyData as {
             data?: unknown[];
             items?: unknown[];
             providers?: unknown[];
             results?: unknown[];
-          }).items ??
-          (nearbyData as {
+          }
+        ).items ??
+        (
+          nearbyData as {
             data?: unknown[];
             items?: unknown[];
             providers?: unknown[];
             results?: unknown[];
-          }).providers ??
-          (nearbyData as {
+          }
+        ).providers ??
+        (
+          nearbyData as {
             data?: unknown[];
             items?: unknown[];
             providers?: unknown[];
             results?: unknown[];
-          }).results ??
-          []
-        );
+          }
+        ).results ??
+        []);
 
     return normalizeProviders(
       rawData as Parameters<typeof normalizeProviders>[0],
@@ -172,7 +182,9 @@ export default function ServicesPage() {
 
   const handleHeroSearch = async (query: string, location: string) => {
     if (!categories.length) {
-      setSearchFeedback('جاري تحميل التخصصات حالياً، حاولي مرة ثانية بعد لحظة.');
+      setSearchFeedback(
+        'جاري تحميل التخصصات حالياً، حاولي مرة ثانية بعد لحظة.',
+      );
       return;
     }
 
@@ -180,7 +192,9 @@ export default function ServicesPage() {
 
     if (!matchedCategory) {
       setHasSearched(false);
-      setSearchFeedback(`لم نجد تخصصاً مطابقاً لـ "${query}". اختاري من الأقسام المتاحة بالأسفل.`);
+      setSearchFeedback(
+        `لم نجد تخصصاً مطابقاً لـ "${query}". اختاري من الأقسام المتاحة بالأسفل.`,
+      );
       return;
     }
 
@@ -188,10 +202,10 @@ export default function ServicesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background pb-20">
+    <main className="bg-background min-h-screen pb-20">
       <HeroSection onSearch={handleHeroSearch} isSearching={locating} />
 
-      <div className="container mx-auto mt-[-3rem] relative z-30 px-4">
+      <div className="relative z-30 container mx-auto -mt-12 px-4">
         <CategoryList
           categories={categories}
           selectedId={selectedServiceId}
@@ -210,7 +224,9 @@ export default function ServicesPage() {
         <section className="container mx-auto mt-12 px-6">
           <div className="mb-8">
             <h2 className="text-2xl font-black">
-              {selectedCategoryName ? `متخصصون في ${selectedCategoryName}` : 'النتائج المتاحة'}
+              {selectedCategoryName
+                ? `متخصصون في ${selectedCategoryName}`
+                : 'النتائج المتاحة'}
             </h2>
             {activeLocationLabel && (
               <p className="text-muted-foreground mt-2 text-sm font-bold">
@@ -221,40 +237,37 @@ export default function ServicesPage() {
 
           {isProvidersLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-              <p className="text-muted-foreground font-bold">جاري البحث عن فنيين...</p>
+              <Loader2 className="text-primary mb-4 h-10 w-10 animate-spin" />
+              <p className="text-muted-foreground font-bold">
+                جاري البحث عن فنيين...
+              </p>
             </div>
           ) : providers.length > 0 ? (
             <ProvidersSearchList
               providers={providers}
               isLoading={isProvidersLoading}
               onServiceRequest={handleOpenRequest}
-              onViewProfile={(p) => navigate(`/profile/${p.id}`)}
+              onViewProfile={(provider) =>
+                navigate(`/app/profile/provider/${provider.id}`)
+              }
             />
           ) : (
             <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-20 text-center">
-              <SearchX className="h-12 w-12 text-muted-foreground mb-4" />
+              <SearchX className="text-muted-foreground mb-4 h-12 w-12" />
               <h3 className="text-xl font-bold">لا يوجد فنيين حالياً</h3>
-              <p className="text-muted-foreground mt-2">جرب اختيار قسم آخر أو تغيير المنطقة</p>
+              <p className="text-muted-foreground mt-2">
+                جرب اختيار قسم آخر أو تغيير المنطقة
+              </p>
             </div>
           )}
         </section>
       )}
 
-      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen} direction="right">
-        <DrawerContent
-          className="fixed inset-y-0 right-0 z-50 mt-0 h-full max-w-none! border-l bg-background outline-none w-full md:w-[400px]! rounded-none"
-        >
-          <div className="flex h-full flex-col overflow-hidden">            
-            {selectedProvider && (
-              <DirectRequestForm
-                provider={selectedProvider}
-                onClose={() => setIsDrawerOpen(false)}
-              />
-            )}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <DirectServiceDrawer
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+        ProviderId={selectedProvider?.id}
+      />
     </main>
   );
 }

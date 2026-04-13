@@ -30,7 +30,7 @@ const ClientActions = () => {
       navigate('/app/services/instant');
     }
     if (variant[location.pathname] === 'طلب خدمه مباشره') {
-      navigate('/app/services/direct');
+      navigate('/app/services');
     }
   };
 
