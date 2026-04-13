@@ -1,61 +1,65 @@
 import { cn } from '@/lib/utils';
 import {
-  Paintbrush,
-  AirVent,
-  Sparkles,
-  Zap,
-  Wrench,
-  Hammer,
-  Layers,
-  Flame,
+  Paintbrush, AirVent, Sparkles, Zap, Wrench, Hammer, Layers, Flame, LayoutGrid
 } from 'lucide-react';
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const CATEGORIES = [
-  { label: 'دهانات', icon: Paintbrush },
-  { label: 'تكييف', icon: AirVent },
-  { label: 'تنظيف', icon: Sparkles },
-  { label: 'كهرباء', icon: Zap },
-  { label: 'سباكة', icon: Wrench },
-  { label: 'نجارة', icon: Hammer },
-  { label: 'بلاط', icon: Layers },
-  { label: 'غاز', icon: Flame },
-];
-
-// ─── Props ────────────────────────────────────────────────────────────────────
+const getCategoryIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes('سباك') || n.includes('plumbing')) return Wrench;
+  if (n.includes('كهرباء') || n.includes('electric')) return Zap;
+  if (n.includes('دهان') || n.includes('paint')) return Paintbrush;
+  if (n.includes('تكييف') || n.includes('air')) return AirVent;
+  if (n.includes('تنظيف') || n.includes('clean')) return Sparkles;
+  if (n.includes('نجارة') || n.includes('carpenter')) return Hammer;
+  if (n.includes('بلاط') || n.includes('tile')) return Layers;
+  if (n.includes('غاز') || n.includes('gas')) return Flame;
+  return LayoutGrid;
+};
 
 interface CategoryListProps {
-  onSelect?: (category: string) => void;
-  selected?: string;
+  categories: { id: number; name: string }[];
+  selectedId: number;
+  onSelect: (id: number, name: string) => void;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+export default function CategoryList({ categories, onSelect, selectedId }: CategoryListProps) {
+  // لو مفيش داتا لسه جت من الـ API، متبعش الـ component فاضي تماماً
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="flex w-full items-center justify-center py-10">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
 
-export default function CategoryList({
-  onSelect,
-  selected,
-}: CategoryListProps) {
   return (
-    <div className="mx-auto grid max-w-4xl grid-cols-2 justify-items-center gap-4 md:grid-cols-3 lg:grid-cols-5">
-      {CATEGORIES.map(({ label, icon: Icon }) => (
-        <button
-          key={label}
-          type="button"
-          onClick={() => onSelect?.(label)}
-          className={cn(
-            'flex h-39 w-full min-w-37 cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl px-5 py-4 shadow-sm transition-all duration-200',
-            selected === label
-              ? 'bg-primary-gradient text-secondary shadow-sm'
-              : 'text-foreground hover:text-primary hover:bg-primary/5 bg-card',
-          )}
-        >
-          <div className="bg-secondary flex h-16 w-16 items-center justify-center rounded-full">
-            <Icon className="text-primary h-6 w-6" />
-          </div>
-          <span className="font-bold">{label}</span>
-        </button>
-      ))}
+    <div className="mx-auto grid max-w-5xl grid-cols-2 justify-items-center gap-4 p-4 md:grid-cols-4 lg:grid-cols-8">
+      {categories.map((cat) => {
+        const Icon = getCategoryIcon(cat.name);
+        const isSelected = selectedId === cat.id;
+
+        return (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => onSelect(cat.id, cat.name)}
+            className={cn(
+              'flex h-32 w-full min-w-[100px] cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl transition-all duration-300 shadow-sm',
+              isSelected
+                ? 'bg-primary-gradient text-white scale-105 shadow-lg'
+                : 'bg-card text-foreground hover:bg-primary/5 border border-border/50'
+            )}
+          >
+            <div className={cn(
+              "flex h-12 w-12 items-center justify-center rounded-2xl transition-colors",
+              isSelected ? "bg-white/20" : "bg-primary/10"
+            )}>
+              <Icon className={cn("h-6 w-6", isSelected ? "text-white" : "text-primary")} />
+            </div>
+            <span className="text-xs font-bold">{cat.name}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

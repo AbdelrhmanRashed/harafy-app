@@ -1,16 +1,21 @@
 // hooks/useLocation.ts
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { LatLng } from '../types/types';
 import { DEFAULT_CENTER } from '../types/constants';
 
+interface LocationResult {
+  position: LatLng;
+  address: string;
+}
+
 interface UseLocationReturn {
   position: LatLng;
-  setPosition: (pos: LatLng) => void;
+  setPosition(pos: LatLng): Promise<LocationResult>;
   address: string;
   locating: boolean;
   denied: boolean;
-  detect: () => void;
-  searchAddress: (query: string) => void;
+  detect(): Promise<LocationResult | null>;
+  searchAddress(query: string): Promise<LocationResult | null>;
 }
 
 // This hook manages the user's location, including auto-detection, manual updates, and address resolution.
@@ -41,29 +46,40 @@ export function useLocation(): UseLocationReturn {
   const [locating, setLocating] = useState(false);
   const [denied, setDenied] = useState(false);
 
-  async function detect() {
-    if (!('geolocation' in navigator)) return;
+  async function detect(): Promise<LocationResult | null> {
+    if (!('geolocation' in navigator)) return null;
     setLocating(true);
     try {
       const pos = await getCurrentPosition();
       const { latitude: lat, longitude: lng } = pos.coords;
-      setPosition({ lat, lng });
-      setDenied(false);
       const addr = await reverseGeocode(lat, lng);
+      const nextPosition = { lat, lng };
+      setPosition(nextPosition);
+      setDenied(false);
       setAddress(addr);
-    } catch (err: any) {
-      if (err?.code === 1) setDenied(true);
+      return { position: nextPosition, address: addr };
+    } catch (err: unknown) {
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'code' in err &&
+        err.code === 1
+      ) {
+        setDenied(true);
+      }
+      return null;
     } finally {
       setLocating(false);
     }
   }
-  async function updatePosition(pos: LatLng) {
+  async function updatePosition(pos: LatLng): Promise<LocationResult> {
     setPosition(pos);
     const addr = await reverseGeocode(pos.lat, pos.lng);
     setAddress(addr);
+    return { position: pos, address: addr };
   }
-  async function searchAddress(query: string) {
-    if (!query) return;
+  async function searchAddress(query: string): Promise<LocationResult | null> {
+    if (!query.trim()) return null;
     setLocating(true);
     try {
       const res = await fetch(
@@ -77,9 +93,14 @@ export function useLocation(): UseLocationReturn {
         };
         setPosition(pos);
         setAddress(data[0].display_name);
+        return {
+          position: pos,
+          address: data[0].display_name,
+        };
       }
+      return null;
     } catch {
-      /** */
+      return null;
     } finally {
       setLocating(false);
     }

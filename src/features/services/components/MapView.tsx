@@ -44,29 +44,31 @@ interface MapViewProps {
   providers: Provider[];
   selectedProvider: Provider | null;
   route: LatLng[];
+  allowMapPickLocation?: boolean;
   onLocationSelect: (pos: LatLng) => void;
   onProviderSelect: (provider: Provider) => void;
   onAddressSearch: (query: string) => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-
+const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.5020 };
 export default function MapView({
-  center,
-  customerPos,
-  providers,
-  selectedProvider,
-  route,
-  onLocationSelect,
-  onProviderSelect,
-  onAddressSearch,
+  center = ZAGAZIG_COORDS,
+  customerPos = ZAGAZIG_COORDS,
+  providers = [],
+  selectedProvider = null,
+  route = [],
+  allowMapPickLocation = true,
+  onLocationSelect = () => { },
+  onProviderSelect = () => { },
+  onAddressSearch = () => { },
 }: MapViewProps) {
   const [mapSearch, setMapSearch] = useState('');
 
   return (
-    <div className="relative h-[calc(100vh-64px)] flex-1 md:h-auto">
+    <div className="relative h-full w-full">
       {/* Search bar - Mobile optimized */}
-      <div className="absolute top-2 right-2 left-1/2 z-900 w-80 -translate-x-1/2 px-2 sm:top-4 sm:right-auto sm:left-1/2 sm:w-96 sm:px-0">
+      <div className="absolute top-2 right-2 left-1/2 z-[900] w-80 -translate-x-1/2 px-2 sm:top-4 sm:right-auto sm:left-1/2 sm:w-96 sm:px-0">
         <div className="flex h-11 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-md sm:h-13.5 sm:gap-3 sm:px-6 sm:py-3">
           <Search className="text-muted-foreground h-4 w-4 shrink-0 sm:h-4.5 sm:w-4.5" />
           <input
@@ -100,14 +102,14 @@ export default function MapView({
           <div className="border-border flex flex-wrap items-center justify-center gap-2 rounded-xl border bg-white px-3 py-2 shadow-lg sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-2.5">
             <div className="flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
               <Navigation className="text-primary h-4 w-4" />
-              <span className="font-bold">{selectedProvider.distance} كم</span>
+              <span className="font-bold">{selectedProvider.baseLocation.addressText}</span>
             </div>
             <div className="bg-border hidden h-3 w-px sm:block" />
             <div className="flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
               <Clock className="text-primary h-4 w-4" />
-              <span className="font-bold">
-                ~{Math.round(selectedProvider.distance * 3)} دقيقة
-              </span>
+              {/* <span className="font-bold">
+                ~{Math.round(selectedProvider.baseLocation.distance * 3)} دقيقة
+              </span> */}
             </div>
             <div className="bg-border h-px w-full sm:hidden" />
             <span className="text-primary text-xs font-semibold">
@@ -130,36 +132,37 @@ export default function MapView({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
 
-        <MapClickHandler onLocationSelect={onLocationSelect} />
+        {allowMapPickLocation && (
+          <MapClickHandler onLocationSelect={onLocationSelect} />
+        )}
 
         {/* Customer marker */}
         <Marker
-          position={[customerPos.lat, customerPos.lng]}
+          position={[customerPos.lat ?? 0, customerPos.lng ?? 0]}
           icon={customerIcon}
         >
           <Popup>موقعك الحالي</Popup>
         </Marker>
 
         {/* Provider markers */}
-        {providers.map((provider) => (
+        {providers?.filter(p => p.baseLocation?.latitude && p.baseLocation?.longitude).map((provider) => (
           <Marker
             key={provider.id}
-            position={[provider.position.lat, provider.position.lng]}
+            position={[provider.baseLocation?.latitude, provider.baseLocation?.longitude]}
             icon={workerIcon(
               provider.name,
-              provider.rating,
-              provider.profession,
+              provider.services?.map((s) => s.name).join(', ') || '',
             )}
             eventHandlers={{ click: () => onProviderSelect(provider) }}
           >
             <Popup>
               <div className="min-w-[140px] text-right font-[Cairo,sans-serif] text-sm">
                 <p className="font-bold">{provider.name}</p>
-                <p className="text-xs text-gray-500">{provider.profession}</p>
+                <p className="text-xs text-gray-500">{provider.services?.map((service) => service.name).join(', ')}</p>
                 <p className="mt-1 text-xs">
                   <span className="text-yellow-500">⭐ {provider.rating}</span>
                   {' · '}
-                  <span className="text-primary">{provider.distance} كم</span>
+                  <span className="text-primary">{provider.baseLocation?.addressText}</span>
                 </p>
               </div>
             </Popup>
@@ -167,7 +170,7 @@ export default function MapView({
         ))}
 
         {/* Route */}
-        {route.length > 1 && (
+        {route?.length > 1 && (
           <Polyline
             positions={route.map((p) => [p.lat, p.lng])}
             pathOptions={{

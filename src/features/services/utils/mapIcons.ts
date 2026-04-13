@@ -9,62 +9,104 @@ L.Icon.Default.mergeOptions({// Using CDN for icons to avoid bundling issues
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
+
+// 1. تحسين أيقونة العميل (تأثير النبض)
 export const customerIcon = L.divIcon({
-  className: "",
+  className: "custom-customer-marker",
   html: `
-    <div style="
-      width:16px; height:16px;
-      background:#7C3AED;
-      border-radius:50%;
-      border:3px solid white;
-      box-shadow:0 0 0 3px rgba(124,58,237,0.3);
-    "></div>
+    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="
+        position: absolute;
+        width: 24px; height: 24px;
+        background: rgba(124, 58, 237, 0.4);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      "></div>
+      <div style="
+        width: 14px; height: 14px;
+        background: #7C3AED;
+        border: 2.5px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 2;
+      "></div>
+    </div>
+    <style>
+      @keyframes pulse {
+        0% { transform: scale(0.8); opacity: 0.8; }
+        100% { transform: scale(2.4); opacity: 0; }
+      }
+    </style>
   `,
-  iconAnchor: [8, 8],// Center the icon on the position
-  iconSize: [16, 16],
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
 });
 
-export const workerIcon = (name: string, rating: number, profession: string) =>
+// 2. تحسين أيقونة الحرفي (تصميم بطاقة احترافية)
+export const workerIcon = (name: string, profession: string, rating: number = 4.9) =>
   L.divIcon({
     className: "custom-worker-marker",
     html: `
-    <div style="display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -100%);">
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+    ">
       <div style="
         background: white;
-        border: 2px solid #7C3AED;
-        border-radius: 20px;
-        padding: 4px 12px;
-        font-family: Cairo, sans-serif;
-        font-size: 12px;
-        font-weight: 700;
-        color: #7C3AED;
-        white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(124,58,237,0.25);
+        border-radius: 12px;
+        padding: 6px 10px;
+        border: 1.5px solid #7C3AED;
         display: flex;
-        align-items: center;
-        gap: 6px;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 100px;
       ">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-person-standing-icon lucide-person-standing"><circle cx="12" cy="5" r="1"/><path d="m9 20 3-6 3 6"/><path d="m6 8 6 2 6-2"/><path d="M12 10v4"/></svg>
-
-
-        <span style="color: #374151;">${name}</span>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <span style="
+            font-family: Cairo, sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            color: #1F2937;
+            white-space: nowrap;
+          ">${name}</span>
+          
+          <div style="
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: #FFFBEB;
+            padding: 1px 5px;
+            border-radius: 6px;
+          ">
+            <span style="color: #F59E0B; font-size: 10px;">⭐</span>
+            <span style="font-size: 10px; font-weight: 700; color: #92400E;">${rating.toFixed(1)}</span>
+          </div>
+        </div>
+        
+        <span style="
+          font-family: Cairo, sans-serif;
+          font-size: 10px;
+          font-weight: 600;
+          color: #6B7280;
+          text-align: right;
+        ">${profession}</span>
       </div>
+
       <div style="
-        font-family: Cairo, sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        color: #4B5563;
-        text-align: right;
-        white-space: nowrap; 
-        margin-top: 4px;
-        text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white; 
-      ">
-       (<span style="color: #FFB800;">⭐</span>
-        <span>${rating.toFixed(1)}</span>) 
-        ${profession}
-      </div>
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 8px solid #7C3AED;
+        margin-top: -1px;
+      "></div>
     </div>
     `,
-    iconAnchor: [0, 0], 
-    iconSize: [0, 0],
+    // الـ Anchor هنا مهم جداً: 
+    // نص الـ Width (مثلاً لو الكارت عرضه 120 بكسل) والـ Height بالكامل عشان المثلث يلمس النقطة
+    iconSize: [120, 50], 
+    iconAnchor: [60, 50], 
+    popupAnchor: [0, -55]
   });

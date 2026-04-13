@@ -19,6 +19,7 @@ import SecurityPage from '@/features/profile/pages/SecurityPage';
 // guards
 import AppStatusGuard from '@/guards/AppStatusGuard';
 import RequestPending from '@/features/services/pages/servicesStatus/RequestPendingPage';
+import InstantRequestDetailsPage from '@/features/services/pages/instant/InstantRequestDetailsPage';
 
 const clientRoutes = [
   {
@@ -50,8 +51,12 @@ const clientRoutes = [
           { index: true, element: <ServicesPage /> },
           { path: 'instant', element: <InstantServicesPage /> },
           { path: 'direct', element: <DirectServicesPage /> },
-          { path: ':requests/:requestId/pending', element: <RequestPending /> },
+          { path: 'requests/:requestId/pending', element: <RequestPending /> },
           { path: 'requests', element: <div>Requests List Page</div> },
+          {
+            path: "requests/:requestId/instant",
+            element: <InstantRequestDetailsPage />,
+          },
           {
             path: 'requests/:requestId',
             element: <div>Request Details Page</div>,
