@@ -2,6 +2,7 @@ import axiosInstance from '@/lib/axios';
 
 export const getProviderProfile = async (id: string) => {
   try {
+    if (!id) return;
     const response = await axiosInstance.get(
       `/api/Provider/get-provider-profile/${id}`,
     );

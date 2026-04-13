@@ -17,6 +17,7 @@ const CommunityFeed = ({
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [providerId, setProviderId] = useState<number | undefined>(undefined);
+
   const handleOpenRequest = (providerId: number) => {
     setProviderId(providerId);
     setIsDrawerOpen(true);

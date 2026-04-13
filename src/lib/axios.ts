@@ -1,10 +1,8 @@
 import axios from 'axios';
-import { API_BASE } from './apiBase';
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE,
+  baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
-  timeout: 30000,
 });
 
 // flag to prevent loop
@@ -56,7 +54,9 @@ axiosInstance.interceptors.response.use(
 
     // if token expired or invalid
     if (
-      error.response?.status === 401 &&
+      (error.response?.status === 401 ||
+        error.response?.status === 400 ||
+        error.response?.status === 404) &&
       !originalRequest._retry &&
       !isAuthRoute &&
       originalRequest.headers?.Authorization
@@ -79,7 +79,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          `${API_BASE}/api/Account/refresh-token`,
+          `${import.meta.env.VITE_BASE_URL}/api/Account/refresh-token`,
           null,
           { withCredentials: true },
         );

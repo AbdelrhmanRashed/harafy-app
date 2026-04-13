@@ -109,7 +109,9 @@ const Post = ({
                 variant="gradient"
                 size="sm"
                 className="cursor-pointer"
-                onClick={() => handleOpenRequest(post.providerId!)}
+                onClick={() =>
+                  post.providerId && handleOpenRequest(post.providerId)
+                }
               >
                 طلب خدمه
               </Button>
