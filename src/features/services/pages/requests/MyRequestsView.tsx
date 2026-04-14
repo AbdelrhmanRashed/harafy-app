@@ -208,7 +208,6 @@ const MyRequestsView = () => {
                )}>
                   <req.icon className="w-6 h-6 text-primary/70" strokeWidth={2.5} />
                </div>
-
             </div>
           ))}
         </div>

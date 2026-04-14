@@ -17,7 +17,7 @@ import {
   LocateFixed,
 } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
-import { useLocation } from '../hooks/useLocation';
+import { useLocationCustom } from '../hooks/useLocation';
 import { DataTimeInput } from './DataTimeInput';
 import type { Provider } from '../types/types';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +41,7 @@ export function DirectRequestForm({
     locating,
     detect,
     searchAddress,
-  } = useLocation();
+  } = useLocationCustom();
   const [manualAddress, setManualAddress] = useState(address);
   const navigate = useNavigate();
 

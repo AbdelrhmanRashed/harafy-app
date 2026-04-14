@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MapPin, Loader2, LocateFixed, AlertCircle } from 'lucide-react';
 
-import { useLocation } from '@/hooks/useLocation';
+import { useLocationCustom } from '@/hooks/useLocation';
 
 export function LocationSection() {
   const {
@@ -22,7 +22,7 @@ export function LocationSection() {
   } = useFormContext();
 
   const { position, address, locating, denied, detect, searchAddress } =
-    useLocation();
+    useLocationCustom();
 
   // ── keep form in sync whenever the hook resolves a new position ──
   useEffect(() => {

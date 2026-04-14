@@ -4,12 +4,12 @@ import { Loader2, SearchX } from 'lucide-react';
 import HeroSection from '../components/HeroSection';
 import CategoryList from '../components/CatagoryList';
 
-import { useLocation } from '../hooks/useLocation';
+import { useLocationCustom } from '@/features/services/hooks/useLocation';
 import { useGetNearbyProviders } from '../hooks/useNearbyProviders';
 import { useServices } from '@/features/onboarding/hooks/useServices';
 import type { Provider } from '../types/types';
 import ProvidersSearchList from '../components/ProvidersSearchList';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useLocation } from "react-router-dom";
 import { normalizeProviders } from '../utils/providerUtils';
 import DirectServiceDrawer from '../components/DirectServiceDrawer';
 
@@ -56,9 +56,14 @@ export default function ServicesPage() {
   const [activeLocationLabel, setActiveLocationLabel] = useState('');
   const navigate = useNavigate();
   const locationRequestedRef = useRef(false);
+  const providersSectionRef = useRef<HTMLElement | null>(null);
 
   // جلب الموقع الحالي (تأكد إن الـ Hook ده شغال وبيرجع قيم)
-  const { position, address, locating, detect, searchAddress } = useLocation();
+  const { position, address, locating, detect, searchAddress } = useLocationCustom();
+
+
+
+
 
   useEffect(() => {
     if (locationRequestedRef.current) return;
@@ -146,6 +151,19 @@ export default function ServicesPage() {
     );
   }, [nearbyData, selectedServiceId, selectedCategoryName]);
 
+
+// scroll to providers list section
+  const scrollToProvidersList = () => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        providersSectionRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    });
+  };
+
   const runSearch = async (
     serviceId: number,
     serviceName: string,
@@ -174,11 +192,38 @@ export default function ServicesPage() {
     setSelectedCategoryName(serviceName);
     setActiveLocationLabel(nextLocationLabel || 'موقعك الحالي');
     setHasSearched(true); // دي اللي بتفتح قسم النتائج
+    scrollToProvidersList();
   };
+
 
   const handleCategorySelect = (id: number, name: string) => {
     void runSearch(id, name);
   };
+
+  // use data passed from AI (if any)
+
+  const handledAiServiceIdRef = useRef<number | null>(null);
+const location = useLocation();
+const aiData = location.state as {
+  serviceIdAI?: number;
+  descriptionAI?: string;
+  autoFill?: boolean;
+} | null;
+
+useEffect(() => {
+  if (!aiData?.serviceIdAI || !categories.length) return;
+    if (handledAiServiceIdRef.current === aiData.serviceIdAI) return;
+  const matchedCategory = categories.find(
+    (category) => category.id === aiData.serviceIdAI
+  );
+
+  if (!matchedCategory) return;
+
+  handledAiServiceIdRef.current = aiData.serviceIdAI;
+  void runSearch(matchedCategory.id, matchedCategory.name);
+}, [aiData?.serviceIdAI, categories]);
+
+
 
   const handleHeroSearch = async (query: string, location: string) => {
     if (!categories.length) {
@@ -221,7 +266,10 @@ export default function ServicesPage() {
 
       {/* قسم عرض الفنيين: لا يظهر إلا بعد اختيار قسم */}
       {hasSearched && (
-        <section className="container mx-auto mt-12 px-6">
+        <section
+          ref={providersSectionRef}
+          className="container mx-auto mt-12 scroll-mt-24 px-6"
+        >
           <div className="mb-8">
             <h2 className="text-2xl font-black">
               {selectedCategoryName

@@ -9,14 +9,14 @@ import {
 import type { InstantStep } from "../../components/instant";
 import { useRoute } from "../../hooks/useRoute";
 import type { Provider } from "../../types/types";
-import { useLocation } from "../../hooks/useLocation";
+import { useLocationCustom } from "../../hooks/useLocation";
 import { cn } from "@/lib/utils";
 import { useAssignServiceReq } from "../../hooks/useAssignServiceReq";
 import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
 import { useSetReqCancelled } from "../../hooks/useSetReqCancelled";
 import { useGetProviderData } from "../../hooks/useGetProviderData";
 
-
+import { useLocation } from "react-router-dom";
 
 
 //main page for instant services
@@ -33,7 +33,20 @@ const InstantRequestPage = () => {
     locating,
     detect,
     searchAddress,
-  } = useLocation();
+  } = useLocationCustom();
+  // detect user location on component mount
+  //   useEffect(() => {
+  //   detect();
+  // }, []);
+
+const location = useLocation();
+
+const aiData = location.state as {
+  serviceIdAI?: number;
+  descriptionAI?: string;
+  autoFill?: boolean;
+} | null;
+
 
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
     null,
@@ -154,6 +167,9 @@ const routeEnd = useMemo(() => {
 
   const allowMapPick = step === "REQUEST";
 
+
+
+
   return (
     <div
       dir="ltr"
@@ -205,6 +221,8 @@ const routeEnd = useMemo(() => {
 
         {step === "REQUEST" && (
           <Step1RequestForm
+            serviceIdAI={aiData?.serviceIdAI}
+            descriptionAI={aiData?.descriptionAI}
             address={address}
             position={customerPos}
             locating={locating}

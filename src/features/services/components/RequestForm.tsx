@@ -41,6 +41,8 @@ interface RequestFormProps {
   navigateOnSuccess?: boolean;
   onSend?: (id: number | string) => void;
   onServiceChange?: (id: number) => void;
+  serviceIdAI?: number;
+  descriptionAI?: string;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -51,7 +53,8 @@ export default function RequestForm({
   locating,
   onDetect,
   onAddressSearch,
-  initialService: _initialService,
+  serviceIdAI,
+  descriptionAI,
   navigateOnSuccess = true,
   onSend,
   onServiceChange,
@@ -80,9 +83,20 @@ export default function RequestForm({
   });
 
   // ── Sync address prop ──────────────────────────────────────────────────────
-  useEffect(() => {
-    setManualAddress(address);
-  }, [address]);
+useEffect(() => {
+  setManualAddress(address);
+}, [address]);
+
+// AI data
+useEffect(() => {
+  if (typeof serviceIdAI === 'number' && serviceIdAI > 0) {
+    form.setValue('ServiceId', serviceIdAI, { shouldValidate: true });
+    onServiceChange?.(serviceIdAI);
+  }
+  if (typeof descriptionAI === 'string') {
+    form.setValue('Description', descriptionAI, { shouldValidate: true });
+  }
+}, [form, serviceIdAI, descriptionAI, onServiceChange]);
 
   // ── Sync lat/lng from map position into form fields ───────────────────────
   useEffect(() => {
@@ -279,9 +293,11 @@ export default function RequestForm({
                   <FormControl>
                     <textarea
                       {...field}
+                      value={field.value}
                       placeholder="اشرح لنا ما تحتاجه باختصار لضمان عروض دقيقة..."
                       rows={3}
                       dir="rtl"
+                      onChange={(e) => field.onChange(e.target.value)}
                       className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm focus:ring-2 focus:outline-none sm:rounded-3xl ${form.formState.errors.Description ? 'ring-2 ring-destructive/70' : ''
                         }`}
                     />

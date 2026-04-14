@@ -35,7 +35,7 @@ function getCurrentPosition(): Promise<GeolocationPosition> {
   );
 }
 
-export function useLocation(): UseLocationReturn {
+export function useLocationCustom(): UseLocationReturn {
   const [position, setPosition] = useState<{ lat: number; lng: number }>({
     lat: 31.2001,
     lng: 29.9187,

@@ -14,6 +14,9 @@ type Step1RequestFormProps = {
   onNearbyProvidersChange: (providers: Provider[]) => void;
   selectedProvider: Provider | null;
   onSelectProvider: (provider: Provider) => void;
+  initialCategoryId?: number;
+  serviceIdAI?: number;
+  descriptionAI?: string;
 };
 
 export default function Step1RequestForm({
@@ -24,6 +27,8 @@ export default function Step1RequestForm({
   onAddressSearch,
   onRequestCreated,
   onNearbyProvidersChange,
+  serviceIdAI,
+  descriptionAI,
   selectedProvider,
   onSelectProvider,
 }: Step1RequestFormProps) {
@@ -65,13 +70,15 @@ export default function Step1RequestForm({
         onAddressSearch={onAddressSearch}
         onSend={(id) => onRequestCreated(String(id))}
         onServiceChange={setSelectedServiceId}
+        serviceIdAI={serviceIdAI}
+        descriptionAI={descriptionAI}
       />
-      <ProvidersList
+      {/* <ProvidersList
         providers={validProviders}
         selectedId={selectedProvider?.id ?? null}
         onSelect={onSelectProvider}
         isLoading={isFetching}
-      />
+      /> */}
     </>
   );
 }

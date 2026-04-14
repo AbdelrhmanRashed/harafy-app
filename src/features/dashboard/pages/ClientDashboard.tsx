@@ -11,12 +11,41 @@ import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
 import ProfileCardSkeleton from '@/features/community/components/ProfileCardSkeleton';
 import PostsFilter from '@/features/community/components/PostsFilter';
 import { useState } from 'react';
+import HarafyBot from '@/features/harafyBot/HarafyBot';
+import { useNavigate } from 'react-router-dom';
 
 const ClientDashboard = () => {
   const { data: clientProfile, isLoading } = useClientProfile();
   const roles = useAuthStore((state) => state.user?.role);
   const [search, setSearch] = useState('');
   const [nearby, setNearby] = useState(false);
+  const navigate = useNavigate();
+
+// handle AI actions from HarafyBot
+ const handleAiAction = (data: any) => {
+  const actionMap: Record<string, string> = {
+    navigate: "/app/services/instant",
+    instant_request: "/app/services/instant",
+    services_search: "/app/services",
+  };
+
+  const route = actionMap[data.type];
+  const serviceIdAI = data.serviceId ?? data.categoryId;
+  const descriptionAI = data.description ?? '';
+
+  if (route) {
+    setTimeout(() => {navigate(route, { 
+        state: { 
+          serviceIdAI, 
+          descriptionAI,
+          autoFill: true // fill the form automatically based on AI's understanding
+        } 
+      });}, 5000); // slight delay for better UX
+  } else {
+    console.warn("⚠️ Unknown action type:", data.type);
+  }
+};
+// ------------------------------------------------------------------------------------
   return (
     <main className="container mx-auto px-4 py-6" dir="rtl">
       <h1 className="text-primary mb-6 text-right text-3xl font-bold">
@@ -54,6 +83,8 @@ const ClientDashboard = () => {
         <div className="order-6 mt-6 lg:col-span-12">
           <FooterLinks />
         </div>
+
+        <HarafyBot onServiceAction={handleAiAction} />
       </div>
     </main>
   );
