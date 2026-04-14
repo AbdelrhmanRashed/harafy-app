@@ -1,0 +1,48 @@
+import {
+  LayoutGrid,
+  ClipboardClock,
+  Bookmark,
+  Star,
+  Settings,
+  Users,
+} from "lucide-react";
+import { NavLink } from "react-router-dom";
+
+const links = [
+  { label: "الرئيسية", icon: LayoutGrid, path: "/provider/home" },
+  { label: "المجتمع", icon: Users, path: "/provider/community" },
+  { label: "الطلبات", icon: ClipboardClock, path: "/provider/requests" },
+  { label: "التقييمات", icon: Star, path: "/provider/reviews" },
+  { label: "المحفظة", icon: Bookmark, path: "/provider/wallet" },
+  { label: "الملف الشخصي", icon: Settings, path: "/provider/profile" },
+];
+
+const ProviderSidebar = () => {
+  return (
+    <aside className="w-16 xl:w-64 bg-background border-l p-2 xl:p-4 flex flex-col min-h-screen shrink-0">
+      <div className="space-y-1">
+        {links.map((item, i) => (
+          <NavLink
+            key={i}
+            to={item.path}
+            end
+            className={({ isActive }) =>
+              `flex items-center justify-center xl:justify-start gap-3 px-2 xl:px-4 py-3 rounded-xl transition-colors ${
+                isActive
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-muted"
+              }`
+            }
+          >
+            <item.icon size={20} className="shrink-0" />
+            <span className="hidden xl:inline text-sm xl:text-base">
+              {item.label}
+            </span>
+          </NavLink>
+        ))}
+      </div>
+    </aside>
+  );
+};
+
+export default ProviderSidebar;
