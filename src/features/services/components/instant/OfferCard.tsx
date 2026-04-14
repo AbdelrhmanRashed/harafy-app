@@ -1,7 +1,7 @@
-import { Loader2, MessageCircleCode, MessageSquare, User, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { getTimeAgo } from "@/lib/utils";
-import type { RequestOfferItem } from "./types";
+import { Loader2, MessageSquare, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { getImageUrl, getTimeAgo } from '@/lib/utils';
+import type { RequestOfferItem } from './types';
 
 type OfferCardProps = {
   offer: RequestOfferItem;
@@ -16,24 +16,25 @@ export default function OfferCard({
   disabled,
   isSubmitting,
 }: OfferCardProps) {
+  console.log(offer);
   return (
-    <li className="border-border bg-card hover:border-primary/30 group relative flex flex-col gap-4 rounded-[24px] border p-4 shadow-sm transition-all hover:shadow-md cursor-default w-[350px]">
+    <li className="border-border bg-card hover:border-primary/30 group relative flex w-[350px] cursor-default flex-col gap-4 rounded-[24px] border p-4 shadow-sm transition-all hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-1 items-center gap-3">
-          <div className="bg-primary/5 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 overflow-hidden">
+          <div className="bg-primary/5 border-primary/10 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border">
             {offer.providerPictureUrl ? (
               <img
-                src={offer.providerPictureUrl}
+                src={getImageUrl(offer.providerPictureUrl)}
                 alt={offer.providerName}
                 className="h-full w-full object-cover"
               />
             ) : (
-              <User className="h-6 w-6 text-primary/50" />
+              <User className="text-primary/50 h-6 w-6" />
             )}
           </div>
 
           <div className="flex flex-col text-right">
-            <span className="text-foreground text-xl font-bold line-clamp-1">
+            <span className="text-foreground line-clamp-1 text-xl font-bold">
               {offer.providerName}
             </span>
             <span className="text-muted-foreground mt-0.5 text-xs font-semibold tracking-wide">
@@ -42,24 +43,31 @@ export default function OfferCard({
           </div>
         </div>
 
-        <div className=" flex shrink-0  gap-2  px-3 py-1.5 font-bold flex-col items-center">
-          <span className="text-lg leading-none bg-primary/10 text-primary rounded-full px-4 py-1">
-            {offer.price != null ? offer.price : "—"} ج.م
+        <div className="flex shrink-0 flex-col items-center gap-2 px-3 py-1.5 font-bold">
+          <span className="bg-primary/10 text-primary rounded-full px-4 py-1 text-lg leading-none font-bold">
+            {offer.price != null
+              ? new Intl.NumberFormat('en-EG').format(offer.price)
+              : '—'}
+            <span className="mr-1 text-sm">ج.م</span>
           </span>
 
-          {/* "createdAt": "2026-04-12T04:44:19.0476638" */}
-          <span className="text-xs ">
-            {offer.createdAt 
-              ? getTimeAgo(new Date(offer.createdAt + (offer.createdAt.endsWith("Z") ? "" : "Z")))
-              : "--"}
+          <span className="text-xs">
+            {offer.createdAt
+              ? getTimeAgo(
+                  new Date(
+                    offer.createdAt +
+                      (offer.createdAt.endsWith('Z') ? '' : 'Z'),
+                  ),
+                )
+              : '--'}
           </span>
         </div>
       </div>
 
       {offer.message ? (
-        <div className="bg-muted/40 rounded-[16px] px-4 py-3 text-right flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 text-primary/50" />
-          <p className="text-muted-foreground  font-medium leading-relaxed">
+        <div className="bg-muted/40 flex items-center gap-2 rounded-[16px] px-4 py-3 text-right">
+          <MessageSquare className="text-primary/50 h-4 w-4" />
+          <p className="text-muted-foreground leading-relaxed font-medium">
             {offer.message}
           </p>
         </div>
@@ -78,7 +86,7 @@ export default function OfferCard({
             جاري التعيين...
           </>
         ) : (
-          "قبول العرض"
+          'قبول العرض'
         )}
       </Button>
     </li>

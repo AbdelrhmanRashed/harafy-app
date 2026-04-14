@@ -14,7 +14,6 @@ import { customerIcon, workerIcon } from '../utils/mapIcons.ts';
 import type { LatLng, Provider } from '../types/types.ts';
 
 // ─── Map click handler ────────────────────────────────────────────────────────
-
 function MapClickHandler({
   onLocationSelect,
 }: {
@@ -28,16 +27,18 @@ function MapClickHandler({
   return null;
 }
 
+// ─── Fly to center ───────────────────────────────────────────────────────────
 function ChangeView({ center }: { center: LatLng }) {
   const map = useMap();
+
   useEffect(() => {
     map.flyTo([center.lat, center.lng], 14, { duration: 1.5 });
   }, [center.lat, center.lng]);
+
   return null;
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
-
 interface MapViewProps {
   center: LatLng;
   customerPos: LatLng;
@@ -48,10 +49,14 @@ interface MapViewProps {
   onLocationSelect: (pos: LatLng) => void;
   onProviderSelect: (provider: Provider) => void;
   onAddressSearch: (query: string) => void;
+
+  // 🔥 الجديد
+  liveProviderPos: { lat: number; lng: number } | null;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.5020 };
+const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.502 };
+
 export default function MapView({
   center = ZAGAZIG_COORDS,
   customerPos = ZAGAZIG_COORDS,
@@ -59,21 +64,23 @@ export default function MapView({
   selectedProvider = null,
   route = [],
   allowMapPickLocation = true,
-  onLocationSelect = () => { },
-  onProviderSelect = () => { },
-  onAddressSearch = () => { },
+  onLocationSelect = () => {},
+  onProviderSelect = () => {},
+  onAddressSearch = () => {},
+  liveProviderPos,
 }: MapViewProps) {
   const [mapSearch, setMapSearch] = useState('');
 
+  console.log(liveProviderPos);
   return (
     <div className="relative h-full w-full">
-      {/* Search bar - Mobile optimized */}
-      <div className="absolute top-2 right-2 left-1/2 z-[900] w-80 -translate-x-1/2 px-2 sm:top-4 sm:right-auto sm:left-1/2 sm:w-96 sm:px-0">
-        <div className="flex h-11 items-center gap-2 rounded-full bg-white px-4 py-2 shadow-md sm:h-13.5 sm:gap-3 sm:px-6 sm:py-3">
-          <Search className="text-muted-foreground h-4 w-4 shrink-0 sm:h-4.5 sm:w-4.5" />
+      {/* 🔍 Search */}
+      <div className="absolute top-3 left-1/2 z-[900] w-80 -translate-x-1/2">
+        <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-md">
+          <Search className="h-4 w-4" />
           <input
             type="text"
-            placeholder="ابحث في هذه المنطقة..."
+            placeholder="ابحث..."
             value={mapSearch}
             onChange={(e) => setMapSearch(e.target.value)}
             onKeyDown={(e) => {
@@ -82,44 +89,17 @@ export default function MapView({
                 setMapSearch('');
               }
             }}
-            className="placeholder:text-muted-foreground flex-1 bg-transparent text-xs outline-none sm:text-sm"
+            className="flex-1 bg-transparent text-sm outline-none"
           />
           {mapSearch && (
-            <button
-              type="button"
-              onClick={() => setMapSearch('')}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+            <button onClick={() => setMapSearch('')}>
+              <X className="h-4 w-4" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Route info pill - Mobile optimized */}
-      {selectedProvider && route.length > 1 && (
-        <div className="absolute right-2 bottom-4 left-1/2 z-[1000] -translate-x-1/2 px-2 sm:right-auto sm:bottom-6 sm:left-1/2 sm:px-0">
-          <div className="border-border flex flex-wrap items-center justify-center gap-2 rounded-xl border bg-white px-3 py-2 shadow-lg sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-2.5">
-            <div className="flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
-              <Navigation className="text-primary h-4 w-4" />
-              <span className="font-bold">{selectedProvider.baseLocation.addressText}</span>
-            </div>
-            <div className="bg-border hidden h-3 w-px sm:block" />
-            <div className="flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
-              <Clock className="text-primary h-4 w-4" />
-              {/* <span className="font-bold">
-                ~{Math.round(selectedProvider.baseLocation.distance * 3)} دقيقة
-              </span> */}
-            </div>
-            <div className="bg-border h-px w-full sm:hidden" />
-            <span className="text-primary text-xs font-semibold">
-              {selectedProvider.name}
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Map */}
+      {/* 🗺️ Map */}
       <MapContainer
         center={[center.lat, center.lng]}
         zoom={13}
@@ -127,49 +107,65 @@ export default function MapView({
         zoomControl={false}
       >
         <ChangeView center={center} />
+
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution="&copy; OpenStreetMap"
         />
 
+        {/* pick location */}
         {allowMapPickLocation && (
           <MapClickHandler onLocationSelect={onLocationSelect} />
         )}
 
-        {/* Customer marker */}
+        {/* 👤 Customer */}
         <Marker
-          position={[customerPos.lat ?? 0, customerPos.lng ?? 0]}
+          position={[customerPos.lat, customerPos.lng]}
           icon={customerIcon}
         >
-          <Popup>موقعك الحالي</Popup>
+          <Popup>موقعك</Popup>
         </Marker>
 
-        {/* Provider markers */}
-        {providers?.filter(p => p.baseLocation?.latitude && p.baseLocation?.longitude).map((provider) => (
+        {/* 🔥 Live Provider */}
+        {liveProviderPos && (
           <Marker
-            key={provider.id}
-            position={[provider.baseLocation?.latitude, provider.baseLocation?.longitude]}
-            icon={workerIcon(
-              provider.name,
-              provider.services?.map((s) => s.name).join(', ') || '',
-            )}
-            eventHandlers={{ click: () => onProviderSelect(provider) }}
+            position={[liveProviderPos.lat, liveProviderPos.lng]}
+            icon={workerIcon('Live Provider', 'tracking')}
           >
-            <Popup>
-              <div className="min-w-[140px] text-right font-[Cairo,sans-serif] text-sm">
-                <p className="font-bold">{provider.name}</p>
-                <p className="text-xs text-gray-500">{provider.services?.map((service) => service.name).join(', ')}</p>
-                <p className="mt-1 text-xs">
-                  <span className="text-yellow-500">⭐ {provider.rating}</span>
-                  {' · '}
-                  <span className="text-primary">{provider.baseLocation?.addressText}</span>
-                </p>
-              </div>
-            </Popup>
+            <Popup>المحترف في الطريق 🚀</Popup>
           </Marker>
-        ))}
+        )}
 
-        {/* Route */}
+        {/* 👷 Static Providers (فقط لو مفيش live) */}
+        {providers
+          ?.filter((p) => p.baseLocation?.latitude && p.baseLocation?.longitude)
+          .map((provider) => (
+            <Marker
+              key={provider.id}
+              position={[
+                provider.baseLocation.latitude,
+                provider.baseLocation.longitude,
+              ]}
+              icon={workerIcon(
+                provider.name,
+                provider.services?.map((s) => s.name).join(', ') || '',
+              )}
+              eventHandlers={{
+                click: () => onProviderSelect(provider),
+              }}
+            >
+              <Popup>
+                <div className="text-right text-sm">
+                  <p className="font-bold">{provider.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {provider.services?.map((s) => s.name).join(', ')}
+                  </p>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+
+        {/* 🛣️ Route */}
         {route?.length > 1 && (
           <Polyline
             positions={route.map((p) => [p.lat, p.lng])}
@@ -177,7 +173,6 @@ export default function MapView({
               color: '#7C3AED',
               weight: 4,
               opacity: 0.8,
-              dashArray: '8 4',
             }}
           />
         )}

@@ -22,9 +22,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-
 import { useCreateServiceReq } from '../hooks/useCreateServiceReq';
-import { type CreateServiceReqInput, createServiceReqSchema } from '../schemas/serviceReq.schema';
+import {
+  type CreateServiceReqInput,
+  createServiceReqSchema,
+} from '../schemas/serviceReq.schema';
 import { useServices } from '@/features/onboarding/hooks/useServices';
 import { useNavigate } from 'react-router-dom';
 
@@ -83,27 +85,26 @@ export default function RequestForm({
   });
 
   // ── Sync address prop ──────────────────────────────────────────────────────
-useEffect(() => {
-  setManualAddress(address);
-}, [address]);
+  useEffect(() => {
+    setManualAddress(address);
+  }, [address]);
 
-// AI data
-useEffect(() => {
-  if (typeof serviceIdAI === 'number' && serviceIdAI > 0) {
-    form.setValue('ServiceId', serviceIdAI, { shouldValidate: true });
-    onServiceChange?.(serviceIdAI);
-  }
-  if (typeof descriptionAI === 'string') {
-    form.setValue('Description', descriptionAI, { shouldValidate: true });
-  }
-}, [form, serviceIdAI, descriptionAI, onServiceChange]);
+  // AI data
+  useEffect(() => {
+    if (typeof serviceIdAI === 'number' && serviceIdAI > 0) {
+      form.setValue('ServiceId', serviceIdAI, { shouldValidate: true });
+      onServiceChange?.(serviceIdAI);
+    }
+    if (typeof descriptionAI === 'string') {
+      form.setValue('Description', descriptionAI, { shouldValidate: true });
+    }
+  }, [form, serviceIdAI, descriptionAI, onServiceChange]);
 
   // ── Sync lat/lng from map position into form fields ───────────────────────
   useEffect(() => {
     form.setValue('Latitude', position.lat, { shouldValidate: true });
     form.setValue('Longitude', position.lng, { shouldValidate: true });
   }, [position.lat, position.lng]);
-
 
   // ── Image handlers ────────────────────────────────────────────────────────
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,11 +158,12 @@ useEffect(() => {
         if (navigateOnSuccess) {
           navigate(`/app/services/requests/${newRequestId}/instant`, {
             state: {
-              serviceName: services?.find((s: any) => s.id === values.ServiceId)?.name,
+              serviceName: services?.find((s: any) => s.id === values.ServiceId)
+                ?.name,
               description: values.Description,
               address: manualAddress,
               position,
-              tags: ["فوري"],
+              tags: ['فوري'],
               requestId: newRequestId,
             },
           });
@@ -189,7 +191,8 @@ useEffect(() => {
           طلب فوري
         </h1>
         <p className="text-muted-foreground text-xs sm:text-sm">
-          أخبرنا بما تحتاجه، وسنقوم بربطك بأفضل الحرفيين المتاحين فوراً في منطقتك.
+          أخبرنا بما تحتاجه، وسنقوم بربطك بأفضل الحرفيين المتاحين فوراً في
+          منطقتك.
         </p>
       </div>
 
@@ -205,8 +208,11 @@ useEffect(() => {
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} noValidate className="space-y-3">
-
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            noValidate
+            className="space-y-3"
+          >
             {/* ── Service select ── */}
             <FormField
               control={form.control}
@@ -224,15 +230,21 @@ useEffect(() => {
                           const id = Number(e.target.value);
                           field.onChange(id);
                           onServiceChange?.(id);
-                        }} disabled={isLoadingServices}
-                        className="bg-muted focus:ring-primary/20 h-11 w-full appearance-none rounded-2xl pr-3 pl-8 text-right text-sm focus:ring-2 focus:outline-none disabled:opacity-60 sm:h-12 sm:rounded-3xl"
+                        }}
+                        disabled={isLoadingServices}
+                        className={`bg-muted focus:ring-primary/20 h-11 w-full appearance-none rounded-2xl pr-3 pl-8 text-right text-sm focus:ring-2 focus:outline-none disabled:opacity-60 sm:h-12 sm:rounded-3xl ${form.formState.errors.ServiceId ? 'ring-destructive/70 ring-2' : ''} transition-all duration-300 ease-in-out`}
                       >
                         <option value={0} disabled>
-                          {isLoadingServices ? 'جاري التحميل...' : 'اختر نوع الخدمة'}
+                          {isLoadingServices
+                            ? 'جاري التحميل...'
+                            : 'اختر نوع الخدمة'}
                         </option>
-                        {Array.isArray(services) && services.map((s: any) => (
-                          <option key={s.id} value={s.id}>{s.name}</option>
-                        ))}
+                        {Array.isArray(services) &&
+                          services.map((s: any) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
                       </select>
                       <ChevronDown className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
                     </div>
@@ -298,8 +310,11 @@ useEffect(() => {
                       rows={3}
                       dir="rtl"
                       onChange={(e) => field.onChange(e.target.value)}
-                      className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm focus:ring-2 focus:outline-none sm:rounded-3xl ${form.formState.errors.Description ? 'ring-2 ring-destructive/70' : ''
-                        }`}
+                      className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm transition-all duration-300 ease-in-out focus:ring-2 focus:outline-none sm:rounded-3xl ${
+                        form.formState.errors.Description
+                          ? 'ring-destructive/70 ring-2'
+                          : ''
+                      }`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -310,7 +325,8 @@ useEffect(() => {
             {/* ── Image upload ── */}
             <div className="space-y-2">
               <label className="text-foreground block text-xs font-bold sm:text-sm">
-                صور توضيحية (اختياري)              </label>
+                صور توضيحية (اختياري){' '}
+              </label>
 
               {/* Previews */}
               {imagePreviews.length > 0 && (
@@ -321,7 +337,6 @@ useEffect(() => {
                       className="border-border group relative overflow-hidden rounded-xl border"
                     >
                       <img
-
                         src={src}
                         alt={`uploaded ${i}`}
                         className="h-20 w-full object-cover transition-transform group-hover:scale-105"

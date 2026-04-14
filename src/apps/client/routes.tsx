@@ -20,6 +20,7 @@ import SecurityPage from '@/features/profile/pages/SecurityPage';
 import AppStatusGuard from '@/guards/AppStatusGuard';
 import RequestPending from '@/features/services/pages/servicesStatus/RequestPendingPage';
 import InstantRequestDetailsPage from '@/features/services/pages/instant/InstantRequestDetailsPage';
+import ActiveRequestGuard from '@/guards/ActiveRequestGuard';
 
 const clientRoutes = [
   {
@@ -48,18 +49,32 @@ const clientRoutes = [
       {
         path: 'services',
         children: [
-          { index: true, element: <ServicesPage /> },
-          { path: 'instant', element: <InstantServicesPage /> },
-          { path: 'requests/:requestId/pending', element: <RequestPending /> },
-          { path: 'requests', element: <div>Requests List Page</div> },
           {
-            path: 'requests/:requestId/instant',
-            element: <InstantRequestDetailsPage />,
+            index: true,
+            element: (
+              <ActiveRequestGuard>
+                <ServicesPage />
+              </ActiveRequestGuard>
+            ),
           },
           {
-            path: 'requests/:requestId',
-            element: <div>Request Details Page</div>,
+            path: 'instant',
+            element: (
+              <ActiveRequestGuard>
+                <InstantServicesPage />
+              </ActiveRequestGuard>
+            ),
           },
+          // { path: 'requests/:requestId/pending', element: <RequestPending /> },
+          // { path: 'requests', element: <div>Requests List Page</div> },
+          // {
+          //   path: 'instant/request/:requestId',
+          //   element: <InstantRequestDetailsPage />,
+          // },
+          // {
+          //   path: 'requests/:requestId',
+          //   element: <div>Request Details Page</div>,
+          // },
         ],
       },
 

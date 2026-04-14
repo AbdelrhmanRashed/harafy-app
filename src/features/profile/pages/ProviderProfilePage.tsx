@@ -17,18 +17,21 @@ import { useParams } from 'react-router-dom';
 import { useGetProviderProfile } from '../hooks/useGetProviderProfile';
 import { getImageUrl, cn } from '@/lib/utils';
 import ProviderProfileSkeleton from '../components/ProviderProfileSkeleton';
+import { useEffect } from 'react';
 
 const ProviderProfilePage = () => {
   const { providerId } = useParams();
   const { data, isLoading } = useGetProviderProfile(providerId!);
   console.log(data);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [providerId]);
+
   if (isLoading) return <ProviderProfileSkeleton />;
 
   return (
     <div className="bg-background min-h-screen pb-20">
-      {/* TOP ACCENT STRIPE */}
-
       {/* HERO SECTION - REFINED */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,var(--primary)/0.1,var(--primary)/0)]" />

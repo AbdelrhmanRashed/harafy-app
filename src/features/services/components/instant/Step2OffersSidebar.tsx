@@ -1,15 +1,15 @@
-import { useMemo } from "react";
-import { Loader2, RefreshCw, UserSearch, Zap, XCircle } from "lucide-react";
-import { useGetRequestOffer } from "../../hooks/useGetRequestOffer";
-import OfferCard from "./OfferCard";
-import type { RequestOfferItem } from "./types";
-import { Button } from "@/components/ui/button";
+import { useMemo } from 'react';
+import { Loader2, RefreshCw, UserSearch, Zap, XCircle } from 'lucide-react';
+import { useGetRequestOffer } from '../../hooks/useGetRequestOffer';
+import OfferCard from './OfferCard';
+import type { RequestOfferItem } from './types';
+import { Button } from '@/components/ui/button';
 
 function normalizeOffers(raw: unknown): RequestOfferItem[] {
   if (!raw) return [];
   let list: unknown[] = [];
   if (Array.isArray(raw)) list = raw;
-  else if (typeof raw === "object" && raw !== null && "data" in raw) {
+  else if (typeof raw === 'object' && raw !== null && 'data' in raw) {
     const d = (raw as { data?: unknown }).data;
     if (Array.isArray(d)) list = d;
   }
@@ -21,7 +21,7 @@ function normalizeOffers(raw: unknown): RequestOfferItem[] {
       return {
         id: Number(x.id),
         providerId,
-        providerName: String(x.providerName ?? x.ProviderName ?? ""),
+        providerName: String(x.providerName ?? x.ProviderName ?? ''),
         providerPictureUrl: x.providerPictureUrl as string | null | undefined,
         price: Number(x.price ?? x.Price ?? 0),
         message: (x.message ?? x.Message) as string | undefined,
@@ -54,19 +54,19 @@ export default function Step2OffersSidebar({
   const offers = useMemo(() => normalizeOffers(raw), [raw]);
 
   return (
-    <div className="flex flex-col gap-6 px-4 py-4 sm:px-5 pb-8 h-full relative">
+    <div className="relative flex h-full flex-col gap-6 px-4 py-4 pb-8 sm:px-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-foreground text-xl font-black">عروض المحترفين</h2>
-        <div className="bg-primary/10 text-primary flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold">
-          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+        <h2 className="text-foreground text-xl font-black">عروض الحرفيين</h2>
+        <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold">
+          <div className="bg-primary h-1.5 w-1.5 rounded-full" />
           مباشر
         </div>
       </div>
 
-      <div className="bg-primary/5 rounded-2xl px-5 py-4 flex items-center gap-4">
-        <RefreshCw className="h-5 w-5 text-primary shrink-0" />
+      <div className="bg-primary/5 flex items-center gap-4 rounded-2xl px-5 py-4">
+        <RefreshCw className="text-primary h-5 w-5 shrink-0" />
         <p className="text-muted-foreground text-xs leading-relaxed font-semibold">
-          يتم التحديث تلقائياً كل 10 ثوان. اختر محترفاً ثم اضغط قبول.
+          يتم التحديث تلقائياً كل 10 ثوان. اختر الحرفي ثم اضغط قبول.
         </p>
       </div>
 
@@ -76,32 +76,38 @@ export default function Step2OffersSidebar({
           جاري تحميل العروض...
         </div>
       ) : offers.length === 0 ? (
-        <div className="flex flex-col items-center flex-1 justify-center text-center py-6">
+        <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
           <div className="relative mb-8">
-            <div className="h-32 w-32 bg-primary/5 rounded-full outline outline-[12px] outline-primary/5 flex items-center justify-center">
-              <UserSearch className="h-14 w-14 text-primary/40" />
+            <div className="bg-primary/5 outline-primary/5 flex h-32 w-32 items-center justify-center rounded-full outline outline-[12px]">
+              <UserSearch className="text-primary/40 h-14 w-14" />
             </div>
-            <div className="absolute top-1 right-1 h-6 w-6 bg-[#B591E8] rounded-full border-[3px] border-white flex items-center justify-center shadow-sm">
-              <Zap className="h-3 w-3 text-white fill-current" />
+            <div className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white bg-[#B591E8] shadow-sm">
+              <Zap className="h-3 w-3 fill-current text-white" />
             </div>
           </div>
-          
-          <h3 className="text-foreground text-xl font-black">لا توجد عروض بعد</h3>
-          <p className="text-muted-foreground text-[13px] leading-relaxed mt-3 max-w-[280px]">
-            انتظر حتى يرسل الحرفيين عروضهم لهذا الطلب. سنقوم بإبلاغك فور وصول أول عرض.
+
+          <h3 className="text-foreground text-xl font-black">
+            لا توجد عروض بعد
+          </h3>
+          <p className="text-muted-foreground mt-3 max-w-[280px] text-[13px] leading-relaxed">
+            انتظر حتى يرسل الحرفيين عروضهم لهذا الطلب. سنقوم بإبلاغك فور وصول
+            أول عرض.
           </p>
 
-          <div className="mt-12 flex flex-col items-center gap-3 w-full max-w-[220px]">
-            <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden relative" dir="ltr">
+          <div className="mt-12 flex w-full max-w-[220px] flex-col items-center gap-3">
+            <div
+              className="bg-muted relative h-1.5 w-full overflow-hidden rounded-full"
+              dir="ltr"
+            >
               <div
-                className="absolute inset-y-0 left-0 w-1/3 bg-[#7C3AED] rounded-full transition-transform"
+                className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-[#7C3AED] transition-transform"
                 style={{
                   animation: 'slide-loader 1.5s ease-in-out infinite alternate',
                 }}
               />
             </div>
-            <span className="text-[9px] font-bold text-muted-foreground tracking-[0.1em] uppercase">
-              Searching nearby professionals
+            <span className="text-muted-foreground text-[9px] font-bold tracking-[0.1em] uppercase">
+              جار البحث عن حرفيين بالقرب منك...
             </span>
           </div>
 
@@ -113,7 +119,7 @@ export default function Step2OffersSidebar({
           `}</style>
         </div>
       ) : (
-        <ul className="flex flex-col gap-3 flex-1 overflow-y-auto pr-1 -mr-1">
+        <ul className="-mr-1 flex flex-1 flex-col gap-3 overflow-y-auto pr-1">
           {offers.map((offer) => (
             <OfferCard
               key={offer.id}
@@ -129,7 +135,7 @@ export default function Step2OffersSidebar({
         <div className="mt-auto pt-2 pb-2">
           <Button
             variant="outline"
-            className="w-full text-lg rounded-2xl bg-red-500   hover:bg-red-600 py-6 font-bold text-white hover:text-white transition-all cursor-pointer"
+            className="w-full cursor-pointer rounded-2xl bg-red-500 py-6 text-lg font-bold text-white transition-all hover:bg-red-600 hover:text-white"
             onClick={onCancel}
             disabled={isCancelling}
           >

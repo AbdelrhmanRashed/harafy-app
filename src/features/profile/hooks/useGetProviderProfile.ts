@@ -5,5 +5,6 @@ export const useGetProviderProfile = (id: string) => {
   return useQuery({
     queryKey: ['provider-profile', id],
     queryFn: () => getProviderProfile(id),
+    enabled: !!id,
   });
 };

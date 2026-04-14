@@ -1,31 +1,44 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { Menu, X } from "lucide-react";
-import MapView from "../../components/MapView";
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+import MapView from '../../components/MapView';
 import {
   Step1RequestForm,
   Step2OffersSidebar,
   Step3TrackingSidebar,
-} from "../../components/instant";
-import type { InstantStep } from "../../components/instant";
-import { useRoute } from "../../hooks/useRoute";
-import type { Provider } from "../../types/types";
-import { useLocationCustom } from "../../hooks/useLocation";
-import { cn } from "@/lib/utils";
-import { useAssignServiceReq } from "../../hooks/useAssignServiceReq";
-import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
-import { useSetReqCancelled } from "../../hooks/useSetReqCancelled";
-import { useGetProviderData } from "../../hooks/useGetProviderData";
+} from '../../components/instant';
+import { useRoute } from '../../hooks/useRoute';
+import type { Provider } from '../../types/types';
+import { useLocationCustom } from '../../hooks/useLocation';
+import { cn } from '@/lib/utils';
+import { useAssignServiceReq } from '../../hooks/useAssignServiceReq';
+import { useGetServiceReqById } from '../../hooks/useGetServiceReqById';
+import { useSetReqCancelled } from '../../hooks/useSetReqCancelled';
+import { useGetProviderData } from '../../hooks/useGetProviderData';
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
+import { useActiveRequest } from '@/hooks/useActiveRequest';
 
-
-//main page for instant services
 const InstantRequestPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [step, setStep] = useState<InstantStep>("REQUEST");
-  const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
   const [nearbyForMap, setNearbyForMap] = useState<Provider[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
+    null,
+  );
+  const [providerLivePos, setProviderLivePos] = useState({
+    lat: 0,
+    lng: 0,
+  });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const requestId = searchParams.get('requestId');
 
+  const aiData = location.state as {
+    serviceIdAI?: number;
+    descriptionAI?: string;
+  } | null;
+
+  // 📍 location
   const {
     position: customerPos,
     setPosition: setCustomerPos,
@@ -34,160 +47,126 @@ const InstantRequestPage = () => {
     detect,
     searchAddress,
   } = useLocationCustom();
-  // detect user location on component mount
-  //   useEffect(() => {
-  //   detect();
-  // }, []);
 
-const location = useLocation();
+  // 📡 request
+  const { data: request } = useGetServiceReqById(requestId);
 
-const aiData = location.state as {
-  serviceIdAI?: number;
-  descriptionAI?: string;
-  autoFill?: boolean;
-} | null;
+  // 🧠 STEP (derived from server)
+  const step = useMemo(() => {
+    if (!requestId) return 'REQUEST';
+    if (!request) return 'LOADING';
 
+    switch (request.requestStatus) {
+      case 0:
+        return 'OFFERS';
+      case 2:
+        return 'IN_PROGRESS';
+      case 3:
+        return 'COMPLETED';
+      default:
+        return 'REQUEST';
+    }
+  }, [request, requestId]);
 
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
-    null,
-  );
+  // 🧠 provider
+  const assignedProviderId = request?.providerId?.toString();
+  const targetProviderId =
+    step === 'IN_PROGRESS' ? assignedProviderId : selectedProvider?.id;
 
+  const { data: providerData }: any = useGetProviderData(targetProviderId);
+
+  // 🗺️ map providers
+  const mapProviders = useMemo(() => {
+    if (request?.providerId && providerData) {
+      return [providerData];
+    }
+    return nearbyForMap;
+  }, [request, providerData, nearbyForMap]);
+
+  const mapSelectedProvider = useMemo(() => {
+    if (request?.providerId) return providerData;
+    return selectedProvider;
+  }, [request, providerData, selectedProvider]);
+
+  const routeEnd = useMemo(() => {
+    return providerData?.baseLocation
+      ? {
+          lat: providerData.baseLocation.latitude,
+          lng: providerData.baseLocation.longitude,
+        }
+      : null;
+  }, [providerData]);
+
+  const { route } = useRoute(routeEnd, customerPos);
+
+  // 📡 mutations
   const { mutate: assignMutate, isPending: assignPending } =
     useAssignServiceReq();
 
-  const { mutate: cancelMutate, isPending: cancelPending } = useSetReqCancelled();
+  const { mutate: cancelMutate, isPending: cancelPending } =
+    useSetReqCancelled();
 
+  // 🧠 handlers
 
-  
+  const handleRequestCreated = (id: string) => {
+    localStorage.setItem('activeRequestId', id);
 
-  const { data: trackingReq } = useGetServiceReqById(activeRequestId ?? "", {
-    enabled: step === "TRACKING" && !!activeRequestId,
-    refetchInterval: step === "TRACKING" ? 5000 : false,
-  });
+    navigate(`/app/services/instant?requestId=${id}`);
+  };
 
-  const assignedProviderId = useMemo(() => {
-  return (trackingReq as any)?.providerId?.toString();
-}, [trackingReq]);
+  const handleAcceptOffer = (providerId: number) => {
+    if (!requestId) return;
 
-const targetProviderId = step === "TRACKING" ? assignedProviderId : selectedProvider?.id;
-  const { data:providerData }:any = useGetProviderData(targetProviderId);
-  console.log(providerData?.baseLocation); //to use it for route 
-  
+    assignMutate(
+      { requestId, providerId },
+      {
+        onSuccess: () => {
+          // React Query هيعمل re-render لوحده
+        },
+      },
+    );
+  };
 
+  const handleCancelRequest = () => {
+    if (!requestId) return;
 
-const mapProviders = useMemo(() => {
-  if (step === "TRACKING") {
-    return providerData ? [providerData] : [];
-  }
-  return nearbyForMap;
-}, [step, nearbyForMap, providerData]);
+    cancelMutate(requestId, {
+      onSuccess: () => {
+        localStorage.removeItem('activeRequestId');
 
- const mapSelectedProvider = useMemo(() => {
-  if (step === "TRACKING") {
-    return providerData;
-  }
-  return selectedProvider;
-}, [step, providerData, selectedProvider]);
+        navigate('/app/services/instant');
+      },
+    });
+  };
 
+  const handleProviderSelect = useCallback(
+    (provider: Provider) => {
+      if (step !== 'REQUEST') return;
 
-const routeEnd = useMemo(() => {
-  return providerData?.baseLocation 
-    ? { lat: providerData.baseLocation.latitude, lng: providerData.baseLocation.longitude }
-    : null;
-}, [providerData]);
-
-
-  const { route } = useRoute(routeEnd, customerPos);
+      setSelectedProvider((prev) =>
+        prev?.id === provider.id ? null : provider,
+      );
+    },
+    [step],
+  );
 
   const onNearbyProvidersChange = useCallback((list: Provider[]) => {
     setNearbyForMap(list);
   }, []);
 
-
-
-  // if step is request and provider is selected 
-  // pass as props for map to show route and selected provider
-  const handleProviderSelect = useCallback(
-    (provider: Provider) => {
-      if (step !== "REQUEST") return;
-      setSelectedProvider((prev) =>
-        prev?.id === provider.id ? null : provider,
-      );
-      if (typeof window !== "undefined" && window.innerWidth < 768) {
-        setSidebarOpen(false);
-      }
-    },
-    [step],
-  );
-
-  useEffect(() => {
-    if (selectedProvider && window.innerWidth < 768) {
-      setSidebarOpen(false);
-    }
-  }, [selectedProvider]);
-  const resetFlow = useCallback(() => {
-    setStep("REQUEST");
-    setActiveRequestId(null);
-    setSelectedProvider(null);
-    setNearbyForMap([]);
-  }, []);
-
-  const handleCancelRequest = useCallback(() => {
-    if (!activeRequestId) return;
-    cancelMutate(activeRequestId, {
-      onSuccess: () => {
-        resetFlow();
-      }
-    });
-  }, [activeRequestId, cancelMutate, resetFlow]);
-
-  const handleRequestCreated = useCallback((requestId: string) => {
-    setActiveRequestId(requestId);
-    setStep("OFFERS");
-    setSelectedProvider(null);
-  }, []);
-
-  const handleAcceptOffer = useCallback(
-    (providerId: number) => {
-      if (!activeRequestId) return;
-      assignMutate(
-        { requestId: activeRequestId, providerId },
-        { onSuccess: () => setStep("TRACKING") },
-      );
-    },
-    [activeRequestId, assignMutate],
-  );
-
   const sidebarTitle =
-    step === "REQUEST"
-      ? "طلب فوري"
-      : step === "OFFERS"
-        ? "عروض الحرفيين"
-        : "متابعة الطلب";
+    step === 'REQUEST'
+      ? 'طلب فوري'
+      : step === 'OFFERS'
+        ? 'عروض الحرفيين'
+        : 'متابعة الطلب';
 
-  const allowMapPick = step === "REQUEST";
-
-
-
+  const allowMapPick = step === 'REQUEST';
 
   return (
-    <div
-      dir="ltr"
-      className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden font-[Cairo,sans-serif] md:flex-row"
-    >
-      <button
-        type="button"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-4 left-4 z-[1001] flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-105 md:hidden"
-      >
-        {sidebarOpen ? (
-          <X className="text-foreground h-5 w-5" />
-        ) : (
-          <Menu className="text-foreground h-5 w-5" />
-        )}
-      </button>
-
-      <div className="relative min-h-[40vh] flex-1 md:min-h-0">
+    <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row" dir="ltr">
+      {/* map */}
+      <div className="flex-1">
         <MapView
           allowMapPickLocation={allowMapPick}
           onLocationSelect={setCustomerPos}
@@ -198,14 +177,16 @@ const routeEnd = useMemo(() => {
           route={route}
           onProviderSelect={handleProviderSelect}
           onAddressSearch={searchAddress}
+          liveProviderPos={providerLivePos}
         />
       </div>
 
+      {/* sidebar */}
       <aside
         dir="rtl"
         className={cn(
-          "border-border bg-sidebar absolute inset-y-0 right-0 z-[1050] flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none",
-          sidebarOpen ? "translate-x-0" : "translate-x-full md:translate-x-0",
+          'border-border bg-sidebar absolute inset-y-0 right-0 z-[1050] flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none',
+          sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
         )}
       >
         <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
@@ -218,8 +199,7 @@ const routeEnd = useMemo(() => {
             <X className="h-4 w-4" />
           </button>
         </div>
-
-        {step === "REQUEST" && (
+        {step === 'REQUEST' && (
           <Step1RequestForm
             serviceIdAI={aiData?.serviceIdAI}
             descriptionAI={aiData?.descriptionAI}
@@ -235,9 +215,9 @@ const routeEnd = useMemo(() => {
           />
         )}
 
-        {step === "OFFERS" && activeRequestId && (
+        {step === 'OFFERS' && requestId && (
           <Step2OffersSidebar
-            requestId={activeRequestId}
+            requestId={requestId}
             onAccept={handleAcceptOffer}
             isAssigning={assignPending}
             onCancel={handleCancelRequest}
@@ -245,22 +225,17 @@ const routeEnd = useMemo(() => {
           />
         )}
 
-        {step === "TRACKING" && activeRequestId && (
+        {step === 'IN_PROGRESS' && requestId && (
           <Step3TrackingSidebar
-            requestId={activeRequestId}
-            onCompleteSuccess={resetFlow}
+            requestId={requestId}
+            onCompleteSuccess={() => {
+              localStorage.removeItem('activeRequestId');
+              navigate('/app/services/instant');
+            }}
+            onLocationChange={setProviderLivePos} // 🔥 هنا
           />
         )}
       </aside>
-
-      {sidebarOpen && (
-        <button
-          type="button"
-          aria-label="إغلاق"
-          onClick={() => setSidebarOpen(false)}
-          className="absolute inset-0 z-20 bg-black/50 md:hidden"
-        />
-      )}
     </div>
   );
 };
