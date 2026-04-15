@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useLocation as useRouterLocation } from "react-router-dom";
 import MapView from "../../services/components/MapView";
 import { cn } from "@/lib/utils";
 import { useLocation } from "../../services/hooks/useLocation";
@@ -22,9 +23,10 @@ const SIDEBAR_TITLES: Record<ProviderOfferStep, string> = {
 };
 
 const RequestsPage = () => {
+  const { state } = useRouterLocation();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [step, setStep] = useState<ProviderOfferStep>("REQUESTS");
-  const [selectedRequest, setSelectedRequest] = useState<AvailableRequestItem | null>(null);
+
   const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(null);
 
   const {
@@ -32,6 +34,14 @@ const RequestsPage = () => {
     setPosition: setProviderPos,
     searchAddress,
   } = useLocation();
+
+  // Jump to Step2 if navigated from dashboard with a request
+const [selectedRequest, setSelectedRequest] = useState<AvailableRequestItem | null>(
+  state?.request ?? null
+);
+const [step, setStep] = useState<ProviderOfferStep>(
+  state?.request ? "CREATE_OFFER" : "REQUESTS"
+);
 
   const requestPos = useMemo(() => {
     if (!selectedRequest?.serviceRequestLocation) return null;
