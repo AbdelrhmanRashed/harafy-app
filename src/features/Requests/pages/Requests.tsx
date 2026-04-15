@@ -8,8 +8,18 @@ import { useRoute } from "../../services/hooks/useRoute";
 import Step1AvailableRequests from "../components/Step1AvailableRequests ";
 import Step2CreateOffer from "../components/Step2OffersSidebar";
 import Step3WaitingApproval from "../components/Step3WaitingApproval";
+import Step4Accepted from "../components/Step4Accepted";
+import Step5Reviews from "../components/Step5Reviews";
 
 import type { ProviderOfferStep, AvailableRequestItem, SubmittedOffer } from "../types/providerOfferTypes";
+
+const SIDEBAR_TITLES: Record<ProviderOfferStep, string> = {
+  REQUESTS: "الطلبات المتاحة",
+  CREATE_OFFER: "تقديم عرض",
+  WAITING: "في انتظار الموافقة",
+  ACCEPTED: "تم قبول العرض",
+  REVIEW: "التقييمات",
+};
 
 const RequestsPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,9 +30,6 @@ const RequestsPage = () => {
   const {
     position: providerPos,
     setPosition: setProviderPos,
-    address,
-    locating,
-    detect,
     searchAddress,
   } = useLocation();
 
@@ -36,6 +43,7 @@ const RequestsPage = () => {
 
   const { route } = useRoute(requestPos, providerPos);
 
+  const mapCenter = useMemo(() => requestPos ?? providerPos, [requestPos, providerPos]);
 
   const handleSelectRequest = useCallback((request: AvailableRequestItem) => {
     setSelectedRequest(request);
@@ -56,24 +64,6 @@ const RequestsPage = () => {
     setStep("REQUESTS");
   }, []);
 
-  const handleAccepted = useCallback(() => {
-    console.log("Offer accepted — navigate to job tracking");
-  }, []);
-
-
-
-  const mapCenter = useMemo(() => {
-    if (requestPos) return requestPos;
-    return providerPos;
-  }, [requestPos, providerPos]);
-
-  const sidebarTitle =
-    step === "REQUESTS"
-      ? "الطلبات المتاحة"
-      : step === "CREATE_OFFER"
-      ? "تقديم عرض"
-      : "في انتظار الموافقة";
-
   return (
     <div
       dir="ltr"
@@ -92,10 +82,9 @@ const RequestsPage = () => {
         )}
       </button>
 
-      {/*  Map */}
+      {/* Map */}
       <div className="relative min-h-[40vh] flex-1 md:min-h-0">
         <MapView
-          // allowMapPickLocation={step === "REQUESTS"}
           onLocationSelect={setProviderPos}
           center={mapCenter}
           customerPos={requestPos ?? providerPos}
@@ -107,7 +96,7 @@ const RequestsPage = () => {
         />
       </div>
 
-      {/*  Sidebar */}
+      {/* Sidebar */}
       <aside
         dir="rtl"
         className={cn(
@@ -118,7 +107,7 @@ const RequestsPage = () => {
       >
         {/* Mobile header */}
         <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
-          <h2 className="text-foreground text-sm font-bold">{sidebarTitle}</h2>
+          <h2 className="text-foreground text-sm font-bold">{SIDEBAR_TITLES[step]}</h2>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
@@ -151,7 +140,21 @@ const RequestsPage = () => {
           <Step3WaitingApproval
             offer={submittedOffer}
             onCancelled={handleCancelled}
-            onAccepted={handleAccepted}
+            onAccepted={() => setStep("ACCEPTED")}
+          />
+        )}
+
+        {step === "ACCEPTED" && submittedOffer && (
+          <Step4Accepted
+            offer={submittedOffer}
+            onGoToReview={() => setStep("REVIEW")}
+          />
+        )}
+
+        {step === "REVIEW" && submittedOffer && (
+          <Step5Reviews
+            offer={submittedOffer}
+            onDone={handleCancelled}
           />
         )}
       </aside>

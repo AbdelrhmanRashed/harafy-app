@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, Clock, CheckCircle2, Edit3, XCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useUpdateOffer } from "../hooks/useUpdateOffer";
 import { useDeleteOffer } from "../hooks/useDeleteOffer";
+import { useAssignedRequests } from "../hooks/useAssignedRequests";
 import type { SubmittedOffer } from "../types/providerOfferTypes";
-import { Badge } from "@/components/ui/badge";
 
 type Step3WaitingApprovalProps = {
   offer: SubmittedOffer;
   onCancelled: () => void;
-  onAccepted?: () => void; // called externally when polling detects acceptance
+  onAccepted?: () => void;
 };
 
 export default function Step3WaitingApproval({
@@ -20,20 +21,27 @@ export default function Step3WaitingApproval({
   const [isEditing, setIsEditing] = useState(false);
   const [editPrice, setEditPrice] = useState(String(offer.price));
   const [editMessage, setEditMessage] = useState(offer.message ?? "");
-
-  // Track latest values after edits
   const [currentPrice, setCurrentPrice] = useState(offer.price);
   const [currentMessage, setCurrentMessage] = useState(offer.message ?? "");
 
   const { mutate: updateMutate, isPending: isUpdating } = useUpdateOffer();
   const { mutate: deleteMutate, isPending: isDeleting } = useDeleteOffer();
 
+  const { data: assignedRequests } = useAssignedRequests(false, { enabled: !!onAccepted });
+
+  useEffect(() => {
+    if (!assignedRequests || !onAccepted) return;
+    const accepted = assignedRequests.some(
+      (r) => r.id === offer.serviceRequestId
+    );
+    if (accepted) onAccepted();
+  }, [assignedRequests,offer.serviceRequestId, onAccepted]);
+
   const handleUpdate = () => {
     const numPrice = Number(editPrice);
     if (!numPrice || numPrice <= 0) return;
-
     updateMutate(
-      { id: offer.offerId, price: numPrice, message: editMessage.trim() || undefined },
+      { id: offer.serviceRequestId, price: numPrice, message: editMessage.trim() || undefined },
       {
         onSuccess: () => {
           setCurrentPrice(numPrice);
@@ -55,12 +63,10 @@ export default function Step3WaitingApproval({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-foreground text-xl font-black">في انتظار الموافقة</h2>
-        <Badge className="bg-primary/10 text-primary  font-bold">
-          قيد الانتظار
-        </Badge>
+        <Badge className="bg-primary/10 text-primary font-bold">قيد الانتظار</Badge>
       </div>
 
-      {/* Animated waiting illustration */}
+      {/* Illustration */}
       <div className="flex flex-col items-center py-6">
         <div className="relative mb-6">
           <div className="h-28 w-28 bg-primary/5 rounded-full outline outline-[12px] outline-primary/5 flex items-center justify-center">
@@ -70,45 +76,36 @@ export default function Step3WaitingApproval({
             <Zap className="h-4 w-4 text-primary fill-current" />
           </span>
         </div>
-
-        <h3 className="text-foreground text-lg font-black text-center">
-          تم إرسال عرضك بنجاح!
-        </h3>
+        <h3 className="text-foreground text-lg font-black text-center">تم إرسال عرضك بنجاح!</h3>
         <p className="text-muted-foreground text-[13px] leading-relaxed mt-2 max-w-[260px] text-center">
           في انتظار موافقة العميل. سيتم إعلامك فور قبوله للعرض.
         </p>
       </div>
 
-      {/* Offer summary card */}
+      {/* Offer summary / edit form */}
       {!isEditing ? (
         <div className="bg-muted/40 rounded-2xl p-4 border border-border/60 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-              طلب #{offer.serviceRequestId}
+              طلب #{offer.serviceRequestId}, #{offer.offerId}
             </span>
             <CheckCircle2 className="h-4 w-4 text-green-500" />
           </div>
-
           <div className="flex items-center justify-between pt-1 border-t border-border/50">
             <span className="text-xl font-black text-primary">
               {currentPrice.toLocaleString("ar-EG")} جنيه
             </span>
             <span className="text-xs text-muted-foreground">السعر المقترح</span>
           </div>
-
           {currentMessage && (
             <div className="pt-1 border-t border-border/50">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {currentMessage}
-              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{currentMessage}</p>
             </div>
           )}
         </div>
       ) : (
-        /* Edit form */
         <div className="bg-muted/40 rounded-2xl p-4 border-2 border-primary/40 space-y-4">
           <p className="text-sm font-bold text-foreground">تعديل العرض</p>
-
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-muted-foreground">
               السعر (جنيه) <span className="text-red-500">*</span>
@@ -126,7 +123,6 @@ export default function Step3WaitingApproval({
               </span>
             </div>
           </div>
-
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-muted-foreground">رسالة (اختياري)</label>
             <textarea
@@ -136,7 +132,6 @@ export default function Step3WaitingApproval({
               className="w-full rounded-xl border-2 border-border bg-background px-4 py-2.5 text-sm text-foreground focus:border-primary focus:outline-none transition-colors resize-none"
             />
           </div>
-
           <div className="flex gap-2 pt-1">
             <Button
               onClick={handleUpdate}
@@ -144,7 +139,7 @@ export default function Step3WaitingApproval({
               className="flex-1 h-10 rounded-xl font-bold text-sm gap-1.5"
               variant="gradient"
             >
-              {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {isUpdating && <Loader2 className="h-4 w-4 animate-spin" />}
               {isUpdating ? "جاري الحفظ..." : "حفظ التعديل"}
             </Button>
             <Button
@@ -173,7 +168,7 @@ export default function Step3WaitingApproval({
             />
           </div>
           <span className="text-sm font-bold text-muted-foreground tracking-[0.1em] uppercase">
-           انتظار قبول العميل
+            انتظار قبول العميل
           </span>
           <style>{`
             @keyframes slide-loader {
@@ -197,7 +192,6 @@ export default function Step3WaitingApproval({
             تعديل العرض
           </Button>
         )}
-
         <Button
           className="w-full h-12 rounded-2xl font-bold gap-2 transition-all"
           onClick={handleDelete}

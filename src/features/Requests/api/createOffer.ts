@@ -1,7 +1,14 @@
 import axiosInstance from "@/lib/axios";
 import type { CreateOfferPayload } from "../types/providerOfferTypes";
 
-export const createOffer = async (payload: CreateOfferPayload) => {
+export type CreateOfferResponse = {
+  id?: number;
+  offerId?: number;
+};
+
+export const createOffer = async (
+  payload: CreateOfferPayload
+): Promise<CreateOfferResponse> => {
   const res = await axiosInstance.post(
     `/api/RequestOffer/create-offer/${payload.serviceRequestId}`,
     {

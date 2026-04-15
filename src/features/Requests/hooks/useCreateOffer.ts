@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createOffer } from "../api/createOffer";
+import { createOffer, type CreateOfferResponse } from "../api/createOffer";
+import type { CreateOfferPayload } from "../types/providerOfferTypes";
 import { toast } from "sonner";
 
 export const useCreateOffer = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<CreateOfferResponse, Error, CreateOfferPayload>({
     mutationFn: createOffer,
     onSuccess: () => {
       toast.success("تم إرسال عرضك بنجاح");

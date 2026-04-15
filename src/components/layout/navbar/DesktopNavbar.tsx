@@ -4,6 +4,7 @@ import NavLinks from './components/NavLinks';
 import SearchInputField from './components/SearchInputField';
 import ClientActions from './sections/ClientActions';
 import type { UserRole } from '@/types/auth.types';
+import ProviderActions from './sections/ProviderActions';
 
 interface DesktopNavbarProps {
   role: UserRole;
@@ -23,7 +24,7 @@ const DesktopNavbar = ({ role }: DesktopNavbarProps) => {
 
       {/* Left Side: Actions */}
       <div className="flex items-center gap-4">
-        {role === 'Client' && <ClientActions />}
+        {role === 'Provider' && <ProviderActions />}
       </div>
     </header>
   );

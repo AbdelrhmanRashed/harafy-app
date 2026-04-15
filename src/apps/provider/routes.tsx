@@ -10,7 +10,7 @@ import ProviderStatusGuard from '@/guards/ProviderStatusGuard';
 import { Navigate } from 'react-router-dom';
 import ProviderLayout from './layout/ProviderLayout';
 import Requests from '@/features/Requests/pages/Requests';
-import path from 'path';
+import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
 
 const ProviderRoutes = [
   {
@@ -46,6 +46,10 @@ const ProviderRoutes = [
     },
 
   ],
+          },
+          {
+            path:'reviews',
+            element:<ReviewsPage/>
           },
           {
             path: 'profile',

@@ -4,7 +4,7 @@ import type { UserRole } from '@/types/auth.types';
 
 export const Navbar = () => {
   //CHANGE LATER!!!
-  const role: UserRole = 'Client';
+  const role: UserRole = 'Provider';
 
   return (
     <>

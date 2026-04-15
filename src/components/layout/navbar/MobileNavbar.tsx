@@ -3,6 +3,7 @@ import ClientActions from './sections/ClientActions';
 import { getNavLinks } from '@/constants/navigation';
 import NavLinks from './components/NavLinks';
 import type { UserRole } from '@/types/auth.types';
+import ProviderActions from './sections/ProviderActions';
 
 interface MobileNavbarProps {
   role: UserRole;
@@ -14,7 +15,7 @@ const MobileNavbar = ({ role }: MobileNavbarProps) => {
       <header className="bg-background/93 border-border sticky top-0 z-900 flex h-16 w-full items-center justify-between border-b px-4 font-sans backdrop-blur-md md:hidden">
         <Logo />
         <div className="flex items-center gap-2">
-          {role === 'Client' && <ClientActions />}
+          {role === 'Provider' && <ProviderActions />}
         </div>
       </header>
 

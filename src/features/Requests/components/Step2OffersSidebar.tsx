@@ -35,10 +35,10 @@ export default function Step2CreateOffer({
                         message: message.trim() || undefined,
                     });
                 },
+                
             }
         );
     };
-
     const createdAt = request.createdAt
         ? new Date(request.createdAt).toLocaleTimeString("ar-EG", {
             hour: "2-digit",
@@ -166,7 +166,6 @@ export default function Step2CreateOffer({
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-bold text-foreground">
                         رسالة للعميل{" "}
-                        <span className="text-muted-foreground text-xs font-normal">(اختياري)</span>
                     </label>
                     <textarea
                         value={message}
