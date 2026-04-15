@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function Step4Accepted({ offer, onGoToReview }: Props) {
-  const { data: assignedRequests } = useAssignedRequests(false);
+  const { data: assignedRequests } = useAssignedRequests(true);
 
   const assignedRequest = assignedRequests?.find(
     (r) => r.id === offer.serviceRequestId

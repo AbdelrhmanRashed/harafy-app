@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loader2, Clock, CheckCircle2, Edit3, XCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,15 +27,25 @@ export default function Step3WaitingApproval({
   const { mutate: updateMutate, isPending: isUpdating } = useUpdateOffer();
   const { mutate: deleteMutate, isPending: isDeleting } = useDeleteOffer();
 
-  const { data: assignedRequests } = useAssignedRequests(false, { enabled: !!onAccepted });
+  const acceptedRef = useRef(false);
+  const { data: assignedRequests } = useAssignedRequests(true, { enabled: !!onAccepted });
 
   useEffect(() => {
     if (!assignedRequests || !onAccepted) return;
+    if (acceptedRef.current) return;
+    console.log("=== POLLING CHECK ===");
+    console.log("assignedRequests:", assignedRequests);
+    console.log("offer.serviceRequestId:", offer.serviceRequestId);
+    console.log("ids in assigned:", assignedRequests.map(r => r.id));
     const accepted = assignedRequests.some(
       (r) => r.id === offer.serviceRequestId
     );
-    if (accepted) onAccepted();
-  }, [assignedRequests,offer.serviceRequestId, onAccepted]);
+    console.log("accepted:", accepted);
+    if (accepted) {
+      acceptedRef.current = true;
+      onAccepted();
+    }
+  }, [assignedRequests, offer.serviceRequestId, onAccepted]);
 
   const handleUpdate = () => {
     const numPrice = Number(editPrice);

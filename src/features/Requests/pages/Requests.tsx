@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Menu, X } from "lucide-react";
 import { useLocation as useRouterLocation } from "react-router-dom";
 import MapView from "../../services/components/MapView";
@@ -25,8 +25,16 @@ const SIDEBAR_TITLES: Record<ProviderOfferStep, string> = {
 const RequestsPage = () => {
   const { state } = useRouterLocation();
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(
+    !!(state?.request && typeof window !== "undefined" && window.innerWidth < 768)
+  );
 
+  const [selectedRequest, setSelectedRequest] = useState<AvailableRequestItem | null>(
+    state?.request ?? null
+  );
+  const [step, setStep] = useState<ProviderOfferStep>(
+    state?.request ? "CREATE_OFFER" : "REQUESTS"
+  );
   const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(null);
 
   const {
@@ -34,14 +42,6 @@ const RequestsPage = () => {
     setPosition: setProviderPos,
     searchAddress,
   } = useLocation();
-
-  // Jump to Step2 if navigated from dashboard with a request
-const [selectedRequest, setSelectedRequest] = useState<AvailableRequestItem | null>(
-  state?.request ?? null
-);
-const [step, setStep] = useState<ProviderOfferStep>(
-  state?.request ? "CREATE_OFFER" : "REQUESTS"
-);
 
   const requestPos = useMemo(() => {
     if (!selectedRequest?.serviceRequestLocation) return null;
@@ -52,7 +52,6 @@ const [step, setStep] = useState<ProviderOfferStep>(
   }, [selectedRequest]);
 
   const { route } = useRoute(requestPos, providerPos);
-
   const mapCenter = useMemo(() => requestPos ?? providerPos, [requestPos, providerPos]);
 
   const handleSelectRequest = useCallback((request: AvailableRequestItem) => {
@@ -72,6 +71,10 @@ const [step, setStep] = useState<ProviderOfferStep>(
     setSubmittedOffer(null);
     setSelectedRequest(null);
     setStep("REQUESTS");
+  }, []);
+
+  const handleAccepted = useCallback(() => {
+    setStep("ACCEPTED");
   }, []);
 
   return (
@@ -150,7 +153,7 @@ const [step, setStep] = useState<ProviderOfferStep>(
           <Step3WaitingApproval
             offer={submittedOffer}
             onCancelled={handleCancelled}
-            onAccepted={() => setStep("ACCEPTED")}
+            onAccepted={handleAccepted}
           />
         )}
 
