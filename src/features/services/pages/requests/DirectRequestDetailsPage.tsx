@@ -14,6 +14,7 @@ import "leaflet/dist/leaflet.css";
 import { customerIcon } from "@/features/services/utils/mapIcons";
 import { useGetServiceReqById } from "../../hooks/useGetServiceReqById";
 import { useGetRequestOffer } from "../../hooks/useGetRequestOffer";
+import { useSetReqCancelled } from "../../hooks/useSetReqCancelled";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -105,6 +106,19 @@ export default function InstantRequestDetailsPage() {
 
   // call api get request offer by id
   const {  data: requestOffers, isLoading: requestOfferLoading } = useGetRequestOffer(requestId!);  
+  const { mutate: cancelMutate, isPending: cancelPending } =
+      useSetReqCancelled();
+    const handleCancelRequest = () => {
+    if (!requestId) return;
+
+    cancelMutate(requestId, {
+      onSuccess: () => {
+        localStorage.removeItem('activeRequestId');
+        navigate('/app/home');
+      },
+    });
+  };
+
 
   // Map Data from API or fallback to state
   const reqData = data as RequestState | undefined;
@@ -137,7 +151,7 @@ export default function InstantRequestDetailsPage() {
       </div>
     );
   }
-
+  
   return (
     <div
       className="min-h-screen bg-background font-[Cairo,sans-serif] pb-10"
@@ -148,11 +162,11 @@ export default function InstantRequestDetailsPage() {
         <div className="flex items-start justify-between gap-4">
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0">
-            <Button
+           <Button
               variant="destructive"
               size="sm"
               className="rounded-full text-xs font-bold h-9 px-4"
-              onClick={() => navigate(-1)}
+              onClick={handleCancelRequest}
             >
               إلغاء الطلب
             </Button>

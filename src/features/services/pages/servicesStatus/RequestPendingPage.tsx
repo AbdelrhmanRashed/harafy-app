@@ -54,7 +54,7 @@ const RequestPending = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-b from-[#F0EFFE] via-[#F5F3FF] to-background flex flex-col items-center justify-center px-5 py-12 font-[Cairo,sans-serif]"
+      className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-12 "
     >
       <div className="w-full max-w-md flex flex-col items-center gap-8">
 
@@ -91,10 +91,10 @@ const RequestPending = () => {
 
         {/* ── Request summary card ── */}
         {payload && (
-          <div className="min-w-xl bg-white rounded-3xl border border-border/40 shadow-sm overflow-hidden">
+          <div className="min-w-xl bg-card rounded-3xl border border-border/40 shadow-sm overflow-hidden">
             <div className="flex items-center gap-6 px-8 pt-10 pb-8">
               {/* Avatar */}
-              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-900 shrink-0">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden  shrink-0">
                 {payload.providerImage ? (
                   <img
                     src={payload.providerImage}
@@ -160,7 +160,7 @@ const RequestPending = () => {
             {/* <ChevronLeft className="h-4 w-4" /> */}
           </Button>
           <Button
-            variant="ghost"
+            variant="secondary"
             className="flex-1 h-14 rounded-3xl font-bold text-muted-foreground hover:text-foreground"
             onClick={() => navigate("/app/home")}
           >
