@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Loader2, MapPin, SendHorizonal, Zap } from "lucide-react";
+import { ArrowRight, Loader2, MapPin, SendHorizonal, Zap,X  } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCreateOffer } from "../hooks/useCreateOffer";
 import type { AvailableRequestItem, SubmittedOffer } from "../types/providerOfferTypes";
@@ -49,7 +49,7 @@ export default function Step2CreateOffer({
     const serviceName = services?.find((s) => s.id === request.serviceId)?.name
         ?? "";
     const images = request.imageUrls ?? [];
-
+const [lightbox, setLightbox] = useState<string | null>(null);
     return (
         <div className="flex flex-col gap-5 px-4 py-4 sm:px-5 pb-8 h-full" dir="rtl">
             {/* Header */}
@@ -132,6 +132,7 @@ export default function Step2CreateOffer({
                                         src={url}
                                         alt={`صورة ${i + 1}`}
                                         className="w-full h-full object-cover"
+                                        onClick={() => setLightbox(url)}
                                     />
                                 </div>
                             ))}
@@ -196,6 +197,26 @@ export default function Step2CreateOffer({
                     سيصل عرضك للعميل فوراً وسيتمكن من قبوله أو رفضه.
                 </p>
             </div>
+            {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition"
+            onClick={() => setLightbox(null)}
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <img
+            src={lightbox}
+            alt="صورة مكبرة"
+            className="max-w-[90vw] max-h-[80vh] rounded-2xl object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
+      )}     
+       </div>
     );
 }
