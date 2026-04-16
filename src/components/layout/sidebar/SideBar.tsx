@@ -6,7 +6,7 @@ import {
   Settings,
   Users,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const links = [
   { label: "الرئيسية", icon: LayoutGrid, path: "/provider/home" },
@@ -18,8 +18,17 @@ const links = [
 ];
 
 const ProviderSidebar = () => {
+  const { pathname } = useLocation();
+
+  const isRequestsRoute = pathname.startsWith("/provider/requests");
+
   return (
-    <aside className="w-16 xl:w-64 bg-background border-l p-2 xl:p-4 flex flex-col min-h-screen shrink-0">
+    <aside
+      className={`
+        bg-background border-l flex flex-col min-h-screen shrink-0 transition-all duration-200
+        ${isRequestsRoute ? "w-16 p-2" : "w-16 xl:w-64 p-2 xl:p-4"}
+      `}
+    >
       <div className="space-y-1">
         {links.map((item, i) => (
           <NavLink
@@ -27,17 +36,20 @@ const ProviderSidebar = () => {
             to={item.path}
             end
             className={({ isActive }) =>
-              `flex items-center justify-center xl:justify-start gap-3 px-2 xl:px-4 py-3 rounded-xl transition-colors ${
-                isActive
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted"
+              `flex items-center gap-3 py-3 rounded-xl transition-colors
+              ${isRequestsRoute ? "justify-center px-2" : "justify-center xl:justify-start px-2 xl:px-4"}
+              ${isActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted"
               }`
             }
           >
             <item.icon size={20} className="shrink-0" />
-            <span className="hidden xl:inline text-sm xl:text-base">
-              {item.label}
-            </span>
+            {!isRequestsRoute && (
+              <span className="hidden xl:inline text-sm xl:text-base">
+                {item.label}
+              </span>
+            )}
           </NavLink>
         ))}
       </div>
