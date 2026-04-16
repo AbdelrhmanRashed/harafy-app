@@ -11,6 +11,7 @@ import { Navigate } from 'react-router-dom';
 import ProviderLayout from './layout/ProviderLayout';
 import Requests from '@/features/Requests/pages/Requests';
 import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
+import DirectRequestPage from '@/features/Requests/pages/direct/DirectRequestPage';
 
 const ProviderRoutes = [
   {
@@ -21,59 +22,58 @@ const ProviderRoutes = [
           <ProviderLayout />
         </ProviderStatusGuard>
       </ProtectedRoute>
-                // <ProviderLayout />
+      // <ProviderLayout />
     ),
     children: [
-          {
-            index: true,
-            element: <Navigate to="home" replace />,
-          },
-          {
-            path: 'home',
-            element: <ProviderDashboard />,
-          },
-          {
-            path: 'community',
-            element: <CommunityPage />,
-          },
-          // requests routes
-          {
-            path: 'requests',
-            children: [
-    {
-      index: true,
-      element: <Requests />,
-    },
+      {
+        index: true,
+        element: <Navigate to="home" replace />,
+      },
+      {
+        path: 'home',
+        element: <ProviderDashboard />,
+      },
+      {
+        path: 'community',
+        element: <CommunityPage />,
+      },
+      // requests routes
+      {
+        path: 'requests',
+        children: [
+          {index: true,element: <Requests />},
+          { path: 'direct', element: <DirectRequestPage /> },
 
-  ],
-          },
-          {
-            path:'reviews',
-            element:<ReviewsPage/>
-          },
-          {
-            path: 'profile',
-            children: [
-              {
-                index: true,
-                element: <ProfilePage />,
-              },
-              {
-                path: 'settings',
-                element: <SettingsLayout />,
-                children: [
-                  { index: true, element: <Navigate to="info" replace /> },
-                  { path: 'info', element: <ProfileSettingsPage /> },
-                  { path: 'notifications', element: <NotificationsPage /> },
-                  { path: 'security', element: <SecurityPage /> },
-                ],
-              },
-            ],
-          },
 
         ],
       },
-    ];
+      {
+        path: 'reviews',
+        element: <ReviewsPage />
+      },
+      {
+        path: 'profile',
+        children: [
+          {
+            index: true,
+            element: <ProfilePage />,
+          },
+          {
+            path: 'settings',
+            element: <SettingsLayout />,
+            children: [
+              { index: true, element: <Navigate to="info" replace /> },
+              { path: 'info', element: <ProfileSettingsPage /> },
+              { path: 'notifications', element: <NotificationsPage /> },
+              { path: 'security', element: <SecurityPage /> },
+            ],
+          },
+        ],
+      },
+
+    ],
+  },
+];
 
 
 export default ProviderRoutes;
