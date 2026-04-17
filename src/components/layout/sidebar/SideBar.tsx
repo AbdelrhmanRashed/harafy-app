@@ -20,13 +20,15 @@ const links = [
 const ProviderSidebar = () => {
   const { pathname } = useLocation();
 
-  const isRequestsRoute = pathname.startsWith("/provider/requests");
+  const isIconOnly =
+    pathname.startsWith("/provider/requests") ||
+    pathname.startsWith("/provider/community");
 
   return (
     <aside
       className={`
         bg-background border-l flex flex-col min-h-screen shrink-0 transition-all duration-200
-        ${isRequestsRoute ? "w-16 p-2" : "w-16 xl:w-64 p-2 xl:p-4"}
+        ${isIconOnly ? "w-16 p-2" : "w-16 xl:w-64 p-2 xl:p-4"}
       `}
     >
       <div className="space-y-1">
@@ -37,7 +39,10 @@ const ProviderSidebar = () => {
             end
             className={({ isActive }) =>
               `flex items-center gap-3 py-3 rounded-xl transition-colors
-              ${isRequestsRoute ? "justify-center px-2" : "justify-center xl:justify-start px-2 xl:px-4"}
+              ${isIconOnly
+                ? "justify-center px-2"
+                : "justify-center xl:justify-start px-2 xl:px-4"
+              }
               ${isActive
                 ? "bg-primary/10 text-primary font-medium"
                 : "text-muted-foreground hover:bg-muted"
@@ -45,7 +50,7 @@ const ProviderSidebar = () => {
             }
           >
             <item.icon size={20} className="shrink-0" />
-            {!isRequestsRoute && (
+            {!isIconOnly && (
               <span className="hidden xl:inline text-sm xl:text-base">
                 {item.label}
               </span>
