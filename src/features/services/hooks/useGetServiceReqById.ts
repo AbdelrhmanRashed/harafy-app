@@ -7,5 +7,7 @@ export const useGetServiceReqById = (id: string | null) => {
     queryKey: ['service-requests', id],
     queryFn: () => getServiceReqById(id!),
     enabled: !!id,
+    staleTime: 0,
+    refetchInterval: 10 * 1000,
   });
 };

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { getDynamicPrompt } from './ModelAi';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -138,7 +137,7 @@ const HarafyBot = ({
 
       {/* Chat Box */}
       {isOpen && (
-        <Card className="fixed right-3 bottom-35 z-[1000]! flex h-[450px] w-80 flex-col shadow-xl">
+        <Card className="fixed right-3 bottom-35 z-1000! flex h-[450px] w-80 flex-col shadow-xl">
           {/* Header */}
           <div className="relative flex items-center justify-between border-b px-6 pb-3 font-semibold">
             <X
