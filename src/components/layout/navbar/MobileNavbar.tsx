@@ -16,6 +16,7 @@ const MobileNavbar = ({ role }: MobileNavbarProps) => {
         <Logo />
         <div className="flex items-center gap-2">
           {role === 'Provider' && <ProviderActions />}
+          {role === 'Client' && <ClientActions />}
         </div>
       </header>
 
