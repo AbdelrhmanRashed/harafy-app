@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { MapPin, Clock, Calendar, X, Star, Menu } from "lucide-react";
-import { useGetServices } from "../../../Requests/hooks/useGetServices";
-import MapView from "../../../services/components/MapView";
-import { useLocation as useProviderLocation } from "../../../services/hooks/useLocation";
-import { useRoute } from "../../../services/hooks/useRoute";
+import { useGetServices } from "../../../../Requests/hooks/useGetServices";
+import MapView from "../../../../services/components/MapView";
+import { useLocation as useProviderLocation } from "../../../../services/hooks/useLocation";
+import { useRoute } from "../../../../services/hooks/useRoute";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/lib/axios";
 import { useState, useEffect } from "react";
@@ -26,12 +26,10 @@ const DirectRequestPage = () => {
     searchAddress,
   } = useProviderLocation();
 
-  // ✅ Auto-detect provider's real GPS location on mount
   useEffect(() => {
     detect();
   }, []);
 
-  // ✅ Client's real location comes from the request data
   const clientPos = request?.serviceRequestLocation
     ? {
         lat: request.serviceRequestLocation.latitude,
@@ -39,16 +37,7 @@ const DirectRequestPage = () => {
       }
     : null;
 
-  // ✅ Route from provider's real location to client's location
   const { route } = useRoute(clientPos, providerPos);
-
-  if (!request) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">لا توجد بيانات للطلب</p>
-      </div>
-    );
-  }
 
   const serviceName =
     services?.find((s) => s.id === request.serviceId)?.name ?? "";
@@ -278,23 +267,23 @@ const DirectRequestPage = () => {
 
       {/* Lightbox */}
       {lightbox && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-          onClick={() => setLightbox(null)}
-        >
-          <button
-            className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white"
-            onClick={() => setLightbox(null)}
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <img
-            src={lightbox}
-            className="max-h-[80vh] max-w-[90vw] rounded-2xl object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90"
+    onClick={() => setLightbox(null)}
+  >
+    <button
+      className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white"
+      onClick={() => setLightbox(null)}
+    >
+      <X className="h-5 w-5" />
+    </button>
+    <img
+      src={lightbox}
+      className="max-h-[80vh] max-w-[90vw] rounded-2xl object-contain"
+      onClick={(e) => e.stopPropagation()}
+    />
+  </div>
+)}
     </div>
   );
 };

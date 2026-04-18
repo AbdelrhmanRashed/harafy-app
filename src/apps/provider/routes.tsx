@@ -11,7 +11,8 @@ import { Navigate } from 'react-router-dom';
 import ProviderLayout from './layout/ProviderLayout';
 import Requests from '@/features/Requests/pages/Requests';
 import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
-import DirectRequestPage from '@/features/Requests/pages/direct/DirectRequestPage';
+import DirectPage from '@/features/Requests/pages/direct/DirectPage';
+import DirectRequestPage from '@/features/Requests/pages/direct/Accepted/DirectRequestPage';
 
 const ProviderRoutes = [
   {
@@ -38,15 +39,14 @@ const ProviderRoutes = [
         element: <CommunityPage />,
       },
       // requests routes
-      {
-        path: 'requests',
-        children: [
-          {index: true,element: <Requests />},
-          { path: 'direct', element: <DirectRequestPage /> },
-
-
-        ],
-      },
+{
+  path: 'requests',
+  children: [
+    { index: true, element: <Requests /> },
+    { path: 'direct', element: <DirectPage /> },
+    { path: 'direct/:serviceRequestId', element: <DirectRequestPage /> },
+  ],
+},
       {
         path: 'reviews',
         element: <ReviewsPage />

@@ -45,7 +45,7 @@ export default function DirectRequestCard({ data }: Props) {
       { id: data.id, isAccepted: true },
       {
         onSuccess: (result) => {
-          navigate("/provider/requests/direct", {
+          navigate(`/provider/requests/direct/${data.id}`, {
             state: {
               request: {
                 ...result,

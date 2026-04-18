@@ -17,12 +17,10 @@ export default function Step4Accepted({ offer, onGoToReview }: Props) {
 
   return (
     <div className="flex flex-col gap-6 px-4 py-4 sm:px-5 pb-8 h-full" dir="rtl">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-foreground text-xl font-black">تم قبول عرضك!</h2>
       </div>
 
-      {/* Success illustration */}
       <div className="flex flex-col items-center py-8">
         <div className="relative mb-6">
           <div className="h-28 w-28 bg-green-500/10 rounded-full outline outline-[12px] outline-green-500/5 flex items-center justify-center">

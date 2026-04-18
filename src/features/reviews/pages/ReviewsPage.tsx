@@ -113,7 +113,7 @@ export default function ReviewsPage() {
                       {/* Name + request */}
                       <div>
                         <p className="text-sm font-black text-foreground">
-                          {/* {review.clientName ?? `عميل #${review.serviceRequestId}`} */}
+                          {review.clientName ??""}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {/* طلب #{review.serviceRequestId} */}

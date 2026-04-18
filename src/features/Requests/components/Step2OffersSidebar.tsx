@@ -197,26 +197,26 @@ const [lightbox, setLightbox] = useState<string | null>(null);
                     سيصل عرضك للعميل فوراً وسيتمكن من قبوله أو رفضه.
                 </p>
             </div>
-            {/* Lightbox */}
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-          onClick={() => setLightbox(null)}
-        >
-          <button
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition"
-            onClick={() => setLightbox(null)}
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <img
-            src={lightbox}
-            alt="صورة مكبرة"
-            className="max-w-[90vw] max-h-[80vh] rounded-2xl object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}     
+   {/* Lightbox */}
+{lightbox && (
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90"
+    onClick={() => setLightbox(null)}
+  >
+    <button
+      className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition"
+      onClick={() => setLightbox(null)}
+    >
+      <X className="h-5 w-5" />
+    </button>
+    <img
+      src={lightbox}
+      alt="صورة مكبرة"
+      className="max-h-[80vh] max-w-[90vw] rounded-2xl object-contain"
+      onClick={(e) => e.stopPropagation()}
+    />
+  </div>
+)}     
        </div>
     );
 }
