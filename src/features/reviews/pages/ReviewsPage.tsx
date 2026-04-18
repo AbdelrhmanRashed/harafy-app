@@ -1,6 +1,5 @@
 import { Star, Loader2 } from "lucide-react";
 import { useMyProviderReviews } from "../hooks/useMyProviderReviews";
-import { useCurrentProviderId } from "../../dashboard/hooks/useCurrentProviderId";
 
 function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md" | "lg" }) {
   const sz = size === "lg" ? "h-6 w-6" : size === "md" ? "h-4 w-4" : "h-3 w-3";
@@ -37,8 +36,7 @@ function RatingBar({ star, count, total }: { star: number; count: number; total:
 }
 
 export default function ReviewsPage() {
-  const providerId = useCurrentProviderId();
-  const { data: reviews, isLoading } = useMyProviderReviews(providerId);
+  const { data: reviews, isLoading } = useMyProviderReviews();
 
   const total = reviews?.length ?? 0;
   const avg =
@@ -115,10 +113,10 @@ export default function ReviewsPage() {
                       {/* Name + request */}
                       <div>
                         <p className="text-sm font-black text-foreground">
-                          {review.clientName ?? `عميل #${review.serviceRequestId}`}
+                          {/* {review.clientName ?? `عميل #${review.serviceRequestId}`} */}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          طلب #{review.serviceRequestId}
+                          {/* طلب #{review.serviceRequestId} */}
                         </p>
                       </div>
                     </div>

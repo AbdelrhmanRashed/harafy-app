@@ -31,7 +31,7 @@ const ProviderSidebar = () => {
         ${isIconOnly ? "w-16 p-2" : "w-16 xl:w-64 p-2 xl:p-4"}
       `}
     >
-      <div className="space-y-1">
+      <div className="space-y-1 fixed">
         {links.map((item, i) => (
           <NavLink
             key={i}

@@ -1,6 +1,7 @@
-import { useAssignedRequests } from "../../Requests/hooks/useAssignedRequests";
+import { useProviderProfile } from "./useProviderProfile";
 
 export const useCurrentProviderId = (): number => {
-  const { data } = useAssignedRequests();
-  return data?.[0]?.providerId ?? 0;
+  const { data } = useProviderProfile();
+  console.log("provider profile:", data);
+  return data?.id ?? 0;
 };
