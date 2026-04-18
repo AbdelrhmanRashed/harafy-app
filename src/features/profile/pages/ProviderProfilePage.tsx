@@ -23,13 +23,26 @@ import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import Download from 'yet-another-react-lightbox/plugins/download';
 import ReviewSection from '../components/ReviewSection';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useMyProviderProfile } from '@/features/dashboard/hooks/useMyProviderProfile';
 
 const ProviderProfilePage = () => {
   const { providerId } = useParams();
-  const { data, isLoading } = useGetProviderProfile(providerId!);
+  const { user } = useAuthStore();
+
+  const isMyProfile = user?.role.includes('Provider');
+
+  const { data: myData, isLoading: myIsLoading } =
+    useMyProviderProfile(isMyProfile);
+
+  const { data: providerData, isLoading: providerIsLoading } =
+    useGetProviderProfile(isMyProfile ? undefined : providerId);
+
+  const data = isMyProfile ? myData : providerData;
+  const isLoading = isMyProfile ? myIsLoading : providerIsLoading;
+
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  console.log(data);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -321,10 +334,11 @@ const ProviderProfilePage = () => {
           </div>
         </div>
       </div>
+
       <DirectServiceDrawer
         isDrawerOpen={isDrawerOpen}
         setIsDrawerOpen={setIsDrawerOpen}
-        ProviderId={Number(providerId)}
+        ProviderId={providerId ? Number(providerId) : undefined}
       />
       <Lightbox
         open={lightboxOpen}

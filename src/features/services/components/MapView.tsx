@@ -50,7 +50,7 @@ interface MapViewProps {
   onLocationSelect: (pos: LatLng) => void;
   onProviderSelect: (provider: Provider) => void;
   onAddressSearch: (query: string) => void;
-  liveProviderPos: { lat: number; lng: number } | null;
+  liveProviderPos?: { lat: number; lng: number } | null;
 }
 
 const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.502 };
