@@ -12,6 +12,7 @@ import 'leaflet/dist/leaflet.css';
 import { customerIcon, workerIcon } from '../utils/mapIcons.ts';
 import type { LatLng, Provider } from '../types/types.ts';
 import LoadingSpinner from '@/components/shared/LoadingSpinner.tsx';
+import { Search, X } from 'lucide-react';
 
 // ─── Map click handler ─────────────────────────────────────────
 function MapClickHandler({
@@ -62,11 +63,11 @@ export default function MapView({
   route = [],
   allowMapPickLocation = true,
   onLocationSelect = () => {},
-  onProviderSelect = () => {},
-  // onAddressSearch = () => {},
+  // onProviderSelect = () => {},
+  onAddressSearch = () => {},
   liveProviderPos,
 }: MapViewProps) {
-  // const [mapSearch, setMapSearch] = useState('');
+  const [mapSearch, setMapSearch] = useState('');
 
   return (
     <div className="relative h-full w-full">
@@ -81,29 +82,43 @@ export default function MapView({
         </div>
       )}
       {/* 🔍 Search */}
-      {/* <div className="absolute top-3 left-1/2 z-[900] w-80 -translate-x-1/2">
-        <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-md">
-          <Search className="h-4 w-4" />
-          <input
-            type="text"
-            placeholder="ابحث..."
-            value={mapSearch}
-            onChange={(e) => setMapSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && mapSearch.trim()) {
-                onAddressSearch(mapSearch.trim());
-                setMapSearch('');
-              }
-            }}
-            className="flex-1 bg-transparent text-sm outline-none"
-          />
-          {mapSearch && (
-            <button onClick={() => setMapSearch('')}>
-              <X className="h-4 w-4" />
+      {allowMapPickLocation && (
+        <div className="absolute top-4 left-1/2 z-500 w-[90%] max-w-md -translate-x-1/2">
+          <div className="group border-border/50 bg-background/80 focus-within:ring-primary/10 flex flex-row-reverse items-center gap-3 rounded-full px-4 py-3 shadow-lg backdrop-blur-xl transition-all">
+            <Search className="text-muted-foreground group-focus-within:text-primary h-5 w-5 transition-colors" />
+            <input
+              type="text"
+              dir="rtl"
+              placeholder="ابحث عن موقع أو عنوان..."
+              value={mapSearch}
+              onChange={(e) => setMapSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && mapSearch.trim()) {
+                  onAddressSearch(mapSearch.trim());
+                }
+              }}
+              className="text-foreground placeholder:text-muted-foreground flex-1 bg-transparent text-sm font-medium outline-none"
+            />
+            {mapSearch && (
+              <button
+                onClick={() => setMapSearch('')}
+                className="hover:bg-muted/80 flex h-7 w-7 items-center justify-center rounded-full transition-colors"
+                title="مسح"
+              >
+                <X className="text-muted-foreground h-4 w-4" />
+              </button>
+            )}
+            <button
+              onClick={() => {
+                if (mapSearch.trim()) onAddressSearch(mapSearch.trim());
+              }}
+              className="bg-primary/10 hover:bg-primary/20 text-primary flex h-8 items-center justify-center rounded-full px-4 text-xs font-bold transition-colors"
+            >
+              بحث
             </button>
-          )}
+          </div>
         </div>
-      </div> */}
+      )}
 
       {/* 🗺️ Map */}
       <MapContainer
@@ -156,9 +171,11 @@ export default function MapView({
                 provider.avatar,
                 provider,
               )}
-              eventHandlers={{
-                click: () => onProviderSelect(provider),
-              }}
+              eventHandlers={
+                {
+                  // click: () => onProviderSelect(provider),
+                }
+              }
             >
               <Popup>
                 <div className="text-right text-sm">

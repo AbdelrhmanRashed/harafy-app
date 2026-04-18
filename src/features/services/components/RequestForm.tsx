@@ -310,7 +310,7 @@ export default function RequestForm({
               type="submit"
               variant="gradient"
               disabled={isPending}
-              className="mt-6 h-10 w-full gap-2 rounded-lg text-xs font-bold sm:h-11 sm:rounded-xl sm:text-sm"
+              className="mt-6 h-10 w-full gap-2 rounded-lg text-xs font-bold sm:h-13 sm:rounded-xl sm:text-sm"
             >
               {isPending ? (
                 <>

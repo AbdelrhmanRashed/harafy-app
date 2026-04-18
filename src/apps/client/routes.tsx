@@ -41,10 +41,12 @@ const clientRoutes = [
       {
         path: 'home',
         element: <ClientDashboard />,
+        handle: { title: 'الرئيسية' },
       },
       {
         path: 'community',
         element: <CommunityPage />,
+        handle: { title: 'المجتمع' },
       },
       // services routes
       {
@@ -57,6 +59,7 @@ const clientRoutes = [
                 <ServicesPage />
               </ActiveRequestGuard>
             ),
+            handle: { title: 'الخدمات' },
           },
           {
             path: 'instant',
@@ -65,12 +68,17 @@ const clientRoutes = [
                 <InstantServicesPage />
               </ActiveRequestGuard>
             ),
+            handle: { title: 'الخدمات الفورية' },
           },
-          { path: 'requests/:requestId/pending', element: <RequestPending /> },
-          { path: 'requests', element: <div>Requests List Page</div> },
+          {
+            path: 'requests/:requestId/pending',
+            element: <RequestPending />,
+            handle: { title: 'طلب قيد الانتظار' },
+          },
           {
             path: 'requests/:requestId',
             element: <DirectRequestDetailsPage />,
+            handle: { title: 'تفاصيل الطلب' },
           },
         ],
       },
@@ -79,11 +87,24 @@ const clientRoutes = [
       {
         path: 'settings',
         element: <SettingsLayout />,
+
         children: [
           { index: true, element: <Navigate to="info" replace /> },
-          { path: 'info', element: <ProfileSettingsPage /> },
-          { path: 'notifications', element: <NotificationsPage /> },
-          { path: 'security', element: <SecurityPage /> },
+          {
+            path: 'info',
+            element: <ProfileSettingsPage />,
+            handle: { title: 'معلومات الملف الشخصي' },
+          },
+          {
+            path: 'notifications',
+            element: <NotificationsPage />,
+            handle: { title: 'الإشعارات' },
+          },
+          {
+            path: 'security',
+            element: <SecurityPage />,
+            handle: { title: 'الأمان' },
+          },
         ],
       },
 
@@ -91,9 +112,11 @@ const clientRoutes = [
       {
         path: 'profile/provider/:providerId',
         element: <ProviderProfilePage />,
+        handle: { title: 'الملف الشخصي' },
       },
       {
         path: 'requests',
+        handle: { title: 'الطلبات' },
         element: <RequestsPage />,
       },
     ],

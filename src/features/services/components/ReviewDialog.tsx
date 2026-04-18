@@ -16,11 +16,12 @@ type Props = {
   open: boolean;
   onClose: () => void;
   requestId: number;
+  providerId?: number;
 };
 
-const ReviewDialog = ({ open, onClose, requestId }: Props) => {
+const ReviewDialog = ({ open, onClose, requestId, providerId }: Props) => {
   const [hover, setHover] = useState(0);
-  const { mutate, isPending } = useCreateReview();
+  const { mutate, isPending } = useCreateReview(String(providerId));
 
   const form = useForm<ReviewInput>({
     resolver: zodResolver(reviewSchema),
@@ -111,7 +112,7 @@ const ReviewDialog = ({ open, onClose, requestId }: Props) => {
             <textarea
               placeholder="أخبرنا المزيد عن تجربتك..."
               {...form.register('message')}
-              className="focus:border-primary/30 focus:ring-primary/5 border-card bg-card focus:bg-secondary bg-secondary mt-2 min-h-[120px] w-full resize-none rounded-2xl border-2 p-4 text-sm transition-all focus:ring-4 focus:outline-none"
+              className="focus:border-primary/30 focus:ring-primary/5 border-card bg-secondary focus:bg-secondary mt-2 min-h-[120px] w-full resize-none rounded-2xl border-2 p-4 text-sm transition-all focus:ring-4 focus:outline-none"
             />
             {form.formState.errors.message && (
               <p className="text-destructive text-xs">

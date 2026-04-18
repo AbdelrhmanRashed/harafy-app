@@ -26,6 +26,7 @@ const onboardingRoutes = [
             <UserProfileSettings />
           </OnboardingGuard>
         ),
+        handle: { title: 'معلومات الملف الشخصي' },
       },
       {
         path: 'verification',
@@ -34,11 +35,12 @@ const onboardingRoutes = [
             <VerificationPage />
           </OnboardingGuard>
         ),
+        handle: { title: 'التحقق' },
       },
-      // ✅ review برا الـ Guard خالص
       {
         path: 'review',
         element: <ReviewPage />,
+        handle: { title: 'مراجعة الطلب' },
       },
     ],
   },

@@ -57,7 +57,10 @@ const RequestDetailsSection = ({
   );
   const { data: services } = useServices();
   const getServiceType = (serviceId: number) => {
-    return services?.find((service: any) => service.id === serviceId)?.name;
+    return (
+      services?.find((service: any) => service.id === serviceId)?.name ||
+      'خدمه مباشره'
+    );
   };
   return (
     <div className="bg-card border-border/50 sticky top-6 overflow-hidden rounded-3xl border shadow-sm">

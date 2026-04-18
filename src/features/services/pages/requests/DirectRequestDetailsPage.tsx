@@ -243,6 +243,7 @@ const DirectRequestDetailsPage = () => {
         requestId={requestDetails.id}
         open={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}
+        providerId={requestDetails.providerId}
       />
     </>
   );

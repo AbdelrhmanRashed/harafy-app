@@ -26,34 +26,42 @@ const adminRoutes = [
       {
         path: 'dashboard',
         element: <DashboardPage />,
+        handle: { title: 'لوحة التحكم' },
       },
       {
         path: 'craftsmen',
         element: <CraftsmenPage />,
+        handle: { title: 'الحرفيين' },
       },
       {
         path: 'craftsmen/:id',
         element: <CraftsmenDetailsPage />,
+        handle: { title: 'تفاصيل الحرفي' },
       },
       {
         path: 'clients',
         element: <ClientsPage />,
+        handle: { title: 'العملاء' },
       },
       {
         path: 'orders',
         element: <AdminOrdersPage />,
+        handle: { title: 'الطلبات' },
       },
       {
         path: 'reports',
         element: <ReportsPage />,
+        handle: { title: 'التقارير' },
       },
       {
         path: 'settings',
         element: <SettingsPage />,
+        handle: { title: 'الإعدادات' },
       },
       {
         path: 'roles',
         element: <RolesPage />,
+        handle: { title: 'الأدوار' },
       },
     ],
   },

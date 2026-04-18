@@ -22,6 +22,7 @@ import DirectServiceDrawer from '@/features/services/components/DirectServiceDra
 import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import Download from 'yet-another-react-lightbox/plugins/download';
+import ReviewSection from '../components/ReviewSection';
 
 const ProviderProfilePage = () => {
   const { providerId } = useParams();
@@ -103,8 +104,17 @@ const ProviderProfilePage = () => {
                           />
                         ))}
                       </div>
-                      <span className="text-foreground text-lg font-bold">
-                        {data?.rating || '0.0'}/5.0
+                      {data?.rating !== null ? (
+                        <span className="text-foreground text-lg font-bold">
+                          {data?.rating?.toFixed(1)}/5.0
+                        </span>
+                      ) : (
+                        <span className="text-foreground text-lg font-bold">
+                          غير مقيم
+                        </span>
+                      )}
+                      <span className="text-muted-foreground text-sm font-medium">
+                        ({data?.reviewsCount} تقييم)
                       </span>
                     </div>
                     <div className="text-muted-foreground flex items-center gap-2">
@@ -136,7 +146,7 @@ const ProviderProfilePage = () => {
         <div className="relative px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="grid gap-12 lg:grid-cols-3">
-              {/* LEFT COLUMN */}
+              {/* RIGHT COLUMN */}
               <div className="space-y-8 lg:col-span-2">
                 {/* ABOUT SECTION */}
                 <section className="group">
@@ -195,9 +205,12 @@ const ProviderProfilePage = () => {
                     ))}
                   </div>
                 </section>
+
+                {/* REVIEWS SECTION */}
+                <ReviewSection providerId={providerId!} />
               </div>
 
-              {/* RIGHT SIDEBAR */}
+              {/* LEFT SIDEBAR */}
               <div className="space-y-6">
                 {/* CONTACT CARD */}
                 <Card className="bg-card/50 shadow-md">
@@ -253,18 +266,32 @@ const ProviderProfilePage = () => {
                       <div className="grid grid-cols-2 gap-4 pt-2">
                         <div className="group/stat bg-primary/5 hover:bg-primary/10 rounded-lg p-4 transition-all">
                           <p className="text-foreground text-3xl font-black">
-                            120+
+                            {data?.reviewsCount}+
                           </p>
                           <p className="text-muted-foreground mt-2 text-xs font-bold uppercase">
                             عميل سعيد
                           </p>
                         </div>
                         <div className="group/stat bg-primary/5 hover:bg-primary/10 rounded-lg p-4 transition-all">
-                          <p className="text-primary text-3xl font-black">
-                            4.9
-                          </p>
+                          {data?.rating !== null ? (
+                            <p className="text-primary text-3xl font-black">
+                              {data?.rating.toFixed(1)}
+                            </p>
+                          ) : (
+                            <p className="text-primary text-xl font-black">
+                              غير مقيم
+                            </p>
+                          )}
                           <p className="text-muted-foreground mt-2 text-xs font-bold uppercase">
                             متوسط التقييم
+                          </p>
+                        </div>
+                        <div className="group/stat bg-primary/5 hover:bg-primary/10 rounded-lg p-4 transition-all">
+                          <p className="text-foreground text-3xl font-black">
+                            {data?.jobsCount}
+                          </p>
+                          <p className="text-muted-foreground mt-2 text-xs font-bold uppercase">
+                            عدد الاعمال المنجزة
                           </p>
                         </div>
                       </div>

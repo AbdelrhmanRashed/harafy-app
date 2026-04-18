@@ -12,6 +12,7 @@ import type { DirectRequestDetails } from '../types/directRequest';
 import { useGetProviderData } from '../hooks/useGetProviderData';
 import { getImageUrl } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Link } from 'react-router-dom';
 
 const DirectRequestProviderSection = ({
   requestDetails,
@@ -21,7 +22,6 @@ const DirectRequestProviderSection = ({
   const { data: providerProfile, isLoading } = useGetProviderData(
     String(requestDetails.providerId),
   );
-
   // ─── Provider Data ────────────────────────────────────────────────────────
   const name = providerProfile?.name || 'جاري التحميل...';
   const nickname = providerProfile?.nickname;
@@ -90,9 +90,13 @@ const DirectRequestProviderSection = ({
               {/* Provider Info */}
               <div className="flex-1 space-y-4 text-center md:mt-2 md:text-right">
                 <div>
-                  <h3 className="text-foreground text-2xl font-black">
+                  <Link
+                    to={`/app/profile/provider/${providerProfile?.id}`}
+                    className="text-foreground hover:text-primary text-2xl font-black transition-colors"
+                  >
                     {name}
-                  </h3>
+                  </Link>
+
                   {nickname && (
                     <p className="text-muted-foreground mt-1 text-sm font-bold">
                       يعرف بـ: {nickname}
@@ -130,7 +134,7 @@ const DirectRequestProviderSection = ({
                       <p className="text-muted-foreground mt-1 text-sm font-bold">
                         للتواصل مع الحرفي:
                       </p>
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
                         {providerPhones.map((phone: string) => (
                           <a
                             key={phone}

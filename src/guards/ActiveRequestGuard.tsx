@@ -9,13 +9,18 @@ const ActiveRequestGuard = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (isLoading) return;
-
-    // ❌ مفيش request → سيبه عادي
     if (!request) return;
+
+    // ✅ لو request منتهي تماماً
+    if (request.requestStatus === 4) {
+      localStorage.removeItem('activeRequestId');
+      localStorage.removeItem('requestType');
+      return; // ← وقف هنا، متعملش navigate
+    }
 
     const isInInstant = location.pathname.includes('instant');
 
-    // 🟢 لو request شغال
+    // 🟢 لو request لسه شغال
     if (request.requestStatus !== 3) {
       if (!isInInstant) {
         if (reqType === 'instant') {
@@ -26,18 +31,16 @@ const ActiveRequestGuard = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    // 🔥 لو request خلص
+    // 🔥 لو request خلص (status === 3)
     else {
-      // امسح من localStorage
       localStorage.removeItem('activeRequestId');
       localStorage.removeItem('requestType');
 
-      // لو واقف في instant → اطلعه
       if (isInInstant) {
         navigate('/app/services', { replace: true });
       }
     }
-  }, [request, isLoading, location.pathname, navigate]);
+  }, [request, isLoading, location.pathname, navigate, reqType]);
   console.log(request);
   return <>{children}</>;
 };

@@ -333,7 +333,7 @@ export const RequestsDataTable = ({
                   <div className="mb-4 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <span className="text-secondary-foreground bg-secondary/60 ring-border/50 rounded-[10px] px-3 py-1.5 text-xs font-black shadow-sm ring-1">
-                        {service?.name || 'خدمة غير محددة'}
+                        {service?.name || 'خدمه مباشره'}
                       </span>
                     </div>
                     <span className="text-muted-foreground/80 mt-1 flex items-center gap-1.5 text-[11px] font-semibold">

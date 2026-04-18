@@ -21,10 +21,12 @@ const authRoutes = [
       {
         path: 'login',
         element: <LoginPage />,
+        handle: { title: 'تسجيل الدخول' },
       },
       {
         path: 'register',
         element: <RegisterPage />,
+        handle: { title: 'إنشاء حساب' },
       },
     ],
   },
