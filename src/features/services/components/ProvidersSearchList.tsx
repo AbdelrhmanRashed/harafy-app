@@ -1,7 +1,8 @@
-import { SearchX, Loader2, Users } from 'lucide-react';
+import { SearchX, Users } from 'lucide-react';
 import ServiceSearchCard from './ServiceSearchCard';
 import type { Provider } from '@/features/services/types/types';
 import { cn } from '@/lib/utils';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 interface ProvidersSearchListProps {
   providers: Provider[];
@@ -18,17 +19,17 @@ export default function ProvidersSearchList({
   onViewProfile,
   searchQuery,
 }: ProvidersSearchListProps) {
-  
-  // 1. حالة التحميل (Loading State)
+  console.log(providers);
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
         <div className="relative flex items-center justify-center">
-          <Loader2 className="text-primary h-12 w-12 animate-spin stroke-[1.5]" />
+          <LoadingSpinner />
           <div className="bg-primary/10 absolute h-20 w-20 animate-ping rounded-full" />
         </div>
         <p className="text-muted-foreground animate-pulse font-black">
-          جاري البحث عن أفضل المحترفين...
+          جاري البحث عن الحرفيين...
         </p>
       </div>
     );
@@ -41,12 +42,13 @@ export default function ProvidersSearchList({
         <div className="bg-secondary mb-6 flex h-24 w-24 items-center justify-center rounded-full shadow-inner">
           <SearchX className="text-muted-foreground/40 h-12 w-12" />
         </div>
-        <h3 className="text-foreground text-2xl font-black">لم نجد نتائج مطابقة!</h3>
-        <p className="text-muted-foreground mt-3 max-w-sm font-bold leading-relaxed">
-          {searchQuery 
+        <h3 className="text-foreground text-2xl font-black">
+          لم نجد نتائج مطابقة!
+        </h3>
+        <p className="text-muted-foreground mt-3 max-w-sm leading-relaxed font-bold">
+          {searchQuery
             ? `عذراً، لم نجد فنيين متاحين حالياً لـ "${searchQuery}". جرب تغيير كلمات البحث أو القسم.`
-            : "لم نجد فنيين متاحين في منطقتك حالياً. جرب اختيار قسم آخر."
-          }
+            : 'لم نجد فنيين متاحين في منطقتك حالياً. جرب اختيار قسم آخر.'}
         </p>
       </div>
     );
@@ -73,10 +75,12 @@ export default function ProvidersSearchList({
       </div>
 
       {/* Grid القائمة */}
-      <div className={cn(
-        "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3",
-        "transition-all duration-500 ease-in-out"
-      )}>
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3',
+          'transition-all duration-500 ease-in-out',
+        )}
+      >
         {providers.map((provider) => (
           <ServiceSearchCard
             key={provider.id}

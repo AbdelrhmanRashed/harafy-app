@@ -9,9 +9,14 @@ import { useGetNearbyProviders } from '../hooks/useNearbyProviders';
 import { useServices } from '@/features/onboarding/hooks/useServices';
 import type { Provider } from '../types/types';
 import ProvidersSearchList from '../components/ProvidersSearchList';
-import {useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 import { normalizeProviders } from '../utils/providerUtils';
 import DirectServiceDrawer from '../components/DirectServiceDrawer';
+import ReviewDialog from '../components/ReviewDialog';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
+import ServiceSearchCardSkeleton from '../components/ServiceSearchCardSkeleton';
 
 type ServiceCategory = {
   id: number;
@@ -45,6 +50,11 @@ const findMatchingCategory = (
 };
 
 export default function ServicesPage() {
+  const [showReview, setShowReview] = useState(false);
+  const [completedRequestId, setCompletedRequestId] = useState<number | null>(
+    null,
+  );
+
   const [selectedServiceId, setSelectedServiceId] = useState<number>(0);
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
@@ -59,11 +69,8 @@ export default function ServicesPage() {
   const providersSectionRef = useRef<HTMLElement | null>(null);
 
   // جلب الموقع الحالي (تأكد إن الـ Hook ده شغال وبيرجع قيم)
-  const { position, address, locating, detect, searchAddress } = useLocationCustom();
-
-
-
-
+  const { position, address, locating, detect, searchAddress } =
+    useLocationCustom();
 
   useEffect(() => {
     if (locationRequestedRef.current) return;
@@ -95,64 +102,13 @@ export default function ServicesPage() {
     setIsDrawerOpen(true);
   };
 
-  // أهم خطوة: استخراج البيانات من الـ Response بتاع الفنيين
-  const providers = useMemo(() => {
-    if (!nearbyData) return [];
-    const rawData = Array.isArray(nearbyData)
-      ? nearbyData
-      : ((
-          nearbyData as {
-            data?: unknown[];
-            items?: unknown[];
-            providers?: unknown[];
-            results?: unknown[];
-          }
-        ).data ??
-        (
-          nearbyData as {
-            data?: unknown[];
-            items?: unknown[];
-            providers?: unknown[];
-            results?: unknown[];
-          }
-        ).items ??
-        (
-          nearbyData as {
-            data?: unknown[];
-            items?: unknown[];
-            providers?: unknown[];
-            results?: unknown[];
-          }
-        ).providers ??
-        (
-          nearbyData as {
-            data?: unknown[];
-            items?: unknown[];
-            providers?: unknown[];
-            results?: unknown[];
-          }
-        ).results ??
-        []);
-
-    return normalizeProviders(
-      rawData as Parameters<typeof normalizeProviders>[0],
-    ).map((provider) =>
-      provider.services.length > 0
-        ? provider
-        : {
-            ...provider,
-            services: [
-              {
-                id: selectedServiceId,
-                name: selectedCategoryName || 'خدمة غير محددة',
-              },
-            ],
-          },
-    );
-  }, [nearbyData, selectedServiceId, selectedCategoryName]);
-
-
-// scroll to providers list section
+  const { data: providers } = useGetNearbyProviders(
+    String(position.lat),
+    String(position.lng),
+    selectedServiceId,
+  );
+  console.log(providers);
+  // scroll to providers list section
   const scrollToProvidersList = () => {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
@@ -191,10 +147,9 @@ export default function ServicesPage() {
     setSelectedServiceId(serviceId);
     setSelectedCategoryName(serviceName);
     setActiveLocationLabel(nextLocationLabel || 'موقعك الحالي');
-    setHasSearched(true); // دي اللي بتفتح قسم النتائج
+    setHasSearched(true);
     scrollToProvidersList();
   };
-
 
   const handleCategorySelect = (id: number, name: string) => {
     void runSearch(id, name);
@@ -203,27 +158,25 @@ export default function ServicesPage() {
   // use data passed from AI (if any)
 
   const handledAiServiceIdRef = useRef<number | null>(null);
-const location = useLocation();
-const aiData = location.state as {
-  serviceIdAI?: number;
-  descriptionAI?: string;
-  autoFill?: boolean;
-} | null;
+  const location = useLocation();
+  const aiData = location.state as {
+    serviceIdAI?: number;
+    descriptionAI?: string;
+    autoFill?: boolean;
+  } | null;
 
-useEffect(() => {
-  if (!aiData?.serviceIdAI || !categories.length) return;
+  useEffect(() => {
+    if (!aiData?.serviceIdAI || !categories.length) return;
     if (handledAiServiceIdRef.current === aiData.serviceIdAI) return;
-  const matchedCategory = categories.find(
-    (category) => category.id === aiData.serviceIdAI
-  );
+    const matchedCategory = categories.find(
+      (category) => category.id === aiData.serviceIdAI,
+    );
 
-  if (!matchedCategory) return;
+    if (!matchedCategory) return;
 
-  handledAiServiceIdRef.current = aiData.serviceIdAI;
-  void runSearch(matchedCategory.id, matchedCategory.name);
-}, [aiData?.serviceIdAI, categories]);
-
-
+    handledAiServiceIdRef.current = aiData.serviceIdAI;
+    void runSearch(matchedCategory.id, matchedCategory.name);
+  }, [aiData?.serviceIdAI, categories]);
 
   const handleHeroSearch = async (query: string, location: string) => {
     if (!categories.length) {
@@ -245,6 +198,15 @@ useEffect(() => {
 
     await runSearch(matchedCategory.id, matchedCategory.name, location);
   };
+
+  const reviewRequestIdFromNav = (location.state as any)?.reviewRequestId;
+
+  useEffect(() => {
+    if (reviewRequestIdFromNav) {
+      setCompletedRequestId(reviewRequestIdFromNav);
+      setShowReview(true);
+    }
+  }, [reviewRequestIdFromNav]);
 
   return (
     <main className="bg-background min-h-screen pb-20">
@@ -284,11 +246,10 @@ useEffect(() => {
           </div>
 
           {isProvidersLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="text-primary mb-4 h-10 w-10 animate-spin" />
-              <p className="text-muted-foreground font-bold">
-                جاري البحث عن فنيين...
-              </p>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <ServiceSearchCardSkeleton key={index} />
+              ))}
             </div>
           ) : providers.length > 0 ? (
             <ProvidersSearchList
@@ -315,6 +276,12 @@ useEffect(() => {
         isDrawerOpen={isDrawerOpen}
         setIsDrawerOpen={setIsDrawerOpen}
         ProviderId={selectedProvider?.id}
+      />
+
+      <ReviewDialog
+        open={showReview}
+        onClose={() => setShowReview(false)}
+        requestId={completedRequestId ?? 0}
       />
     </main>
   );

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useActiveRequest } from '@/hooks/useActiveRequest';
 
 const ActiveRequestGuard = ({ children }: { children: React.ReactNode }) => {
-  const { request, isLoading } = useActiveRequest();
+  const { request, isLoading, reqType } = useActiveRequest();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,7 +18,11 @@ const ActiveRequestGuard = ({ children }: { children: React.ReactNode }) => {
     // 🟢 لو request شغال
     if (request.requestStatus !== 3) {
       if (!isInInstant) {
-        navigate(`/app/services/instant?requestId=${request.id}`);
+        if (reqType === 'instant') {
+          navigate(`/app/services/instant?requestId=${request.id}`);
+        } else {
+          navigate(`/app/services/requests/${request.id}`);
+        }
       }
     }
 
@@ -26,6 +30,7 @@ const ActiveRequestGuard = ({ children }: { children: React.ReactNode }) => {
     else {
       // امسح من localStorage
       localStorage.removeItem('activeRequestId');
+      localStorage.removeItem('requestType');
 
       // لو واقف في instant → اطلعه
       if (isInInstant) {
@@ -33,7 +38,7 @@ const ActiveRequestGuard = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [request, isLoading, location.pathname, navigate]);
-
+  console.log(request);
   return <>{children}</>;
 };
 

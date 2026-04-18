@@ -19,8 +19,9 @@ import SecurityPage from '@/features/profile/pages/SecurityPage';
 // guards
 import AppStatusGuard from '@/guards/AppStatusGuard';
 import RequestPending from '@/features/services/pages/servicesStatus/RequestPendingPage';
-import InstantRequestDetailsPage from '@/features/services/pages/requests/DirectRequestDetailsPage';
+import DirectRequestDetailsPage from '@/features/services/pages/requests/DirectRequestDetailsPage';
 import ActiveRequestGuard from '@/guards/ActiveRequestGuard';
+import RequestsPage from '@/features/services/pages/RequestsPage';
 
 const clientRoutes = [
   {
@@ -67,13 +68,9 @@ const clientRoutes = [
           },
           { path: 'requests/:requestId/pending', element: <RequestPending /> },
           { path: 'requests', element: <div>Requests List Page</div> },
-          // {
-          //   path: 'instant/request/:requestId',
-          //   element: <InstantRequestDetailsPage />,
-          // },
           {
             path: 'requests/:requestId',
-            element: <InstantRequestDetailsPage />,
+            element: <DirectRequestDetailsPage />,
           },
         ],
       },
@@ -95,10 +92,10 @@ const clientRoutes = [
         path: 'profile/provider/:providerId',
         element: <ProviderProfilePage />,
       },
-      // {
-      //   path: "requests",
-      //   element: <RequestsPage />,
-      // },
+      {
+        path: 'requests',
+        element: <RequestsPage />,
+      },
     ],
   },
 ];

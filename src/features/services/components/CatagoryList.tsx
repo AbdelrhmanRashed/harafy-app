@@ -1,6 +1,14 @@
 import { cn } from '@/lib/utils';
 import {
-  Paintbrush, AirVent, Sparkles, Zap, Wrench, Hammer, Layers, Flame, LayoutGrid
+  Paintbrush,
+  AirVent,
+  Sparkles,
+  Zap,
+  Wrench,
+  Hammer,
+  Layers,
+  Flame,
+  LayoutGrid,
 } from 'lucide-react';
 
 const getCategoryIcon = (name: string) => {
@@ -22,18 +30,22 @@ interface CategoryListProps {
   onSelect: (id: number, name: string) => void;
 }
 
-export default function CategoryList({ categories, onSelect, selectedId }: CategoryListProps) {
+export default function CategoryList({
+  categories,
+  onSelect,
+  selectedId,
+}: CategoryListProps) {
   // لو مفيش داتا لسه جت من الـ API، متبعش الـ component فاضي تماماً
   if (!categories || categories.length === 0) {
     return (
       <div className="flex w-full items-center justify-center py-10">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <div className="border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto grid max-w-5xl grid-cols-2 justify-items-center gap-4 p-4 md:grid-cols-4 lg:grid-cols-8">
+    <div className="mx-auto grid max-w-7xl grid-cols-2 justify-items-center gap-4 p-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
       {categories.map((cat) => {
         const Icon = getCategoryIcon(cat.name);
         const isSelected = selectedId === cat.id;
@@ -44,17 +56,24 @@ export default function CategoryList({ categories, onSelect, selectedId }: Categ
             type="button"
             onClick={() => onSelect(cat.id, cat.name)}
             className={cn(
-              'flex h-32 w-full min-w-[100px] cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl transition-all duration-300 shadow-sm',
+              'flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl shadow-sm transition-all duration-300',
               isSelected
-                ? 'bg-primary-gradient text-white scale-105 shadow-lg'
-                : 'bg-card text-foreground hover:bg-primary/5 border border-border/50'
+                ? 'bg-primary-gradient scale-105 text-white shadow-lg'
+                : 'bg-card text-foreground hover:bg-primary/5 border-border/50 border',
             )}
           >
-            <div className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-2xl transition-colors",
-              isSelected ? "bg-white/20" : "bg-primary/10"
-            )}>
-              <Icon className={cn("h-6 w-6", isSelected ? "text-white" : "text-primary")} />
+            <div
+              className={cn(
+                'flex h-12 w-12 items-center justify-center rounded-2xl transition-colors',
+                isSelected ? 'bg-white/20' : 'bg-primary/10',
+              )}
+            >
+              <Icon
+                className={cn(
+                  'h-6 w-6',
+                  isSelected ? 'text-white' : 'text-primary',
+                )}
+              />
             </div>
             <span className="text-xs font-bold">{cat.name}</span>
           </button>

@@ -209,12 +209,6 @@ const Post = ({
                 </span>
               </Button>
             </div>
-            <button
-              onClick={() => setSaved(!saved)}
-              className={`transition ${saved ? 'text-primary' : 'text-gray-400'}`}
-            >
-              <Bookmark size={18} fill={saved ? 'currentColor' : 'none'} />
-            </button>
           </div>
 
           {showComments && <CommentsSection postId={post.id} />}

@@ -14,9 +14,8 @@ interface UseLocationReturn {
   address: string;
   locating: boolean;
   denied: boolean;
-detect(): Promise<LocationResult | null>;
-searchAddress(query: string): Promise<LocationResult | null>;
-
+  detect(): Promise<LocationResult | null>;
+  searchAddress(query: string): Promise<LocationResult | null>;
 }
 
 // This hook manages the user's location, including auto-detection, manual updates, and address resolution.
@@ -43,7 +42,7 @@ function getCurrentPosition(): Promise<GeolocationPosition> {
 
 export function useLocationCustom(): UseLocationReturn {
   const [position, setPosition] = useState<LatLng>(DEFAULT_CENTER);
-  const [address, setAddress] = useState('جاري تحديد الموقع...');
+  const [address, setAddress] = useState('');
   const [locating, setLocating] = useState(false);
   const [denied, setDenied] = useState(false);
 

@@ -7,7 +7,7 @@ import {
   Step3TrackingSidebar,
 } from '../../components/instant';
 import { useRoute } from '../../hooks/useRoute';
-import type { Provider } from '../../types/types';
+import type { LatLng, Provider } from '../../types/types';
 import { useLocationCustom } from '../../hooks/useLocation';
 import { cn } from '@/lib/utils';
 import { useAssignServiceReq } from '../../hooks/useAssignServiceReq';
@@ -16,7 +16,6 @@ import { useSetReqCancelled } from '../../hooks/useSetReqCancelled';
 import { useGetProviderData } from '../../hooks/useGetProviderData';
 
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
-import { useActiveRequest } from '@/hooks/useActiveRequest';
 
 const InstantRequestPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,10 +23,8 @@ const InstantRequestPage = () => {
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
     null,
   );
-  const [providerLivePos, setProviderLivePos] = useState({
-    lat: 0,
-    lng: 0,
-  });
+
+  const [providerLivePos, setProviderLivePos] = useState<LatLng | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -89,15 +86,12 @@ const InstantRequestPage = () => {
   }, [request, providerData, selectedProvider]);
 
   const routeEnd = useMemo(() => {
-    return providerData?.baseLocation
-      ? {
-          lat: providerData.baseLocation.latitude,
-          lng: providerData.baseLocation.longitude,
-        }
-      : null;
-  }, [providerData]);
+    if (!providerLivePos) return null;
 
-  const { route } = useRoute(routeEnd, customerPos);
+    return providerLivePos;
+  }, [providerLivePos]);
+
+  const { route } = useRoute(customerPos, routeEnd);
 
   // 📡 mutations
   const { mutate: assignMutate, isPending: assignPending } =
@@ -110,6 +104,7 @@ const InstantRequestPage = () => {
 
   const handleRequestCreated = (id: string) => {
     localStorage.setItem('activeRequestId', id);
+    localStorage.setItem('requestType', 'instant');
 
     navigate(`/app/services/instant?requestId=${id}`);
   };
@@ -127,6 +122,7 @@ const InstantRequestPage = () => {
     );
   };
 
+  //  handle cancel request
   const handleCancelRequest = () => {
     if (!requestId) return;
 
@@ -135,6 +131,15 @@ const InstantRequestPage = () => {
         localStorage.removeItem('activeRequestId');
 
         navigate('/app/services/instant');
+      },
+    });
+  };
+  // handle complete success
+  const handleCompleteSuccess = () => {
+    localStorage.removeItem('activeRequestId');
+    navigate('/app/services', {
+      state: {
+        reviewRequestId: Number(requestId),
       },
     });
   };
@@ -229,10 +234,9 @@ const InstantRequestPage = () => {
           <Step3TrackingSidebar
             requestId={requestId}
             onCompleteSuccess={() => {
-              localStorage.removeItem('activeRequestId');
-              navigate('/app/services/instant');
+              handleCompleteSuccess();
             }}
-            onLocationChange={setProviderLivePos} // 🔥 هنا
+            onLocationChange={setProviderLivePos}
           />
         )}
       </aside>

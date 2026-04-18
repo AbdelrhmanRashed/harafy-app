@@ -13,6 +13,7 @@ export const usePostComments = (postId: number, enabled: boolean) => {
     },
     initialPageParam: 1,
     enabled, // enabled when the user opens the comments
-    staleTime: 1000 * 30, // 30 seconds
+    staleTime: 0,
+    refetchInterval: 1000 * 10,
   });
 };

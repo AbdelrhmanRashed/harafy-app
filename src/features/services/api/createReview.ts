@@ -1,6 +1,15 @@
-import axios from '@/lib/axios';
+import axiosInstance from '@/lib/axios';
 
-export const createReview = async (data: any) => {
-  const res = await axios.post('/api/Review/create-review', data);
-  return res.data;
+export const createReview = async (data: {
+  ServiceRequestId: number;
+  Rating: number;
+  Message: string;
+}) => {
+  try {
+    const res = await axiosInstance.post('/api/Review/create-review', data);
+    return res.data;
+  } catch (error) {
+    console.error('Error creating review:', error);
+    throw error;
+  }
 };

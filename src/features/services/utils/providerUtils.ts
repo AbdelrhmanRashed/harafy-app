@@ -160,14 +160,11 @@ export const normalizeProvider = (data: any): Provider | null => {
     };
 
     if (isProviderValid(normalized)) {
-      console.log('✅ Valid provider normalized:', normalized.name);
       return normalized;
     } else {
-      console.warn('⚠️ Provider validation failed:', normalized.name);
       return null;
     }
   } catch (error) {
-    console.error('❌ Error normalizing provider:', error, data);
     return null;
   }
 };
@@ -177,7 +174,6 @@ export const normalizeProvider = (data: any): Provider | null => {
  */
 export const normalizeProviders = (data: any[]): Provider[] => {
   if (!Array.isArray(data)) {
-    console.warn('Expected array of providers, got:', typeof data);
     return [];
   }
 
@@ -185,8 +181,5 @@ export const normalizeProviders = (data: any[]): Provider[] => {
     .map((item) => normalizeProvider(item))
     .filter((provider): provider is Provider => provider !== null);
 
-  console.log(
-    `📊 Normalized ${normalized.length} providers from ${data.length} raw items`
-  );
   return normalized;
 };

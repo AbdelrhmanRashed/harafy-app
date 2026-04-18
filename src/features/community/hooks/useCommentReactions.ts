@@ -6,4 +6,6 @@ export const useCommentReactions = (commentId: number, enabled: boolean) =>
     queryKey: ['comment-reactions', commentId],
     queryFn: () => getCommentReactions(commentId),
     enabled,
+    staleTime: 0,
+    refetchInterval: 1000 * 10,
   });

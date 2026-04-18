@@ -159,7 +159,7 @@ export default function RequestForm({
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="border-border border-b">
+    <div className="">
       {/* Header */}
       <div className="px-4 pt-4 sm:px-5 sm:pt-6">
         <h1 className="text-foreground mb-1 text-2xl font-black sm:mb-2 sm:text-3xl">
@@ -252,7 +252,7 @@ export default function RequestForm({
                         type="button"
                         onClick={onDetect}
                         disabled={locating}
-                        className="bg-primary/10 hover:bg-primary/20 flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors disabled:opacity-50 sm:h-12 sm:w-12"
+                        className="bg-primary/10 hover:bg-primary/20 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors disabled:opacity-50 sm:h-12 sm:w-12"
                         title="تحديد موقعي تلقائياً"
                       >
                         {locating ? (
@@ -285,10 +285,11 @@ export default function RequestForm({
                       rows={3}
                       dir="rtl"
                       onChange={(e) => field.onChange(e.target.value)}
-                      className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm transition-all duration-300 ease-in-out focus:ring-2 focus:outline-none sm:rounded-3xl ${form.formState.errors.Description
+                      className={`bg-muted focus:ring-primary/20 placeholder:text-muted-foreground w-full resize-none rounded-2xl px-3 py-2 text-right text-sm transition-all duration-300 ease-in-out focus:ring-2 focus:outline-none sm:rounded-3xl ${
+                        form.formState.errors.Description
                           ? 'ring-destructive/70 ring-2'
                           : ''
-                        }`}
+                      }`}
                     />
                   </FormControl>
                   <FormMessage />
@@ -300,9 +301,8 @@ export default function RequestForm({
             <ImageUpload
               onImagesChange={setImageFiles}
               maxImages={5}
-              label="صور توضيحية (اختياري)"
+              label="صور توضيحية"
               description="PNG, JPG (حتى 5 صور)"
-
             />
 
             {/* ── Submit ── */}
@@ -310,7 +310,7 @@ export default function RequestForm({
               type="submit"
               variant="gradient"
               disabled={isPending}
-              className="h-10 w-full gap-2 rounded-lg text-xs font-bold sm:h-11 sm:rounded-xl sm:text-sm"
+              className="mt-6 h-10 w-full gap-2 rounded-lg text-xs font-bold sm:h-11 sm:rounded-xl sm:text-sm"
             >
               {isPending ? (
                 <>

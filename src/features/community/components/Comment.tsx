@@ -13,6 +13,7 @@ import { useUpdateComment } from '../hooks/useUpdateComment';
 import EmojiContainer from './EmojiContainer';
 import { useReactToComment } from '../hooks/useReactToComment';
 import ReactionPicker from './ReactionPicker';
+import { Link } from 'react-router-dom';
 
 const Comment = ({ comment }: { comment: CommentResponse }) => {
   const [open, setOpen] = useState(false);
@@ -40,6 +41,8 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
     }
   };
 
+  console.log(comment);
+
   const handleUpdateComment = () => {
     updateComment(
       { commentId: comment.id, Message: message },
@@ -49,11 +52,20 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
 
   return (
     <div className="flex min-w-0 gap-2">
-      <div className="bg-primary/10 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
-        <Avatar>
-          <AvatarImage src={getImageUrl(comment.clientPictureUrl)} />
-          <AvatarFallback>{comment.clientName[0]}</AvatarFallback>
-        </Avatar>
+      <div className="bg-primary/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
+        {comment.isProvider ? (
+          <Link to={`/app/profile/provider/${comment.providerId}`}>
+            <Avatar className="ring-primary h-8 w-8 ring-2 ring-offset-2">
+              <AvatarImage src={getImageUrl(comment.clientPictureUrl)} />
+              <AvatarFallback>{comment.clientName[0]}</AvatarFallback>
+            </Avatar>
+          </Link>
+        ) : (
+          <Avatar>
+            <AvatarImage src={getImageUrl(comment.clientPictureUrl)} />
+            <AvatarFallback>{comment.clientName[0]}</AvatarFallback>
+          </Avatar>
+        )}
       </div>
 
       <div className="group flex max-w-full flex-1 items-start gap-2">
@@ -70,7 +82,15 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
               isEditing && 'border-primary border-2',
             )}
           >
-            <p className="text-sm font-semibold">{comment.clientName}</p>
+            {comment.isProvider ? (
+              <Link to={`/app/profile/provider/${comment.providerId}`}>
+                <p className="text-primary mb-1 cursor-pointer text-sm font-semibold">
+                  {comment.clientName}
+                </p>
+              </Link>
+            ) : (
+              <p className="text-sm font-semibold">{comment.clientName}</p>
+            )}
 
             {isEditing ? (
               <div className="relative flex w-full flex-col gap-4">

@@ -458,6 +458,35 @@
     scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
   }
 
+  /* في ملف globals.css أو ملف التنسيقات الخاص بك */
+  @keyframes marker-pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+    }
+  }
+
+  .worker-marker-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .worker-marker-container:hover {
+    transform: translateY(-5px) scale(1.05);
+    z-index: 999 !important;
+  }
+
+  .custom-div-icon {
+    background: none !important;
+    border: none !important;
+  }
   /* Light */
   :root * {
     scrollbar-color: rgba(0, 0, 0, 0.2) transparent;

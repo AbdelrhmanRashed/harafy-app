@@ -29,10 +29,24 @@ export function useRoute(from: LatLng | null, to: LatLng | null) {
       setRoute([]);
       return;
     }
+
+    const controller = new AbortController();
+
     setLoading(true);
+
     fetchRoute(from, to)
-      .then(setRoute)
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!controller.signal.aborted) {
+          setRoute(data);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
   }, [from?.lat, from?.lng, to?.lat, to?.lng]);
 
   return { route, loading };

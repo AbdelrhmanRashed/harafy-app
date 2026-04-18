@@ -48,7 +48,7 @@ export default function Step2OffersSidebar({
 }: Step2OffersSidebarProps) {
   const { data: raw, isFetching } = useGetRequestOffer(requestId, {
     enabled: !!requestId,
-    refetchInterval: 10000,
+    refetchInterval: 3000,
   });
 
   const offers = useMemo(() => normalizeOffers(raw), [raw]);
@@ -66,16 +66,11 @@ export default function Step2OffersSidebar({
       <div className="bg-primary/5 flex items-center gap-4 rounded-2xl px-5 py-4">
         <RefreshCw className="text-primary h-5 w-5 shrink-0" />
         <p className="text-muted-foreground text-xs leading-relaxed font-semibold">
-          يتم التحديث تلقائياً كل 10 ثوان. اختر الحرفي ثم اضغط قبول.
+          جارى البحث عن الحرفيين بالقرب منك
         </p>
       </div>
 
-      {isFetching && offers.length === 0 ? (
-        <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-12 text-sm font-bold">
-          <Loader2 className="text-primary h-8 w-8 animate-spin" />
-          جاري تحميل العروض...
-        </div>
-      ) : offers.length === 0 ? (
+      {offers.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
           <div className="relative mb-8">
             <div className="bg-primary/5 outline-primary/5 flex h-32 w-32 items-center justify-center rounded-full outline outline-[12px]">

@@ -1,4 +1,3 @@
-import { Search, Navigation, Clock, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
   MapContainer,
@@ -12,8 +11,9 @@ import {
 import 'leaflet/dist/leaflet.css';
 import { customerIcon, workerIcon } from '../utils/mapIcons.ts';
 import type { LatLng, Provider } from '../types/types.ts';
+import LoadingSpinner from '@/components/shared/LoadingSpinner.tsx';
 
-// ─── Map click handler ────────────────────────────────────────────────────────
+// ─── Map click handler ─────────────────────────────────────────
 function MapClickHandler({
   onLocationSelect,
 }: {
@@ -27,7 +27,7 @@ function MapClickHandler({
   return null;
 }
 
-// ─── Fly to center ───────────────────────────────────────────────────────────
+// ─── Fly to center ────────────────────────────────────────────
 function ChangeView({ center }: { center: LatLng }) {
   const map = useMap();
 
@@ -38,7 +38,7 @@ function ChangeView({ center }: { center: LatLng }) {
   return null;
 }
 
-// ─── Props ────────────────────────────────────────────────────────────────────
+// ─── Props ────────────────────────────────────────────────────
 interface MapViewProps {
   center: LatLng;
   customerPos: LatLng;
@@ -49,12 +49,9 @@ interface MapViewProps {
   onLocationSelect: (pos: LatLng) => void;
   onProviderSelect: (provider: Provider) => void;
   onAddressSearch: (query: string) => void;
-
-  // 🔥 الجديد
   liveProviderPos: { lat: number; lng: number } | null;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
 const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.502 };
 
 export default function MapView({
@@ -66,16 +63,25 @@ export default function MapView({
   allowMapPickLocation = true,
   onLocationSelect = () => {},
   onProviderSelect = () => {},
-  onAddressSearch = () => {},
+  // onAddressSearch = () => {},
   liveProviderPos,
 }: MapViewProps) {
-  const [mapSearch, setMapSearch] = useState('');
+  // const [mapSearch, setMapSearch] = useState('');
 
-  console.log(liveProviderPos);
   return (
     <div className="relative h-full w-full">
+      {!liveProviderPos && selectedProvider && (
+        <div className="bg-card/10 dark:bg-card/90 absolute inset-0 z-600 flex items-center justify-center backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <LoadingSpinner />
+            <span className="text-muted-foreground text-sm font-bold">
+              جاري تحديد موقع الحرفي...
+            </span>
+          </div>
+        </div>
+      )}
       {/* 🔍 Search */}
-      <div className="absolute top-3 left-1/2 z-[900] w-80 -translate-x-1/2">
+      {/* <div className="absolute top-3 left-1/2 z-[900] w-80 -translate-x-1/2">
         <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-md">
           <Search className="h-4 w-4" />
           <input
@@ -97,7 +103,7 @@ export default function MapView({
             </button>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* 🗺️ Map */}
       <MapContainer
@@ -113,7 +119,7 @@ export default function MapView({
           attribution="&copy; OpenStreetMap"
         />
 
-        {/* pick location */}
+        {/* 📍 pick location */}
         {allowMapPickLocation && (
           <MapClickHandler onLocationSelect={onLocationSelect} />
         )}
@@ -123,22 +129,19 @@ export default function MapView({
           position={[customerPos.lat, customerPos.lng]}
           icon={customerIcon}
         >
-          <Popup>موقعك</Popup>
+          <Popup>
+            <div className="text-right text-sm font-bold">موقعك</div>
+          </Popup>
         </Marker>
 
-        {/* 🔥 Live Provider */}
-        {liveProviderPos && (
-          <Marker
-            position={[liveProviderPos.lat, liveProviderPos.lng]}
-            icon={workerIcon('Live Provider', 'tracking')}
-          >
-            <Popup>المحترف في الطريق 🚀</Popup>
-          </Marker>
-        )}
-
-        {/* 👷 Static Providers (فقط لو مفيش live) */}
+        {/* 👷 Nearby Providers (بدون المختار) */}
         {providers
-          ?.filter((p) => p.baseLocation?.latitude && p.baseLocation?.longitude)
+          ?.filter(
+            (p) =>
+              p.id !== selectedProvider?.id && // ❌ منع التكرار
+              p.baseLocation?.latitude &&
+              p.baseLocation?.longitude,
+          )
           .map((provider) => (
             <Marker
               key={provider.id}
@@ -149,6 +152,9 @@ export default function MapView({
               icon={workerIcon(
                 provider.name,
                 provider.services?.map((s) => s.name).join(', ') || '',
+                provider.rating || 0,
+                provider.avatar,
+                provider,
               )}
               eventHandlers={{
                 click: () => onProviderSelect(provider),
@@ -165,8 +171,23 @@ export default function MapView({
             </Marker>
           ))}
 
+        {/* 🚀 Live Provider (المختار فقط) */}
+        {liveProviderPos && selectedProvider && (
+          <Marker
+            position={[liveProviderPos.lat, liveProviderPos.lng]}
+            icon={workerIcon(
+              selectedProvider.name,
+              selectedProvider.services?.map((s) => s.name).join(', ') || '',
+              selectedProvider.rating || 0,
+              selectedProvider.pictureUrl,
+            )}
+          >
+            <Popup>{selectedProvider.name} في الطريق</Popup>
+          </Marker>
+        )}
+
         {/* 🛣️ Route */}
-        {route?.length > 1 && (
+        {liveProviderPos && liveProviderPos.lat !== 0 && route?.length > 1 && (
           <Polyline
             positions={route.map((p) => [p.lat, p.lng])}
             pathOptions={{

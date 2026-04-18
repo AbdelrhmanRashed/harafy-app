@@ -12,45 +12,37 @@ import {
 import { Button } from '@/components/ui/button';
 import { useGetServiceReqById } from '../../hooks/useGetServiceReqById';
 import { useSetReqCompleted } from '../../hooks/useSetReqCompleted';
-import { cn } from '@/lib/utils';
+import { cn, getImageUrl, getTimeAgo } from '@/lib/utils';
 import { useGetProviderData } from '../../hooks/useGetProviderData';
 import { useTrackingSocket } from '@/realtime/useTrackingSocket';
 import { useEffect, useState } from 'react';
 import ReviewDialog from '../ReviewDialog';
+import { useGetRequestOffer } from '../../hooks/useGetRequestOffer';
 // ─── Tracking steps ───────────────────────────────────────────────────────────
 
-const TRACKING_STEPS = [
-  {
-    id: 1,
-    label: 'تم قبول العرض',
-    sublabel: '10:30 صباحاً',
-    icon: CheckCircle2,
-  },
-  {
-    id: 2,
-    label: 'في الطريق إليك',
-    sublabel: 'جاري تتبع الموقع الآن',
-    icon: Truck,
-  },
-  {
-    id: 3,
-    label: 'وصل للموقع',
-    sublabel: '',
-    icon: MapPin,
-  },
-  {
-    id: 4,
-    label: 'جاري العمل',
-    sublabel: '',
-    icon: Wrench,
-  },
-  {
-    id: 5,
-    label: 'مكتمل',
-    sublabel: '',
-    icon: CheckCircle2,
-  },
-];
+const getSteps = (myOffer: any) => {
+  return [
+    {
+      id: 1,
+      label: 'تم قبول العرض',
+      sublabel: `منذ ${getTimeAgo(new Date(myOffer?.createdAt))}`,
+      icon: CheckCircle2,
+    },
+
+    {
+      id: 2,
+      label: 'جاري العمل',
+      sublabel: myOffer?.message,
+      icon: Wrench,
+    },
+    {
+      id: 3,
+      label: 'مكتمل',
+      sublabel: '',
+      icon: CheckCircle2,
+    },
+  ];
+};
 
 // requestStatus → which tracking step is active
 function getTrackingStep(requestStatus: number): number {
@@ -76,23 +68,12 @@ export default function Step3TrackingSidebar({
 }: Step3TrackingSidebarProps) {
   const { data: reqData, isFetching: fetchingReq } =
     useGetServiceReqById(requestId);
-  // {
-  //     "id": 63,
-  //     "requestStatus": 2,
-  //     "description": "شصيشصيشصيشصيشصي",
-  //     "finalPrice": null,
-  //     "createdAt": "2026-04-12T23:51:14.0430056",
-  //     "preferredTime": null,
-  //     "clientId": 142,
-  //     "providerId": 72,
-  //     "serviceRequestLocation": {
-  //         "latitude": 30.589011538430825,
-  //         "longitude": 31.5223503112793
-  //     },
-  //     "serviceId": 1,
-  //     "imageUrls": []
-  // }
+  const { data: offerData } = useGetRequestOffer(requestId);
+  const myOffer = offerData?.find(
+    (offer: any) => offer.providerId === reqData?.providerId,
+  );
 
+  console.log(myOffer);
   const req = reqData as Record<string, unknown> | undefined;
 
   const assignedId = req?.providerId?.toString();
@@ -102,30 +83,6 @@ export default function Step3TrackingSidebar({
 
   const { mutate: completeMutate, isPending: completing } =
     useSetReqCompleted();
-  const [openReview, setOpenReview] = useState(false);
-  // export interface Provider {
-  //   id: number;
-  //   name: string;
-  //   pictureUrl?: string | null;
-  //   bio: string;
-  //   nickname: string;
-  //   rating: number | null;
-  //   reviewsCount: number;
-  //   jobsCount: number;
-  //   governorateId: number;
-  //   regionId: number;
-  //   baseLocation: {
-  //     id: number;
-  //     latitude: number;
-  //     longitude: number;
-  //     addressText: string;
-  //     providerId: number;
-  //   };
-  //   services: {
-  //     id: number;
-  //     name: string;
-  //   }[];
-  // }
 
   const providerName =
     providerData?.name || (req?.providerName as string) || 'حرفي متخصص';
@@ -135,12 +92,10 @@ export default function Step3TrackingSidebar({
     providerData?.services[0]?.name ||
     (req?.providerProfession as string) ||
     'حرفي متخصص';
-  const providerRating =
-    providerData?.rating || (req?.providerRating as number) || 4.9;
+
   const phoneNumber = providerData?.phoneNumber || '0123456789';
 
   const requestStatus = (req?.requestStatus as number) ?? 1;
-  const finalPrice = req?.finalPrice as number | null | undefined;
   const serviceId = req?.serviceId as number | undefined;
   const currentTrackingStep = getTrackingStep(requestStatus);
   const isCompleted = requestStatus === 3;
@@ -167,9 +122,7 @@ export default function Step3TrackingSidebar({
 
   const handleComplete = () => {
     completeMutate(requestId, {
-      onSuccess: () => {
-        setOpenReview(true);
-      },
+      onSuccess: () => onCompleteSuccess(), // بس كده
     });
   };
   console.log('Assigned ID:', assignedId);
@@ -184,12 +137,6 @@ export default function Step3TrackingSidebar({
     );
   }
 
-  useEffect(() => {
-    if (isCompleted) {
-      setOpenReview(true);
-    }
-  }, [isCompleted]);
-
   return (
     <>
       <div className="flex h-full flex-col" dir="rtl">
@@ -202,7 +149,7 @@ export default function Step3TrackingSidebar({
                 <Loader2 className="text-primary h-5 w-5 animate-spin" />
               ) : providerPic ? (
                 <img
-                  src={providerPic}
+                  src={getImageUrl(providerPic)}
                   alt={providerName}
                   className="h-full w-full object-cover"
                 />
@@ -218,7 +165,7 @@ export default function Step3TrackingSidebar({
               {/* Rating */}
               <div className="mb-1 flex items-center justify-end gap-1">
                 <span className="text-foreground text-xs font-bold">
-                  {providerRating.toFixed(1)}
+                  {providerData?.rating?.toFixed(1) ?? '0.0'}
                 </span>
                 <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
               </div>
@@ -286,7 +233,7 @@ export default function Step3TrackingSidebar({
             {/* Price */}
             <div className="border-border/50 flex items-center justify-between border-t pt-1">
               <span className="text-primary text-base font-black">
-                {finalPrice != null ? `${finalPrice} جنيه` : '—'}
+                {myOffer?.price != null ? `${myOffer?.price} جنيه` : '—'}
               </span>
               <span className="text-muted-foreground text-xs">
                 السعر المتفق عليه
@@ -302,11 +249,10 @@ export default function Step3TrackingSidebar({
           </p>
 
           <div className="relative">
-            {TRACKING_STEPS.map((step, index) => {
+            {getSteps(myOffer).map((step, index) => {
               const isStepCompleted = step.id < currentTrackingStep;
               const isStepActive = step.id === currentTrackingStep;
-              const isStepPending = step.id > currentTrackingStep;
-              const isLast = index === TRACKING_STEPS.length - 1;
+              const isLast = index === getSteps(myOffer).length - 1;
               const Icon = step.icon;
 
               return (
@@ -320,7 +266,7 @@ export default function Step3TrackingSidebar({
                         isStepCompleted
                           ? 'bg-primary border-primary text-white'
                           : isStepActive
-                            ? 'border-primary text-primary shadow-primary/20 bg-white shadow-md'
+                            ? 'border-primary text-primary shadow-primary/20 bg-card shadow-md'
                             : 'bg-muted border-border text-muted-foreground',
                       )}
                     >
@@ -371,12 +317,12 @@ export default function Step3TrackingSidebar({
         <div className="border-border shrink-0 border-t px-5 py-4">
           <Button
             type="button"
-            variant="outline"
+            variant="gradient"
             className={cn(
-              'h-14 w-full rounded-2xl border-2 text-base font-bold transition-all',
+              'h-14 w-full cursor-pointer rounded-2xl transition-all',
               isCompleted
                 ? 'border-green-500 bg-green-50 text-green-600'
-                : 'border-border text-foreground hover:border-primary hover:text-primary',
+                : 'text-base font-bold',
             )}
             disabled={completing || isCompleted}
             onClick={handleComplete}
@@ -397,16 +343,10 @@ export default function Step3TrackingSidebar({
           </Button>
 
           <p className="text-muted-foreground mt-2 px-2 text-center text-[11px] leading-relaxed">
-            يمكنك تأكيد إتمام العمل فقط بعد وصول المحترف وقيامه بالخدمة
-            المطلوبة.
+            يمكنك تأكيد إتمام العمل فقط بعد وصول الحرفي وقيامه بالخدمة المطلوبة.
           </p>
         </div>
       </div>
-      <ReviewDialog
-        open={openReview}
-        onClose={() => setOpenReview(false)}
-        requestId={Number(requestId)}
-      />
     </>
   );
 }

@@ -32,6 +32,7 @@ export const usePosts = ({
       return undefined;
     },
     initialPageParam: 1,
-    staleTime: 1000 * 60,
+    refetchInterval: 1000 * 10,
+    staleTime: 0,
   });
 };

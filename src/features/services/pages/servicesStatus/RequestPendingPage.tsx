@@ -1,8 +1,6 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Shield, ChevronLeft, MapPin, Check, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { MapPin, Check, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,36 +26,23 @@ interface RequestState {
 
     address: string;
   };
-
-
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const RequestPending = () => {
-
   const { requestId } = useParams();
   const { state } = useLocation() as { state: RequestState };
   const navigate = useNavigate();
 
   const payload = state?.payload;
-  console.log("Received payload:", payload);
+  console.log('Received payload:', payload);
 
-  // Animate progress bar
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const timer = setTimeout(() => setProgress(65), 300);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const timeAgo = "قبل ١ دقيقة";
+  const timeAgo = 'قبل ١ دقيقة';
 
   return (
-    <div
-      className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-12 "
-    >
-      <div className="w-full max-w-md flex flex-col items-center gap-8">
-
+    <div className="bg-background flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-5 py-12">
+      <div className="flex w-full max-w-md flex-col items-center gap-8">
         {/* ── Success icon ── */}
         <div className="relative">
           {/* Outer glow rings
@@ -65,69 +50,68 @@ const RequestPending = () => {
           <div className="absolute inset-0 rounded-full bg-primary/10 scale-125" /> */}
 
           {/* Icon circle */}
-          <div className="relative w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-            <div className="h-12 w-12 bg-white rounded-full flex items-center justify-center">
-              <Check className="h-8 w-8  text-primary" strokeWidth={3.5} />
-
+          <div className="bg-primary shadow-primary/30 relative flex h-24 w-24 items-center justify-center rounded-full shadow-lg">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
+              <Check className="text-primary h-8 w-8" strokeWidth={3.5} />
             </div>
           </div>
         </div>
 
         {/* ── Heading ── */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-black text-foreground">
+        <div className="space-y-2 text-center">
+          <h1 className="text-foreground text-4xl font-black">
             تم إرسال طلبك بنجاح
           </h1>
           <p className="text-muted-foreground text-xl leading-relaxed font-medium">
-            في انتظار رد مقدم الخدمة{" "}
+            في انتظار رد مقدم الخدمة{' '}
             {payload?.providerName && (
               <span className="text-primary font-bold">
                 ({payload.providerName})...
               </span>
             )}
-
           </p>
         </div>
 
         {/* ── Request summary card ── */}
         {payload && (
-          <div className="min-w-xl bg-card rounded-3xl border border-border/40 shadow-sm overflow-hidden">
+          <div className="bg-card border-border/40 min-w-xl overflow-hidden rounded-3xl border shadow-sm">
             <div className="flex items-center gap-6 px-8 pt-10 pb-8">
               {/* Avatar */}
-              <div className="w-16 h-16 rounded-2xl overflow-hidden  shrink-0">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl">
                 {payload.providerImage ? (
                   <img
                     src={payload.providerImage}
                     alt={payload.providerName}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-950 flex items-center justify-center text-white font-bold text-xl">
+                  <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-slate-700 to-slate-950 text-xl font-bold text-white">
                     {payload.providerAvatar || payload.providerName.charAt(0)}
                   </div>
                 )}
               </div>
 
               {/* Info */}
-              <div className="text-right space-y-1 flex-1 items-start">
+              <div className="flex-1 items-start space-y-1 text-right">
                 {/* Badge + time */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
+                  <span className="text-primary bg-primary/10 rounded-full px-2.5 py-0.5 text-xs font-bold">
                     طلب مباشر
                   </span>
-                  <span className="text-xs font-medium  text-muted-foreground">{timeAgo}</span>
-
+                  <span className="text-muted-foreground text-xs font-medium">
+                    {timeAgo}
+                  </span>
                 </div>
 
-                <p className="text-lg  font-bold text-foreground truncate">
+                <p className="text-foreground truncate text-lg font-bold">
                   {payload?.profession}
                 </p>
 
                 {payload?.address && (
                   <div className="flex items-center justify-start gap-1">
-                    <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
-                    <span className="text-sm text-muted-foreground truncate max-w-[180px]">
-                      {payload.address.split(",").slice(0, 2).join(",")}
+                    <MapPin className="text-muted-foreground h-3 w-3 shrink-0" />
+                    <span className="text-muted-foreground max-w-[180px] truncate text-sm">
+                      {payload.address.split(',').slice(0, 2).join(',')}
                     </span>
                   </div>
                 )}
@@ -136,24 +120,11 @@ const RequestPending = () => {
           </div>
         )}
 
-        {/* ── Progress bar ── */}
-        <div className="w-full space-y-4">
-          <div className="w-full h-1.5 bg-muted-foreground/15 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-[1500ms] ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="text-center text-xs font-[inter] font-semibold tracking-widest text-muted-foreground uppercase">
-            Processing Request
-          </p>
-        </div>
-
         {/* ── Action buttons ── */}
-        <div className="w-full flex items-center gap-3">
+        <div className="flex w-full items-center gap-3">
           <Button
             variant="gradient"
-            className="flex-1 h-14 rounded-3xl font-bold gap-2 shadow-primary-gradient"
+            className="shadow-primary-gradient h-14 flex-1 gap-2 rounded-xl font-bold"
             onClick={() => navigate(`/app/services/requests/${requestId}`)}
           >
             عرض تفاصيل الطلب
@@ -161,22 +132,21 @@ const RequestPending = () => {
           </Button>
           <Button
             variant="secondary"
-            className="flex-1 h-14 rounded-3xl font-bold text-muted-foreground hover:text-foreground"
-            onClick={() => navigate("/app/home")}
+            className="text-muted-foreground hover:text-foreground h-14 flex-1 cursor-pointer rounded-xl font-bold"
+            onClick={() => navigate('/app/home')}
           >
             الرجوع للرئيسية
           </Button>
         </div>
 
         {/* ── Trust badge ── */}
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <ShieldCheck  className="h-4 w-4" />
+        <div className="text-muted-foreground flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4" />
           <span className="text-sm font-medium">معاملة آمنة عبر منصة حرفي</span>
         </div>
-
       </div>
     </div>
   );
-}
+};
 
-export default RequestPending
+export default RequestPending;

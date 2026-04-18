@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Zap, ArrowRight, Loader2, Activity, ArrowLeft } from 'lucide-react';
+import { Zap, Loader2, Activity, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useActiveRequest } from '@/hooks/useActiveRequest';
 import { cn } from '@/lib/utils';
 
 const QuickRequest = () => {
   const navigate = useNavigate();
-  const { request, isLoading } = useActiveRequest();
+  const { request, isLoading, reqType } = useActiveRequest();
 
   const hasActiveRequest = request && request.requestStatus !== 3;
 
@@ -16,8 +16,8 @@ const QuickRequest = () => {
       className={cn(
         'relative flex h-[300px] flex-col items-start justify-between gap-4 overflow-hidden rounded-2xl border-none p-8 transition-all duration-500',
         hasActiveRequest
-          ? 'ring-primary/50 animate-in fade-in zoom-in-95 bg-card border-primary/20 border-2 shadow-xl dark:bg-slate-950'
-          : 'bg-primary text-primary-foreground shadow-lg',
+          ? 'ring-primary/50 animate-in fade-in zoom-in-95 bg-card border-2 shadow-xl dark:bg-slate-950'
+          : 'bg-primary dark:bg-primary/80 text-primary-foreground shadow-lg',
       )}
     >
       {/* Background Decorative Icon */}
@@ -90,9 +90,13 @@ const QuickRequest = () => {
             variant="default"
             size="lg"
             className="group w-full cursor-pointer rounded-2xl px-10 py-8 text-xl font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-95 md:w-auto"
-            onClick={() =>
-              navigate(`/app/services/instant?requestId=${request.id}`)
-            }
+            onClick={() => {
+              if (reqType === 'instant') {
+                navigate(`/app/services/instant?requestId=${request.id}`);
+              } else {
+                navigate(`/app/services/requests/${request.id}`);
+              }
+            }}
           >
             <span>متابعة الطلب</span>
             <ArrowLeft className="mr-2 h-6 w-6 transition-transform group-hover:-translate-x-2" />
