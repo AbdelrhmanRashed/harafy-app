@@ -2,19 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { ClipboardClock, Tag, Star, Wallet } from "lucide-react";
 import { useMyOffers } from "../../hooks/useMyOffers";
 import { useGetAvailableRequests } from "../../../Requests/hooks/useGetAvailableRequests";
-import { useGetServices } from "../../../Requests/hooks/useGetServices";
-import { useCurrentProviderId } from "../../hooks/useCurrentProviderId";
-import { useMyProviderReviews } from "../../../reviews/hooks/useMyProviderReviews";
+import { useGetMyReviews } from "../../../reviews/hooks/useGetMyReviews";
+
 const StatsCards = () => {
   const navigate = useNavigate();
-  const providerId = useCurrentProviderId();
-  const { data: reviews } = useMyProviderReviews(providerId);
-  const { data: services } = useGetServices();
-  const { data: availableRequests } = useGetAvailableRequests(services ?? []);
+  const { data: reviews } = useGetMyReviews();
+  const { data: availableRequests } = useGetAvailableRequests();
   const { data: myOffers } = useMyOffers();
-const avgRating = reviews?.length
-      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-      : "—";
+
+  const avgRating = reviews?.length
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : "—";
+
   const stats = [
     {
       title: "الطلبات النشطة",
@@ -60,12 +59,9 @@ const avgRating = reviews?.length
               <item.icon className="w-4 h-4 text-primary" />
             </div>
           </div>
-
           <h3 className="mt-4 text-2xl font-semibold tracking-tight">
             {item.value}
           </h3>
-
-        
         </div>
       ))}
     </div>

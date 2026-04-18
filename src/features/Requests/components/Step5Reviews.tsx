@@ -1,6 +1,6 @@
 import { Loader2, Star, ArrowRight, UserCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useProviderReviews } from "../hooks/useProviderReviews";
+import { useGetMyReviews } from "../../reviews/hooks/useGetMyReviews";
 import type { SubmittedOffer } from "../types/providerOfferTypes";
 
 type Props = {
@@ -15,7 +15,9 @@ function StarRating({ rating }: { rating: number }) {
         <Star
           key={i}
           className={`h-3.5 w-3.5 ${
-            i < rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"
+            i < Math.round(rating)
+              ? "text-amber-400 fill-amber-400"
+              : "text-muted-foreground/30"
           }`}
         />
       ))}
@@ -24,7 +26,7 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function Step5Reviews({ offer, onDone }: Props) {
-  const { data: reviews, isLoading } = useProviderReviews(offer.serviceRequestId);
+  const { data: reviews, isLoading } = useGetMyReviews(offer.serviceRequestId);
 
   return (
     <div className="flex flex-col gap-6 px-4 py-4 sm:px-5 pb-8 h-full" dir="rtl">
@@ -57,53 +59,36 @@ export default function Step5Reviews({ offer, onDone }: Props) {
         </div>
       ) : (
         <ul className="flex flex-col gap-3 flex-1 overflow-y-auto">
-          {reviews.map((review) => {
-            const date = review.createdAt
-              ? new Date(review.createdAt).toLocaleDateString("ar-EG", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
-              : null;
-
-            return (
-              <li
-                key={review.id}
-                className="bg-card rounded-2xl border border-border p-4 space-y-3"
-              >
-                {/* Client row */}
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full overflow-hidden bg-primary/10 border border-border shrink-0 flex items-center justify-center">
-                    {review.clientPictureUrl ? (
-                      <img
-                        src={review.clientPictureUrl}
-                        alt={review.clientName ?? ""}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <UserCircle2 className="h-5 w-5 text-primary/50" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-extrabold text-foreground truncate">
-                      {review.clientName ?? `عميل #${review.serviceRequestId}`}
-                    </p>
-                    {date && (
-                      <span className="text-[11px] text-muted-foreground">{date}</span>
-                    )}
-                  </div>
-                  <StarRating rating={review.rating} />
+          {reviews.map((review) => (
+            <li
+              key={review.id}
+              className="bg-card rounded-2xl border border-border p-4 space-y-3"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-primary/10 border border-border shrink-0 flex items-center justify-center">
+                  {review.clientPictureUrl ? (
+                    <img
+                      src={review.clientPictureUrl}
+                      alt={review.clientName ?? ""}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle2 className="h-5 w-5 text-primary/50" />
+                  )}
                 </div>
+                <p className="flex-1 text-sm font-extrabold text-foreground truncate">
+                  {review.clientName ?? "عميل"}
+                </p>
+                <StarRating rating={review.rating} />
+              </div>
 
-                {/* Message / comment */}
-                {(review.message || review.comment) && (
-                  <p className="text-xs text-muted-foreground leading-relaxed border-t border-border/50 pt-2">
-                    {review.message ?? review.comment}
-                  </p>
-                )}
-              </li>
-            );
-          })}
+              {review.message && (
+                <p className="text-xs text-muted-foreground leading-relaxed border-t border-border/50 pt-2">
+                  {review.message}
+                </p>
+              )}
+            </li>
+          ))}
         </ul>
       )}
 

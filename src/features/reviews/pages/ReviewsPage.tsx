@@ -1,5 +1,5 @@
 import { Star, Loader2 } from "lucide-react";
-import { useMyProviderReviews } from "../hooks/useMyProviderReviews";
+import { useGetMyReviews } from "../hooks/useGetMyReviews";
 
 function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md" | "lg" }) {
   const sz = size === "lg" ? "h-6 w-6" : size === "md" ? "h-4 w-4" : "h-3 w-3";
@@ -22,8 +22,8 @@ function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md
 function RatingBar({ star, count, total }: { star: number; count: number; total: number }) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground w-3">{star}</span>
+    <div className="flex items-center gap-2" dir="ltr">
+      <span className="text-xs text-muted-foreground w-3 text-right">{star}</span>
       <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
         <div
           className="h-full bg-amber-400 rounded-full transition-all duration-500"
@@ -36,7 +36,7 @@ function RatingBar({ star, count, total }: { star: number; count: number; total:
 }
 
 export default function ReviewsPage() {
-  const { data: reviews, isLoading } = useMyProviderReviews();
+  const { data: reviews, isLoading } = useGetMyReviews();
 
   const total = reviews?.length ?? 0;
   const avg =
@@ -44,9 +44,10 @@ export default function ReviewsPage() {
       ? (reviews!.reduce((s, r) => s + r.rating, 0) / total).toFixed(1)
       : "0.0";
 
+  // ✅ Math.round to handle float ratings like 3.6
   const distribution = [5, 4, 3, 2, 1].map((star) => ({
     star,
-    count: reviews?.filter((r) => r.rating === star).length ?? 0,
+    count: reviews?.filter((r) => Math.round(r.rating) === star).length ?? 0,
   }));
 
   return (
@@ -92,11 +93,11 @@ export default function ReviewsPage() {
               {reviews.map((review) => (
                 <div
                   key={review.id}
+                  dir="rtl"
                   className="bg-card rounded-2xl border border-border p-5 space-y-3"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      {/* Avatar */}
                       <div className="w-10 h-10 rounded-full bg-primary/10 border border-border shrink-0 overflow-hidden flex items-center justify-center">
                         {review.clientPictureUrl ? (
                           <img
@@ -110,15 +111,9 @@ export default function ReviewsPage() {
                           </span>
                         )}
                       </div>
-                      {/* Name + request */}
-                      <div>
-                        <p className="text-sm font-black text-foreground">
-                          {review.clientName ??""}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {/* طلب #{review.serviceRequestId} */}
-                        </p>
-                      </div>
+                      <p className="text-sm font-black text-foreground">
+                        {review.clientName ?? ""}
+                      </p>
                     </div>
                     <StarRating rating={review.rating} size="sm" />
                   </div>
@@ -135,7 +130,7 @@ export default function ReviewsPage() {
         </div>
 
         {/* Sidebar — rating distribution */}
-        <aside className="w-full md:w-56 lg:w-100 shrink-0">
+        <aside className="w-full md:w-64 shrink-0">
           <div className="bg-card rounded-2xl border border-border p-4">
             <p className="text-md font-black text-foreground mb-3">تحليل التقييمات</p>
             <div className="flex flex-col gap-2">

@@ -2,10 +2,9 @@ import axiosInstance from "@/lib/axios";
 import type { ProviderReview } from "../types/providerOfferTypes";
 
 export const getProviderReviews = async (
-  providerId: number,
   serviceRequestId?: number
 ): Promise<ProviderReview[]> => {
-  const res = await axiosInstance.get(`/api/Review/provider-reviews/${providerId}`);
+  const res = await axiosInstance.get(`/api/Review/my-reviews =`);
   const all: ProviderReview[] = Array.isArray(res.data)
     ? res.data
     : res.data.data ?? [];
