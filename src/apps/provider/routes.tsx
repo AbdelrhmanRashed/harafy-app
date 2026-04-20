@@ -14,6 +14,7 @@ import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
 import DirectPage from '@/features/Requests/pages/direct/DirectPage';
 import DirectRequestPage from '@/features/Requests/pages/direct/Accepted/DirectRequestPage';
 import AssignedRequestsPage from '@/features/Requests/pages/asignRequest/AllRequests';
+import MyOffersPage from '@/features/Requests/pages/offer/MyOffersPage';
 
 const ProviderRoutes = [
   {
@@ -45,6 +46,7 @@ const ProviderRoutes = [
         children: [
           { index: true, element: <Requests /> },
           { path: "assigned-requests", element: <AssignedRequestsPage /> },
+          { path: "my-offers", element: <MyOffersPage /> },
           { path: 'direct', element: <DirectPage /> },
           { path: 'direct/:serviceRequestId', element: <DirectRequestPage /> },
         ],

@@ -37,14 +37,16 @@ const RequestsPage = () => {
 
   const [selectedRequest, setSelectedRequest] =
     useState<AvailableRequestItem | null>(state?.request ?? null);
-const [step, setStep] = useState<ProviderOfferStep>(
-  state?.step === "ACCEPTED" ? "ACCEPTED"
-  : state?.request ? "CREATE_OFFER"
-  : "REQUESTS"
-);
-const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
-  state?.offer ?? null 
-);
+
+  const [step, setStep] = useState<ProviderOfferStep>(
+    state?.step === "ACCEPTED" ? "ACCEPTED"
+      : state?.step === "WAITING" ? "WAITING"
+        : state?.request ? "CREATE_OFFER"
+          : "REQUESTS"
+  );
+  const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
+    state?.offer ?? null
+  );
   const {
     position: providerPos,
     setPosition: setProviderPos,
@@ -197,7 +199,7 @@ const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
         providers={[]}
         selectedProvider={null}
         route={route}
-        onProviderSelect={() => {}}
+        onProviderSelect={() => { }}
         onAddressSearch={searchAddress}
       />
     </div>

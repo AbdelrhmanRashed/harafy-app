@@ -33,8 +33,8 @@ const StatsCards = () => {
       title: "العروض المقدمة",
       value: myOffers?.length ?? "—",
       icon: Tag,
-      onClick: undefined,
-    },
+      onClick: () => navigate("/provider/requests/my-offers"),    
+},
     {
       title: "تقييمات العملاء",
       value: avgRating,
@@ -44,13 +44,13 @@ const StatsCards = () => {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
       {stats.map((item, i) => (
         <div
           key={i}
           onClick={item.onClick}
           className={`relative overflow-hidden rounded-2xl border bg-background p-5 shadow-sm transition hover:shadow-md ${
-            item.onClick ? "cursor-pointer hover:border-primary hover:bg-primary/[0.02]" : ""
+            "cursor-pointer hover:border-primary hover:bg-primary/[0.02]"
           }`}
         >
           <div className="flex items-center justify-between">

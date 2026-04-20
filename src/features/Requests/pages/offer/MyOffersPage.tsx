@@ -1,22 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { Loader2, Briefcase, MapPin, Zap } from "lucide-react";
+import { Loader2, Tag, MapPin, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useAssignedRequests } from "../../hooks/useAssignedRequests";
-import { useGetServices } from "../../hooks/useGetServices";
+import { useGetAvailableRequests } from "../../../Requests/hooks/useGetAvailableRequests";
+import { useGetServices } from "../../../Requests/hooks/useGetServices";
 import { useGetMyOffers } from "../../hooks/useGetMyOffers";
 
-
-
-export default function AssignedRequestsPage() {
+const MyOffersPage = () => {
   const navigate = useNavigate();
-  const { data: requests, isLoading } = useAssignedRequests(true);
   const { data: services } = useGetServices();
+  const { data: requests, isLoading } = useGetAvailableRequests(services ?? []);
   const { data: myOffers } = useGetMyOffers();
 
-  const sorted = [...(requests ?? [])].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  const offeredRequests = (requests ?? []).filter((r) => r.hasOffer);
 
   if (isLoading) {
     return (
@@ -26,37 +22,38 @@ export default function AssignedRequestsPage() {
     );
   }
 
-  if (!sorted.length) {
+  if (!offeredRequests.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
         <div className="h-24 w-24 rounded-full bg-primary/5 flex items-center justify-center">
-          <Briefcase className="h-10 w-10 text-primary/40" />
+          <Tag className="h-10 w-10 text-primary/40" />
         </div>
-        <h3 className="text-lg font-black text-foreground">لا توجد أعمال حالياً</h3>
+        <h3 className="text-lg font-black text-foreground">لا توجد عروض مقدمة</h3>
         <p className="text-sm text-muted-foreground max-w-[240px] leading-relaxed">
-          ستظهر هنا الطلبات المسندة إليك فور قبول العميل لعرضك.
+          ستظهر هنا الطلبات التي قدمت عليها عروضاً.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir="rtl">
       <div className="max-w-7xl mx-auto space-y-4 p-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black text-foreground">إجمالي الأعمال</h2>
+          <h2 className="text-xl font-black text-foreground">العروض المقدمة</h2>
           <Badge className="bg-primary/10 text-primary font-bold px-3 py-1">
-            {sorted.length} طلب
+            {offeredRequests.length} عرض
           </Badge>
         </div>
 
-        {sorted.map((req) => {
-
+        {offeredRequests.map((req) => {
+          const serviceName =
+            services?.find((s) => s.id === req.serviceId)?.name ??
+            `خدمة #${req.serviceId}`;
           const createdAt = req.createdAt
             ? new Date(req.createdAt).toLocaleDateString("ar-EG")
             : null;
-          const images = req.imageUrls ?? [];
-          const offerData = myOffers?.find((o) => o.serviceRequestId === req.id);
+          const offerData = myOffers?.find((o) => o.id === req.offerId);
 
           return (
             <Card
@@ -66,9 +63,9 @@ export default function AssignedRequestsPage() {
                 navigate("/provider/requests", {
                   state: {
                     request: req,
-                    step: "ACCEPTED",
+                    step: "WAITING",
                     offer: {
-                      offerId: offerData?.id ?? 0,
+                      offerId: req.offerId!,
                       serviceRequestId: req.id,
                       price: offerData?.price ?? 0,
                       message: offerData?.message ?? undefined,
@@ -79,14 +76,14 @@ export default function AssignedRequestsPage() {
             >
               <CardContent className="px-4 py-3 space-y-3">
 
-                {/* Client row + status */}
+                {/* Client row */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-primary/10 border border-border shrink-0 flex items-center justify-center">
                       {req.clientPictureUrl ? (
                         <img
                           src={req.clientPictureUrl}
-                          alt={req.clientName}
+                          alt={req.clientName ?? ""}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -104,16 +101,20 @@ export default function AssignedRequestsPage() {
                       )}
                     </div>
                   </div>
-                  <Badge className={`text-[11px] font-bold px-3 py-1 text-primary bg-primary/10`}>
-                    جاري العمل</Badge>
+                  <Badge className="text-[10px] font-bold px-2.5 py-1 bg-primary/10 text-primary">
+                    عرض مرسل
+                  </Badge>
                 </div>
 
-                {/* Service + request id */}
+                {/* Service + id */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
                     #{req.id}
                   </span>
-
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <p className="text-sm font-bold text-primary">{serviceName}</p>
+                  </div>
                 </div>
 
                 {/* Description */}
@@ -127,14 +128,14 @@ export default function AssignedRequestsPage() {
                     <span className="text-base font-black text-primary">
                       {offerData.price.toLocaleString("ar-EG")} جنيه
                     </span>
-                    <span className="text-xs text-muted-foreground">السعر المتفق عليه</span>
+                    <span className="text-xs text-muted-foreground">عرضك المقدم</span>
                   </div>
                 )}
 
                 {/* Images */}
-                {images.length > 0 && (
+                {req.imageUrls?.length > 0 && (
                   <div className="flex gap-2 overflow-x-auto scrollbar-none">
-                    {images.map((url, i) => (
+                    {req.imageUrls.map((url, i) => (
                       <div
                         key={i}
                         className="w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-border"
@@ -167,4 +168,6 @@ export default function AssignedRequestsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default MyOffersPage;

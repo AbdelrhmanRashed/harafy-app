@@ -10,7 +10,7 @@ const ProviderDashboard = () => {
     const navigate = useNavigate();
 
   return (
-    <div className="space-y-6 max-w-7xl mx-5 my-2">
+    <div className="space-y-6 max-w-7xl mx-5 my-2 ">
 
       <StatsCards />
 
