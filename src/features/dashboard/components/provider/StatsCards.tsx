@@ -3,14 +3,14 @@ import { ClipboardClock, Tag, Star, Briefcase } from "lucide-react";
 import { useMyOffers } from "../../hooks/useMyOffers";
 import { useGetAvailableRequests } from "../../../Requests/hooks/useGetAvailableRequests";
 import { useGetMyReviews } from "../../../reviews/hooks/useGetMyReviews";
-import { useGetProviderProfile } from "../../../profile/hooks/useGetProviderProfile";
+import { useGetProviderHisProfile } from "../../../profile/hooks/useGetProviderHisProfile";
 
 const StatsCards = () => {
   const navigate = useNavigate();
   const { data: reviews } = useGetMyReviews();
   const { data: availableRequests } = useGetAvailableRequests();
   const { data: myOffers } = useMyOffers();
-  const { data: profile } = useGetProviderProfile();
+  const { data: profile } = useGetProviderHisProfile();
 
   const avgRating = reviews?.length
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
@@ -23,12 +23,12 @@ const StatsCards = () => {
       icon: ClipboardClock,
       onClick: () => navigate("/provider/requests"),
     },
-    {
-      title: "إجمالى الأعمال",
-      value: profile?.jobsCount ?? "—",
-      icon: Briefcase,
-      onClick: undefined,
-    },
+{
+  title: "إجمالي الأعمال",
+  value: profile?.jobsCount ?? "—",
+  icon: Briefcase,
+  onClick: () => navigate("/provider/requests/assigned-requests"), 
+},
     {
       title: "العروض المقدمة",
       value: myOffers?.length ?? "—",

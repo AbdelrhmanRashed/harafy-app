@@ -5,8 +5,9 @@ import MapView from '../../services/components/MapView';
 import { cn } from '@/lib/utils';
 import { useLocationCustom } from '../../services/hooks/useLocation';
 import { useRoute } from '../../services/hooks/useRoute';
+import { useGetMyOffers } from '../hooks/useGetMyOffers';
 
-import Step1AvailableRequests from '../components/Step1AvailableRequests ';
+import Step1AvailableRequests from '../components/Step1AvailableRequests';
 import Step2CreateOffer from '../components/Step2OffersSidebar';
 import Step3WaitingApproval from '../components/Step3WaitingApproval';
 import Step4Accepted from '../components/Step4Accepted';
@@ -28,24 +29,22 @@ const SIDEBAR_TITLES: Record<ProviderOfferStep, string> = {
 
 const RequestsPage = () => {
   const { state } = useRouterLocation();
+  const { data: myOffers } = useGetMyOffers();
 
   const [sidebarOpen, setSidebarOpen] = useState(
-    !!(
-      state?.request &&
-      typeof window !== 'undefined' &&
-      window.innerWidth < 768
-    ),
+    !!(state?.request && typeof window !== 'undefined' && window.innerWidth < 768),
   );
 
   const [selectedRequest, setSelectedRequest] =
     useState<AvailableRequestItem | null>(state?.request ?? null);
-  const [step, setStep] = useState<ProviderOfferStep>(
-    state?.request ? 'CREATE_OFFER' : 'REQUESTS',
-  );
-  const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
-    null,
-  );
-
+const [step, setStep] = useState<ProviderOfferStep>(
+  state?.step === "ACCEPTED" ? "ACCEPTED"
+  : state?.request ? "CREATE_OFFER"
+  : "REQUESTS"
+);
+const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
+  state?.offer ?? null 
+);
   const {
     position: providerPos,
     setPosition: setProviderPos,
@@ -61,10 +60,9 @@ const RequestsPage = () => {
   }, [selectedRequest]);
 
   const { route } = useRoute(requestPos, providerPos);
-  const mapCenter = useMemo(
-    () => requestPos ?? providerPos,
-    [requestPos, providerPos],
-  );
+  const mapCenter = useMemo(() => requestPos ?? providerPos, [requestPos, providerPos]);
+
+
 
   const handleSelectRequest = useCallback((request: AvailableRequestItem) => {
     setSelectedRequest(request);
@@ -73,6 +71,21 @@ const RequestsPage = () => {
       setSidebarOpen(false);
     }
   }, []);
+
+  const handleOpenExistingOffer = useCallback((request: AvailableRequestItem) => {
+    const offerData = myOffers?.find((o) => o.id === request.offerId);
+    setSelectedRequest(request);
+    setSubmittedOffer({
+      offerId: request.offerId!,
+      serviceRequestId: request.id,
+      price: offerData?.price ?? 0,
+      message: offerData?.message ?? undefined,
+    });
+    setStep('WAITING');
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  }, [myOffers]);
 
   const handleOfferCreated = useCallback((offer: SubmittedOffer) => {
     setSubmittedOffer(offer);
@@ -89,6 +102,7 @@ const RequestsPage = () => {
     setStep('ACCEPTED');
   }, []);
 
+
   return (
     <div className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden font-[Cairo,sans-serif] md:flex-row">
       {/* Mobile toggle button */}
@@ -104,7 +118,7 @@ const RequestsPage = () => {
         )}
       </button>
 
-      {/* Sidebar — left drawer on mobile, right panel on desktop */}
+      {/* Sidebar */}
       <aside
         dir="rtl"
         className={cn(
@@ -115,9 +129,7 @@ const RequestsPage = () => {
       >
         {/* Mobile header */}
         <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
-          <h2 className="text-foreground text-sm font-bold">
-            {SIDEBAR_TITLES[step]}
-          </h2>
+          <h2 className="text-foreground text-sm font-bold">{SIDEBAR_TITLES[step]}</h2>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
@@ -131,9 +143,11 @@ const RequestsPage = () => {
         {step === 'REQUESTS' && (
           <Step1AvailableRequests
             onSelectRequest={handleSelectRequest}
+            onOpenExistingOffer={handleOpenExistingOffer}
             selectedRequestId={selectedRequest?.id ?? null}
           />
         )}
+
         {step === 'CREATE_OFFER' && selectedRequest && (
           <Step2CreateOffer
             request={selectedRequest}
@@ -144,6 +158,7 @@ const RequestsPage = () => {
             onOfferCreated={handleOfferCreated}
           />
         )}
+
         {step === 'WAITING' && submittedOffer && (
           <Step3WaitingApproval
             offer={submittedOffer}
@@ -151,12 +166,14 @@ const RequestsPage = () => {
             onAccepted={handleAccepted}
           />
         )}
+
         {step === 'ACCEPTED' && submittedOffer && (
           <Step4Accepted
             offer={submittedOffer}
             onGoToReview={() => setStep('REVIEW')}
           />
         )}
+
         {step === 'REVIEW' && submittedOffer && (
           <Step5Reviews offer={submittedOffer} onDone={handleCancelled} />
         )}
@@ -172,7 +189,7 @@ const RequestsPage = () => {
         />
       )}
 
-      {/* Map — direct flex child, same as InstantRequestPage */}
+      {/* Map */}
       <MapView
         onLocationSelect={setProviderPos}
         center={mapCenter}

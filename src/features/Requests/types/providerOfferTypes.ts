@@ -40,6 +40,8 @@ export type AvailableRequestItem = ServiceRequestType & {
   clientName?: string;
   clientPictureUrl?: string | null;
   serviceName?: string;
+  hasOffer?: boolean;
+  offerId?: number | null;
 };
 
 export type AssignedRequest = {

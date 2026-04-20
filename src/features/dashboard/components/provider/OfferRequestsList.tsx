@@ -1,4 +1,4 @@
-import { Loader2, ClipboardList } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetAvailableRequests } from "../../../Requests/hooks/useGetAvailableRequests";
 import { useGetServices } from "../../../Requests/hooks/useGetServices";
@@ -8,6 +8,8 @@ export default function OfferRequestsList() {
   const { data: services } = useGetServices();
   const { data: requests, isLoading } = useGetAvailableRequests(services ?? []);
 
+  const filtered = (requests ?? []).filter((req) => !req.hasOffer);
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-10">
@@ -16,7 +18,7 @@ export default function OfferRequestsList() {
     );
   }
 
-  if (!requests?.length) {
+  if (!filtered.length) {
     return (
       <Card className="rounded-xl bg-muted border-r-4 border-muted-foreground">
         <CardContent className="p-10">
@@ -30,7 +32,7 @@ export default function OfferRequestsList() {
 
   return (
     <div className="space-y-4">
-      {requests.map((req) => (
+      {filtered.map((req) => (
         <OfferRequestCard key={req.id} data={req} />
       ))}
     </div>

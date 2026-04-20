@@ -13,6 +13,7 @@ import Requests from '@/features/Requests/pages/Requests';
 import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
 import DirectPage from '@/features/Requests/pages/direct/DirectPage';
 import DirectRequestPage from '@/features/Requests/pages/direct/Accepted/DirectRequestPage';
+import AssignedRequestsPage from '@/features/Requests/pages/asignRequest/AllRequests';
 
 const ProviderRoutes = [
   {
@@ -43,6 +44,7 @@ const ProviderRoutes = [
         path: 'requests',
         children: [
           { index: true, element: <Requests /> },
+          { path: "assigned-requests", element: <AssignedRequestsPage /> },
           { path: 'direct', element: <DirectPage /> },
           { path: 'direct/:serviceRequestId', element: <DirectRequestPage /> },
         ],
