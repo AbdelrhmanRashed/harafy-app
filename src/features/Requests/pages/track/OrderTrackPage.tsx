@@ -1,23 +1,26 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Clock, Calendar, X, Star, Menu } from 'lucide-react';
-import { useGetServices } from '../../../../Requests/hooks/useGetServices';
-import MapView from '../../../../services/components/MapView';
-import { useLocationCustom as useProviderLocation } from '../../../../services/hooks/useLocation';
-import { useRoute } from '../../../../services/hooks/useRoute';
+import { useGetServices } from '../../../Requests/hooks/useGetServices';
+import MapView from '../../../services/components/MapView';
+import { useLocationCustom as useProviderLocation } from '../../../services/hooks/useLocation';
+import { useRoute } from '../../../services/hooks/useRoute';
 import { Button } from '@/components/ui/button';
 import axiosInstance from '@/lib/axios';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import type { AssignedRequest } from '../../types/providerOfferTypes';
 
 const BASE_URL = axiosInstance.defaults.baseURL ?? '';
 
-const DirectRequestPage = () => {
-  const { state } = useLocation();
+const OrderTrackPage = () => {
+  const { serviceId } = useParams();
   const navigate = useNavigate();
-  const request = state?.request;
+  const { state } = useLocation();
   const { data: services } = useGetServices();
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const request = state?.request as AssignedRequest | undefined;
 
   const {
     position: providerPos,
@@ -28,7 +31,7 @@ const DirectRequestPage = () => {
 
   useEffect(() => {
     detect();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clientPos = request?.serviceRequestLocation
     ? {
@@ -40,9 +43,9 @@ const DirectRequestPage = () => {
   const { route } = useRoute(clientPos, providerPos);
 
   const serviceName =
-    services?.find((s) => s.id === request.serviceId)?.name ?? '';
+    services?.find((s) => s.id === request?.serviceId)?.name ?? '';
 
-  const createdAt = request.createdAt
+  const createdAt = request?.createdAt
     ? new Date(request.createdAt).toLocaleDateString('ar-EG', {
         year: 'numeric',
         month: 'long',
@@ -52,7 +55,7 @@ const DirectRequestPage = () => {
       })
     : null;
 
-  const preferredTime = request.preferredTime
+  const preferredTime = request?.preferredTime
     ? new Date(request.preferredTime).toLocaleDateString('ar-EG', {
         year: 'numeric',
         month: 'long',
@@ -62,13 +65,13 @@ const DirectRequestPage = () => {
       })
     : null;
 
-  const clientPictureUrl = request.clientPictureUrl
+  const clientPictureUrl = request?.clientPictureUrl
     ? request.clientPictureUrl.startsWith('http')
       ? request.clientPictureUrl
       : `${BASE_URL}/${request.clientPictureUrl}`
     : null;
 
-  const images: string[] = (request.imageUrls ?? []).map((url: string) =>
+  const images: string[] = (request?.imageUrls ?? []).map((url: string) =>
     url.startsWith('http') ? url : `${BASE_URL}/${url}`,
   );
 
@@ -117,18 +120,18 @@ const DirectRequestPage = () => {
                 {clientPictureUrl ? (
                   <img
                     src={clientPictureUrl}
-                    alt={request.clientName ?? ''}
+                    alt={request?.clientName ?? ''}
                     className="h-full w-full object-cover"
                   />
                 ) : (
                   <span className="text-primary text-sm font-bold">
-                    {request.clientName?.charAt(0) ?? 'ع'}
+                    {request?.clientName?.charAt(0) ?? 'ع'}
                   </span>
                 )}
               </div>
               <div className="min-w-0">
                 <h2 className="truncate text-base font-bold">
-                  {request.clientName}
+                  {request?.clientName ?? 'عميل'}
                 </h2>
                 {serviceName && (
                   <p className="text-primary truncate text-sm font-semibold">
@@ -138,13 +141,13 @@ const DirectRequestPage = () => {
               </div>
             </div>
             <span className="text-muted-foreground shrink-0">
-              رقم الطلب: ORD-{request.id}
+              رقم الطلب: ORD-{serviceId}
             </span>
           </div>
 
           {/* Description */}
           <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-            {request.description ?? 'لا يوجد وصف'}
+            {request?.description ?? 'لا يوجد وصف'}
           </p>
 
           {/* Meta */}
@@ -161,14 +164,14 @@ const DirectRequestPage = () => {
                 {createdAt}
               </span>
             )}
-            {request.serviceRequestLocation && (
+            {request?.serviceRequestLocation && (
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <MapPin className="h-3.5 w-3.5 shrink-0" />
                 {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
                 {request.serviceRequestLocation.longitude.toFixed(3)}
               </span>
             )}
-            {request.finalPrice && (
+            {request?.finalPrice && (
               <span className="text-primary text-sm font-bold">
                 {Number(request.finalPrice).toLocaleString('ar-EG')} جنيه
               </span>
@@ -224,7 +227,6 @@ const DirectRequestPage = () => {
             </div>
           )}
 
-          {/* Spacer */}
           <div className="flex-1" />
 
           {/* Button */}
@@ -251,7 +253,7 @@ const DirectRequestPage = () => {
         />
       )}
 
-      {/* Map — provider real GPS + client location from request */}
+      {/* Map */}
       <MapView
         center={clientPos ?? providerPos}
         customerPos={clientPos ?? providerPos}
@@ -286,4 +288,4 @@ const DirectRequestPage = () => {
   );
 };
 
-export default DirectRequestPage;
+export default OrderTrackPage;
