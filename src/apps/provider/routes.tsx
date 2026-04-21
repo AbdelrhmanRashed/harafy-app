@@ -12,9 +12,9 @@ import ProviderLayout from './layout/ProviderLayout';
 import Requests from '@/features/Requests/pages/Requests';
 import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
 import DirectPage from '@/features/Requests/pages/direct/DirectPage';
-import DirectRequestPage from '@/features/Requests/pages/direct/Accepted/DirectRequestPage';
 import AssignedRequestsPage from '@/features/Requests/pages/asignRequest/AllRequests';
 import MyOffersPage from '@/features/Requests/pages/offer/MyOffersPage';
+import OrderTrackPage from '@/features/Requests/pages/track/OrderTrackPage';
 
 const ProviderRoutes = [
   {
@@ -48,8 +48,7 @@ const ProviderRoutes = [
           { path: "assigned-requests", element: <AssignedRequestsPage /> },
           { path: "my-offers", element: <MyOffersPage /> },
           { path: 'direct', element: <DirectPage /> },
-          { path: 'direct/:serviceRequestId', element: <DirectRequestPage /> },
-        ],
+          { path: "ordertrack/:serviceId", element: <OrderTrackPage /> }        ],
       },
       {
         path: 'reviews',

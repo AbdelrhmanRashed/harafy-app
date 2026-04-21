@@ -63,19 +63,10 @@ export default function AssignedRequestsPage() {
               key={req.id}
               className="rounded-xl border-r-4 border-primary cursor-pointer hover:shadow-md transition"
               onClick={() =>
-                navigate("/provider/requests", {
-                  state: {
-                    request: req,
-                    step: "ACCEPTED",
-                    offer: {
-                      offerId: offerData?.id ?? 0,
-                      serviceRequestId: req.id,
-                      price: offerData?.price ?? 0,
-                      message: offerData?.message ?? undefined,
-                    },
-                  },
-                })
-              }
+  navigate(`/provider/requests/ordertrack/${req.id}`, {
+    state: { request: req },
+  })
+}
             >
               <CardContent className="px-4 py-3 space-y-3">
 
@@ -105,7 +96,7 @@ export default function AssignedRequestsPage() {
                     </div>
                   </div>
                   <Badge className={`text-[11px] font-bold px-3 py-1 text-primary bg-primary/10`}>
-                    جاري العمل</Badge>
+                  قيد التنفيذ</Badge>
                 </div>
 
                 {/* Service + request id */}

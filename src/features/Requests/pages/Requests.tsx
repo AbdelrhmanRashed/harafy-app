@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useLocation as useRouterLocation } from 'react-router-dom';
+import { useLocation as useRouterLocation, useNavigate } from 'react-router-dom';
 import MapView from '../../services/components/MapView';
 import { cn } from '@/lib/utils';
 import { useLocationCustom } from '../../services/hooks/useLocation';
@@ -10,8 +10,6 @@ import { useGetMyOffers } from '../hooks/useGetMyOffers';
 import Step1AvailableRequests from '../components/Step1AvailableRequests';
 import Step2CreateOffer from '../components/Step2OffersSidebar';
 import Step3WaitingApproval from '../components/Step3WaitingApproval';
-import Step4Accepted from '../components/Step4Accepted';
-import Step5Reviews from '../components/Step5Reviews';
 
 import type {
   ProviderOfferStep,
@@ -22,13 +20,12 @@ import type {
 const SIDEBAR_TITLES: Record<ProviderOfferStep, string> = {
   REQUESTS: 'الطلبات المتاحة',
   CREATE_OFFER: 'تقديم عرض',
-  WAITING: 'في انتظار الموافقة',
-  ACCEPTED: 'تم قبول العرض',
-  REVIEW: 'التقييمات',
+  WAITING: 'قيد الانتظار',
 };
 
 const RequestsPage = () => {
   const { state } = useRouterLocation();
+  const navigate = useNavigate();
   const { data: myOffers } = useGetMyOffers();
 
   const [sidebarOpen, setSidebarOpen] = useState(
@@ -39,14 +36,15 @@ const RequestsPage = () => {
     useState<AvailableRequestItem | null>(state?.request ?? null);
 
   const [step, setStep] = useState<ProviderOfferStep>(
-    state?.step === "ACCEPTED" ? "ACCEPTED"
-      : state?.step === "WAITING" ? "WAITING"
-        : state?.request ? "CREATE_OFFER"
-          : "REQUESTS"
+    state?.step === 'WAITING' ? 'WAITING'
+    : state?.request ? 'CREATE_OFFER'
+    : 'REQUESTS'
   );
+
   const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
     state?.offer ?? null
   );
+
   const {
     position: providerPos,
     setPosition: setProviderPos,
@@ -64,7 +62,7 @@ const RequestsPage = () => {
   const { route } = useRoute(requestPos, providerPos);
   const mapCenter = useMemo(() => requestPos ?? providerPos, [requestPos, providerPos]);
 
-
+  // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleSelectRequest = useCallback((request: AvailableRequestItem) => {
     setSelectedRequest(request);
@@ -100,9 +98,13 @@ const RequestsPage = () => {
     setStep('REQUESTS');
   }, []);
 
-  const handleAccepted = useCallback(() => {
-    setStep('ACCEPTED');
-  }, []);
+const handleAccepted = useCallback(() => {
+  if (submittedOffer?.serviceRequestId) {
+    navigate(`/provider/requests/ordertrack/${submittedOffer.serviceRequestId}`, {
+      state: { request: selectedRequest }, // ← pass selectedRequest
+    });
+  }
+}, [submittedOffer, selectedRequest, navigate]);
 
 
   return (
@@ -168,17 +170,6 @@ const RequestsPage = () => {
             onAccepted={handleAccepted}
           />
         )}
-
-        {step === 'ACCEPTED' && submittedOffer && (
-          <Step4Accepted
-            offer={submittedOffer}
-            onGoToReview={() => setStep('REVIEW')}
-          />
-        )}
-
-        {step === 'REVIEW' && submittedOffer && (
-          <Step5Reviews offer={submittedOffer} onDone={handleCancelled} />
-        )}
       </aside>
 
       {/* Mobile overlay */}
@@ -199,7 +190,7 @@ const RequestsPage = () => {
         providers={[]}
         selectedProvider={null}
         route={route}
-        onProviderSelect={() => { }}
+        onProviderSelect={() => {}}
         onAddressSearch={searchAddress}
       />
     </div>
