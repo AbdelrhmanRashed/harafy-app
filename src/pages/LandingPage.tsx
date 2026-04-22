@@ -4,10 +4,12 @@ import Details from './landingComponent/Details';
 import Footer from './landingComponent/Footer';
 import Hero from './landingComponent/Hero';
 import WhyUs from './landingComponent/WhyUs';
+import { Navbar } from '@/components/layout/navbar/Navbar';
 
 const LandingPage = () => {
   return (
     <div className="bg-background text-foreground min-h-screen w-full font-sans">
+      <Navbar />
       <Hero />
       <WhyUs />
       <Details />

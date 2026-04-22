@@ -5,6 +5,7 @@ import SearchInputField from './components/SearchInputField';
 import type { UserRole } from '@/types/auth.types';
 import ProviderActions from './sections/ProviderActions';
 import ClientActions from './sections/ClientActions';
+import GuestActions from './sections/GuestActions';
 
 interface DesktopNavbarProps {
   role: UserRole;
@@ -26,6 +27,7 @@ const DesktopNavbar = ({ role }: DesktopNavbarProps) => {
       <div className="flex items-center gap-4">
         {role === 'Provider' && <ProviderActions />}
         {role === 'Client' && <ClientActions />}
+        {role === 'Guest' && <GuestActions />}
       </div>
     </header>
   );

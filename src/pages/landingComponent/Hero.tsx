@@ -1,86 +1,108 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BadgeCheck, User } from 'lucide-react';
+import { BadgeCheck, User, ArrowLeft, Star } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { motion } from 'framer-motion';
 
 const Hero = () => (
-  <div className="relative mx-auto flex min-h-130 w-full max-w-7xl flex-col items-center gap-12 overflow-hidden px-8 py-20 md:flex-row">
-    <div className="flex-1 space-y-6">
-      <Badge variant="secondary" className="text-primary font-bold">
-        منصة الحرفين الأولى
+  <div className="relative mx-auto flex min-h-[90vh] w-full max-w-7xl flex-col items-center justify-center gap-12 overflow-hidden px-8 py-20 md:flex-row">
+    
+    {/* Decorative Background Elements */}
+    <div className="absolute top-0 right-0 -z-10 h-96 w-96 translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[100px]" />
+    <div className="absolute bottom-0 left-0 -z-10 h-80 w-80 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
+
+    <motion.div 
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="flex-1 space-y-8 z-10"
+    >
+      <Badge variant="secondary" className="text-primary font-bold px-4 py-1.5 rounded-full bg-primary/10 border-none shadow-sm">
+        <Star className="w-3.5 h-3.5 ml-2 inline-block fill-primary text-primary" />
+        منصة الحرفيين الأولى في مصر
       </Badge>
-      <h1 className="text-4xl leading-tight font-extrabold tracking-tight lg:text-5xl">
+      <h1 className="text-4xl leading-[1.15] font-extrabold tracking-tight lg:text-[3.5rem]">
         منصتك الموثوقة
         <br />
         للوصول إلى
         <br />
-        <span className="text-primary"> نخبة للحرفين </span>
+        <span className="bg-primary-gradient bg-clip-text text-transparent"> نخبة الحرفيين </span>
       </h1>
-      <p className="text-muted-foreground mr-auto max-w-sm text-sm leading-relaxed lg:mr-0">
+      <p className="text-muted-foreground mr-auto max-w-lg text-lg leading-relaxed lg:mr-0">
         حِرَفِيّ هو الجسر الذي يربطك بأفضل الكفاءات والمهارات المهنية في منطقتك.
-        نضمن لك الجودة، الأمان، والسرعة في تنفيذ طلباتك.
+        نضمن لك الجودة، الأمان، والسرعة في تنفيذ طلباتك بضغطة زر.
       </p>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-4">
         <Button
-          variant="gradient"
-          size={'lg'}
-          className="rounded-xl px-6 py-4 text-sm font-bold"
+          className="bg-primary-gradient shadow-primary/25 rounded-2xl px-8 py-6 text-base font-bold shadow-lg transition-all hover:scale-105 hover:shadow-xl"
         >
           ابحث عن حرفي
+          <ArrowLeft className="mr-2 h-4 w-4" />
         </Button>
         <Button
-          size={'lg'}
-          variant="secondary"
-          className="text-primary rounded-xl px-6 py-4 text-sm font-bold"
+          variant="outline"
+          className="rounded-2xl border-2 px-8 py-6 text-base font-bold transition-all hover:bg-primary/5 hover:border-primary/50"
         >
           اكتشف الخدمات
         </Button>
       </div>
-      <div className="text-muted-foreground flex items-center gap-2 text-sm">
-        <div className="flex -space-x-3">
+      <div className="flex items-center gap-4 pt-4">
+        <div className="flex -space-x-3 -space-x-reverse">
           {[1, 2, 3].map((_, i) => (
             <Avatar
               key={i}
-              className="border-background bg-primary/10 h-8 w-8 border-2"
+              className="border-background h-10 w-10 border-2 shadow-sm"
             >
-              <AvatarFallback className="text-primary">
-                <User size={16} />
+              <AvatarFallback className="bg-primary/10 text-primary">
+                <User size={18} />
               </AvatarFallback>
             </Avatar>
           ))}
         </div>
-        <span>+500 من مستخدمي منصتنا</span>
+        <div>
+          <p className="text-sm font-bold text-foreground">+5,000</p>
+          <p className="text-muted-foreground text-xs">مستخدم موثوق</p>
+        </div>
       </div>
-    </div>
-    <div className="flex flex-1 justify-center">
+    </motion.div>
+    
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+      className="flex flex-1 justify-center relative z-10"
+    >
       <div className="relative">
-        {/* Image */}
-        <div className="border-foreground/10 relative h-100 w-100 overflow-hidden rounded-3xl border shadow-[0_30px_80px_rgba(0,0,0,0.25)] md:rotate-[4deg] lg:h-180 lg:w-135">
+        {/* Main Image */}
+        <div className="border-foreground/5 relative h-[25rem] w-[90vw] md:w-[22rem] overflow-hidden rounded-[2rem] border shadow-2xl md:rotate-[3deg] lg:h-[36rem] lg:w-[28rem] transition-transform hover:rotate-0 duration-500">
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent mix-blend-overlay z-10" />
           <img
             src="/images/landing1.png"
-            alt="workshop tools"
+            alt="ورشة وحرفيون"
             className="h-full w-full object-cover"
           />
         </div>
 
         {/* Floating Card */}
-        <div className="absolute bottom-4 left-1/2 w-[90%] -translate-x-1/2 md:rotate-[4deg]">
-          <div className="bg-background/90 border-border flex items-center gap-4 rounded-2xl border px-4 py-3 shadow-lg backdrop-blur-md">
-            {/* Icon */}
-            <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
-              <BadgeCheck className="text-primary" size={18} />
+        <motion.div 
+          animate={{ y: [0, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          className="absolute -bottom-6 -left-6 md:-left-12 z-20"
+        >
+          <div className="bg-background/95 border-border/50 flex items-center gap-4 rounded-2xl border p-4 shadow-[0_10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl">
+            <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
+              <BadgeCheck className="text-primary" size={24} />
             </div>
-            {/* Text */}
             <div className="text-right">
-              <p className="text-sm font-semibold">توثيق كامل للهوية</p>
-              <p className="text-muted-foreground text-xs">
-                جميع الحرفيين خاضعون لفحص أمني
+              <p className="text-base font-bold text-foreground">توثيق كامل للهوية</p>
+              <p className="text-muted-foreground text-xs mt-0.5">
+                حرفيون معتمدون 100%
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   </div>
 );
 

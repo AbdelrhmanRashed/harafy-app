@@ -4,6 +4,7 @@ import { getNavLinks } from '@/constants/navigation';
 import NavLinks from './components/NavLinks';
 import type { UserRole } from '@/types/auth.types';
 import ProviderActions from './sections/ProviderActions';
+import GuestActions from './sections/GuestActions';
 
 interface MobileNavbarProps {
   role: UserRole;
@@ -17,6 +18,7 @@ const MobileNavbar = ({ role }: MobileNavbarProps) => {
         <div className="flex items-center gap-2">
           {role === 'Provider' && <ProviderActions />}
           {role === 'Client' && <ClientActions />}
+          {role === 'Guest' && <GuestActions />}
         </div>
       </header>
 
