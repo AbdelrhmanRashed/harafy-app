@@ -87,12 +87,11 @@ export default function ServicesPage() {
 
   // 2. جلب الفنيين بناءً على القسم المختار والموقع
   // الـ Hook ده مش هيشتغل (Enabled) إلا لو selectedServiceId أكبر من 0
-  const { data: nearbyData, isLoading: isProvidersLoading } =
-    useGetNearbyProviders(
-      String(position.lat),
-      String(position.lng),
-      selectedServiceId,
-    );
+  const { isLoading: isProvidersLoading } = useGetNearbyProviders(
+    String(position.lat),
+    String(position.lng),
+    selectedServiceId,
+  );
 
   const handleOpenRequest = (provider: Provider) => {
     setSelectedProvider(provider);
