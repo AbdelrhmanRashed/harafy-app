@@ -6,46 +6,53 @@ export const useTrackingSocket = (
   onLocation?: (lat: number, lng: number) => void,
 ) => {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
+  const onLocationRef = useRef(onLocation); // ✅ ref للـ callback
+
+  // ✅ حدّث الـ ref من غير ما تعمل re-run للـ effect
+  useEffect(() => {
+    onLocationRef.current = onLocation;
+  }, [onLocation]);
 
   useEffect(() => {
     if (!providerId) return;
 
-    // تجنب الاتصال المكرر
-    if (connectionRef.current?.state === signalR.HubConnectionState.Connected) {
-      return;
-    }
+    // ✅ لو في connection شغالة متعملش تانية
+    if (connectionRef.current) return;
+
+    let cancelled = false;
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(
         `https://iti-final-project.runasp.net/hubs/live-location?clientId=${providerId}`,
-        {
-          accessTokenFactory: () => localStorage.getItem('token') || '',
-        },
+        { accessTokenFactory: () => localStorage.getItem('token') || '' },
       )
       .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.None)
       .build();
 
+    // ✅ استخدم الـ ref مش الـ callback مباشرة
     connection.on('ReceiveLocation', (data) => {
-      console.log('📍 location:', data);
-      onLocation?.(data.latitude, data.longitude);
+      onLocationRef.current?.(data.latitude, data.longitude);
     });
+
+    connectionRef.current = connection;
 
     const start = async () => {
       try {
         await connection.start();
-        console.log('🟢 connected');
+        if (cancelled) return;
         await connection.invoke('JoinProviderGroup', Number(providerId));
-        console.log('✅ joined group');
       } catch (err) {
-        console.error('❌ socket error', err);
+        if (!cancelled) console.error('❌ socket error', err);
       }
     };
 
-    connectionRef.current = connection;
     start();
 
     return () => {
-      connectionRef.current?.stop().catch(() => {});
+      cancelled = true;
+      connectionRef.current = null;
+      connection.stop().catch(() => {});
     };
-  }, [providerId, onLocation]);
+  }, [providerId]); // ✅ providerId بس مش onLocation
 };

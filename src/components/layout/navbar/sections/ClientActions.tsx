@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Bell, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProfileMenuTrigger from '../components/ProfileMenuTrigger';
 import {
@@ -8,11 +8,64 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useTheme } from '@/hooks/useTheme';
+import NotificationCenter from '@/components/shared/NotificationCenter';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useEffect, useRef } from 'react';
+import { useNotificationSocket } from '@/realtime/useNotificationSocket';
+import { toast } from 'sonner';
+import {
+  useMarkAsRead,
+  useNotifications,
+} from '@/features/notifications/hooks/useNotifications';
+
+const mapType = (type: number): 'info' | 'success' | 'warning' | 'error' => {
+  switch (type) {
+    case 1:
+      return 'success';
+    case 2:
+      return 'warning';
+    case 3:
+      return 'error';
+    default:
+      return 'info';
+  }
+};
 
 const ClientActions = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { token } = useAuthStore();
+  const prevLengthRef = useRef<number>(0);
   const { theme, toggleTheme } = useTheme();
+
+  // ── Realtime notification ───────────────────────────────────────────────────
+  const { connected } = useNotificationSocket(token);
+  // ── Get all notifications ───────────────────────────────────────────────────
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useNotifications();
+
+  const { mutate: markAsRead } = useMarkAsRead();
+
+  const notifications = data?.pages.flatMap((p) => p.data) ?? [];
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  useEffect(() => {
+    if (notifications.length > prevLengthRef.current) {
+      const latest = notifications[0];
+      if (latest && !latest.isRead) {
+        toast[mapType(latest.type)](latest.title, {
+          description: latest.message,
+          action: {
+            label: 'عرض',
+            onClick: () => navigate('/app/notifications'),
+          },
+          duration: 5000,
+          position: 'bottom-right',
+        });
+      }
+    }
+    prevLengthRef.current = notifications.length;
+  }, [notifications.length]);
 
   const variant: Record<string, string> = {
     '/app/home': 'إنشاء منشور',
@@ -66,21 +119,24 @@ const ClientActions = () => {
         </TooltipContent>
       </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative cursor-pointer rounded-full"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="ring-background absolute top-1.5 right-2 flex h-2 w-2 rounded-full bg-red-500 ring-2" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>الإشعارات</p>
-        </TooltipContent>
-      </Tooltip>
+      <NotificationCenter
+        notifications={notifications}
+        unreadCount={unreadCount}
+        connected={connected}
+        onMarkAsRead={markAsRead}
+        onMarkAllAsRead={() => {
+          const unreadIds = notifications
+            .filter((n) => !n.isRead)
+            .map((n) => n.id);
+          if (unreadIds.length > 0) markAsRead(unreadIds);
+        }}
+        onClearAll={() => {}}
+        onViewAll={() => navigate('/app/notifications')}
+        onLoadMore={fetchNextPage}
+        hasMore={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+      />
 
       <ProfileMenuTrigger />
     </>

@@ -13,6 +13,7 @@ import Requests from '@/features/Requests/pages/Requests';
 import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
 import DirectPage from '@/features/Requests/pages/direct/DirectPage';
 import DirectRequestPage from '@/features/Requests/pages/direct/Accepted/DirectRequestPage';
+import AllNotificationsPage from '@/features/notifications/pages/AllNotificationsPage';
 
 const ProviderRoutes = [
   {
@@ -54,6 +55,11 @@ const ProviderRoutes = [
       {
         path: 'profile',
         element: <ProfilePage />,
+      },
+      {
+        path: 'notifications',
+        handle: { title: 'الإشعارات' },
+        element: <AllNotificationsPage />,
       },
       {
         path: 'settings',

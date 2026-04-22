@@ -26,23 +26,45 @@ interface NavItem {
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 
-const NAV_ITEMS: NavItem[] = [
-  {
-    label: 'الملف الشخصي',
-    icon: User,
-    to: '/app/settings/info',
-  },
-  {
-    label: 'الإشعارات',
-    icon: Bell,
-    to: '/app/settings/notifications',
-  },
-  {
-    label: 'الأمان',
-    icon: ShieldUser,
-    to: '/app/settings/security',
-  },
-];
+const getNavItems = (roles: string[] | undefined | null): NavItem[] => {
+  if (roles?.includes('Provider')) {
+    return [
+      {
+        label: 'الملف الشخصي',
+        icon: User,
+        to: '/provider/settings/info',
+      },
+      {
+        label: 'الإشعارات',
+        icon: Bell,
+        to: '/provider/settings/notifications',
+      },
+      {
+        label: 'الأمان',
+        icon: ShieldUser,
+        to: '/provider/settings/security',
+      },
+    ];
+  } else {
+    return [
+      {
+        label: 'الملف الشخصي',
+        icon: User,
+        to: '/app/settings/info',
+      },
+      {
+        label: 'الإشعارات',
+        icon: Bell,
+        to: '/app/settings/notifications',
+      },
+      {
+        label: 'الأمان',
+        icon: ShieldUser,
+        to: '/app/settings/security',
+      },
+    ];
+  }
+};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -73,7 +95,7 @@ const ProfileSidebar = () => {
       <Separator />
       {/* ── Navigation ── */}
       <nav className="flex flex-col gap-2">
-        {NAV_ITEMS.map((item) => {
+        {getNavItems(roles).map((item) => {
           const Icon = item.icon;
           return (
             <NavLink

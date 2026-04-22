@@ -22,6 +22,7 @@ import RequestPending from '@/features/services/pages/servicesStatus/RequestPend
 import DirectRequestDetailsPage from '@/features/services/pages/requests/DirectRequestDetailsPage';
 import ActiveRequestGuard from '@/guards/ActiveRequestGuard';
 import RequestsPage from '@/features/services/pages/RequestsPage';
+import AllNotificationsPage from '@/features/notifications/pages/AllNotificationsPage';
 
 const clientRoutes = [
   {
@@ -118,6 +119,11 @@ const clientRoutes = [
         path: 'requests',
         handle: { title: 'الطلبات' },
         element: <RequestsPage />,
+      },
+      {
+        path: 'notifications',
+        handle: { title: 'الإشعارات' },
+        element: <AllNotificationsPage />,
       },
     ],
   },

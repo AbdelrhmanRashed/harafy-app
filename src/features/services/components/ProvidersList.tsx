@@ -22,23 +22,27 @@ export default function ProvidersList({
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-             <MapPin className="h-4 w-4 text-primary" />
+            <MapPin className="text-primary h-4 w-4" />
           </div>
           <span className="text-foreground text-lg font-black tracking-tight">
-            محترفون متاحون الآن
+            حرفيون متاحون الآن
           </span>
           <div className="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
         </div>
-        <span className="text-muted-foreground text-xs font-bold bg-secondary px-3 py-1 rounded-full">
+        <span className="text-muted-foreground bg-secondary rounded-full px-3 py-1 text-xs font-bold">
           {providers.length} مزود قريب
         </span>
       </div>
 
       {/* List Container */}
-      <div className={cn(
-        "grid grid-cols-1 gap-4 transition-all duration-500",
-        isLoading ? "opacity-40 pointer-events-none blur-[2px]" : "opacity-100"
-      )}>
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-4 transition-all duration-500',
+          isLoading
+            ? 'pointer-events-none opacity-40 blur-[2px]'
+            : 'opacity-100',
+        )}
+      >
         {providers.map((provider) => (
           <ProviderCard
             key={provider.id}
@@ -54,7 +58,9 @@ export default function ProvidersList({
             <div className="bg-muted mb-3 flex h-12 w-12 items-center justify-center rounded-full">
               <MapPin className="text-muted-foreground h-6 w-6" />
             </div>
-            <p className="text-muted-foreground text-sm font-medium">لا يوجد محترفون متاحون في منطقتك حالياً</p>
+            <p className="text-muted-foreground text-sm font-medium">
+              لا يوجد حرفيون متاحون في منطقتك حالياً
+            </p>
           </div>
         )}
       </div>

@@ -5,9 +5,9 @@ import { DirectionProvider } from '@/components/ui/direction';
 import App from './App.tsx';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <DirectionProvider dir="rtl" direction="rtl">
-      <App />
-    </DirectionProvider>
-  </StrictMode>,
+  // <StrictMode>
+  <DirectionProvider dir="rtl" direction="rtl">
+    <App />
+  </DirectionProvider>,
+  // </StrictMode>,
 );

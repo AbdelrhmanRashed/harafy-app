@@ -65,10 +65,10 @@ export default function ProvidersSearchList({
           </div>
           <div>
             <h2 className="text-foreground text-lg font-black tracking-tight">
-              المحترفين المتاحين
+              الحرفيين المتاحين
             </h2>
             <p className="text-muted-foreground text-xs font-bold">
-              وجدنا {providers.length} خبير متاح لخدمتك
+              وجدنا {providers.length} حرفي متاح لخدمتك
             </p>
           </div>
         </div>

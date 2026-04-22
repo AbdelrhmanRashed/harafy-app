@@ -1,13 +1,12 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import userAvatar from '@/assets/images/profileImage.png';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const getImageUrl = (imagePath: string | null | undefined) =>
-  imagePath ? `${import.meta.env.VITE_BASE_URL}/${imagePath}` : userAvatar;
+  imagePath ? `${import.meta.env.VITE_BASE_URL}/${imagePath}` : undefined;
 
 export const getFullName = (
   firstName: string | null | undefined,
@@ -34,15 +33,14 @@ export const getTimeAgo = (date: Date) => {
   }
 };
 
-export const getRoleName = (role: string[] | null | undefined) => {
-  switch (role?.[0]) {
-    case 'Client':
-      return 'عميل';
-    case 'Provider':
-      return 'حرفي';
-    case 'Admin':
-      return 'مدير';
-    default:
-      return 'غير معروف';
+export const getRoleName = (roles: string[] | null | undefined) => {
+  if (roles?.includes('Admin')) {
+    return 'مدير';
+  } else if (roles?.includes('Provider')) {
+    return 'حرفي';
+  } else if (roles?.includes('Client')) {
+    return 'عميل';
+  } else {
+    return 'غير معروف';
   }
 };

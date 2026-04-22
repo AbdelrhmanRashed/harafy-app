@@ -75,7 +75,11 @@ const ProfileMenuTrigger = () => {
         )}
         <DropdownMenuItem asChild>
           <Link
-            to="/provider/settings/notifications"
+            to={
+              data?.role.includes('Provider')
+                ? '/provider/settings/notifications'
+                : '/app/settings/notifications'
+            }
             className="flex cursor-pointer items-center gap-2"
           >
             <BellIcon className="h-4 w-4" />
@@ -84,7 +88,11 @@ const ProfileMenuTrigger = () => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link
-            to="/provider/settings"
+            to={
+              data?.role.includes('Provider')
+                ? '/provider/settings'
+                : '/app/settings'
+            }
             className="flex cursor-pointer items-center gap-2"
           >
             <SettingsIcon className="h-4 w-4" />
