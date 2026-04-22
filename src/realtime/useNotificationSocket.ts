@@ -111,7 +111,7 @@ export const useNotificationSocket = (token: string | null) => {
           onClick: () => navigate('/app/notifications'),
         },
         duration: 5000,
-        position: 'bottom-right',
+        position: 'top-center',
       });
     });
 
