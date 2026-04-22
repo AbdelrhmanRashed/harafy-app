@@ -2,13 +2,14 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Clock, Calendar, X, Star, Menu } from 'lucide-react';
 import { useGetServices } from '../../../Requests/hooks/useGetServices';
 import MapView from '../../../services/components/MapView';
-import { useLocationCustom as useProviderLocation } from '../../../services/hooks/useLocation';
+import { useLocationCustom } from '../../../services/hooks/useLocation';
 import { useRoute } from '../../../services/hooks/useRoute';
 import { Button } from '@/components/ui/button';
 import axiosInstance from '@/lib/axios';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import type { AssignedRequest } from '../../types/providerOfferTypes';
+import { useLiveLocation } from '../../hooks/useUpdateLiveLocation';
 
 const BASE_URL = axiosInstance.defaults.baseURL ?? '';
 
@@ -25,13 +26,17 @@ const OrderTrackPage = () => {
   const {
     position: providerPos,
     setPosition: setProviderPos,
-    detect,
-    searchAddress,
-  } = useProviderLocation();
+    detect: detectMyPosition
+  } = useLocationCustom();
 
+//update provider position every 10 seconds
+  useLiveLocation(true, (pos) => {
+    setProviderPos(pos);
+  });
+//when i open the page for the first time i want to get the provider position
   useEffect(() => {
-    detect();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    detectMyPosition();
+  }, []);
 
   const clientPos = request?.serviceRequestLocation
     ? {
@@ -40,7 +45,19 @@ const OrderTrackPage = () => {
       }
     : null;
 
-  const { route } = useRoute(clientPos, providerPos);
+  const { route } = useRoute(providerPos, clientPos);
+
+  const getDynamicZoom = () => {
+    if (!providerPos || !clientPos) return 13;
+    
+    const latDiff = Math.abs(providerPos.lat - clientPos.lat);
+    const lngDiff = Math.abs(providerPos.lng - clientPos.lng);
+    
+    if (latDiff < 0.005 && lngDiff < 0.005) {
+      return 18; 
+    }
+    return 14; 
+  };
 
   const serviceName =
     services?.find((s) => s.id === request?.serviceId)?.name ?? '';
@@ -255,14 +272,25 @@ const OrderTrackPage = () => {
 
       {/* Map */}
       <MapView
-        center={clientPos ?? providerPos}
+        center={providerPos??clientPos}
         customerPos={clientPos ?? providerPos}
         providers={[]}
-        selectedProvider={null}
+        selectedProvider={
+          {
+            id: 'current-provider',
+            name: 'أنا (الفني)',
+            pictureUrl: '',
+            services: [{ name: serviceName }],
+            rating: 5,
+          } as any
+        }
+        liveProviderPos={providerPos}
         route={route}
         onLocationSelect={setProviderPos}
         onProviderSelect={() => {}}
-        onAddressSearch={searchAddress}
+        onAddressSearch={() => {}}
+        allowMapPickLocation={false}
+        zoom={getDynamicZoom()}
       />
 
       {/* Lightbox */}

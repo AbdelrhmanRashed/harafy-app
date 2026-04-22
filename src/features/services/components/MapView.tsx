@@ -29,12 +29,12 @@ function MapClickHandler({
 }
 
 // ─── Fly to center ────────────────────────────────────────────
-function ChangeView({ center }: { center: LatLng }) {
+function ChangeView({ center, zoom }: { center: LatLng, zoom?: number }) {
   const map = useMap();
 
   useEffect(() => {
-    map.flyTo([center.lat, center.lng], 14, { duration: 1.5 });
-  }, [center.lat, center.lng]);
+    map.flyTo([center.lat, center.lng], zoom || 14, { duration: 1.5, animate: true });
+  }, [center.lat, center.lng, zoom, map]);
 
   return null;
 }
@@ -51,6 +51,7 @@ interface MapViewProps {
   onProviderSelect: (provider: Provider) => void;
   onAddressSearch: (query: string) => void;
   liveProviderPos?: { lat: number; lng: number } | null;
+  zoom?: number;
 }
 
 const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.502 };
@@ -62,13 +63,14 @@ export default function MapView({
   selectedProvider = null,
   route = [],
   allowMapPickLocation = true,
-  onLocationSelect = () => {},
+  onLocationSelect = () => { },
   // onProviderSelect = () => {},
-  onAddressSearch = () => {},
+  onAddressSearch = () => { },
   liveProviderPos,
+  zoom,
 }: MapViewProps) {
   const [mapSearch, setMapSearch] = useState('');
-
+  const effectiveCenter = liveProviderPos ? { lat: liveProviderPos.lat, lng: liveProviderPos.lng } : center;
   return (
     <div className="relative h-full w-full">
       {!liveProviderPos && selectedProvider && (
@@ -122,12 +124,12 @@ export default function MapView({
 
       {/* 🗺️ Map */}
       <MapContainer
-        center={[center.lat, center.lng]}
-        zoom={13}
+        center={[effectiveCenter.lat, effectiveCenter.lng]}
+        zoom={zoom || 13}
         className="h-full w-full"
         zoomControl={false}
       >
-        <ChangeView center={center} />
+        <ChangeView center={effectiveCenter} zoom={zoom} />
 
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"

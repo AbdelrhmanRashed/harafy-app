@@ -168,6 +168,18 @@ const InstantRequestPage = () => {
 
   const allowMapPick = step === 'REQUEST';
 
+  //  const getDynamicZoom = () => {
+  //   if (!providerLivePos || !customerPos) return 13;
+    
+  //   const latDiff = Math.abs(providerLivePos.lat - customerPos.lat);
+  //   const lngDiff = Math.abs(providerLivePos.lng - customerPos.lng);
+    
+  //   if (latDiff < 0.005 && lngDiff < 0.005) {
+  //     return 18; 
+  //   }
+  //   return 14; 
+  // };
+
   return (
     <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row" dir="ltr">
       {/* map */}
@@ -183,6 +195,7 @@ const InstantRequestPage = () => {
           onProviderSelect={handleProviderSelect}
           onAddressSearch={searchAddress}
           liveProviderPos={providerLivePos}
+          zoom={14}
         />
       </div>
 
