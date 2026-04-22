@@ -15,30 +15,12 @@ import {
   useMarkAsRead,
   useNotifications,
 } from '@/features/notifications/hooks/useNotifications';
-import { useEffect, useRef } from 'react';
-import { toast } from 'sonner';
-
-const mapType = (type: number): 'info' | 'success' | 'warning' | 'error' => {
-  switch (type) {
-    case 0:
-      return 'info';
-    case 1:
-      return 'success';
-    case 2:
-      return 'warning';
-    case 3:
-      return 'error';
-    default:
-      return 'info';
-  }
-};
 
 const ProviderActions = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { token } = useAuthStore();
-  const prevLengthRef = useRef<number>(0);
 
   // ── Realtime notification ───────────────────────────────────────────────────
   const { connected } = useNotificationSocket(token);
@@ -50,24 +32,6 @@ const ProviderActions = () => {
 
   const notifications = data?.pages.flatMap((p) => p.data) ?? [];
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  useEffect(() => {
-    if (notifications.length > prevLengthRef.current) {
-      const latest = notifications[0];
-      if (latest && !latest.isRead) {
-        toast[mapType(latest.type)](latest.title, {
-          description: latest.message,
-          action: {
-            label: 'عرض',
-            onClick: () => navigate('/notifications'),
-          },
-          duration: 5000,
-          position: 'bottom-right',
-        });
-      }
-    }
-    prevLengthRef.current = notifications.length;
-  }, [notifications.length]);
 
   const variant: Record<string, string> = {
     '/provider/home': 'إضافة خدمة',

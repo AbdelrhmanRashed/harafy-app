@@ -1,15 +1,45 @@
 import * as signalR from '@microsoft/signalr';
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
+// 🎯 type mapping
+const mapType = (type: number): 'info' | 'success' | 'warning' | 'error' => {
+  switch (type) {
+    case 1:
+      return 'success';
+    case 2:
+      return 'warning';
+    case 3:
+      return 'error';
+    default:
+      return 'info';
+  }
+};
 
 export const useNotificationSocket = (token: string | null) => {
   const qc = useQueryClient();
-  const ref = useRef<signalR.HubConnection | null>(null);
+  const navigate = useNavigate();
 
-  const [connected, setConnected] = useState(false); // ✅ الجديد
+  const connectionRef = useRef<signalR.HubConnection | null>(null);
+
+  // 🔥 tracking shown notifications (important)
+  const shownRef = useRef<Set<number>>(new Set());
+
+  const [connected, setConnected] = useState(false);
+
+  // ✅ load shown notifications from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('shown_notifications');
+
+    if (stored) {
+      shownRef.current = new Set(JSON.parse(stored));
+    }
+  }, []);
 
   useEffect(() => {
-    if (!token || ref.current) return;
+    if (!token || connectionRef.current) return;
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${import.meta.env.VITE_BASE_URL}/hubs/notification`, {
@@ -18,12 +48,11 @@ export const useNotificationSocket = (token: string | null) => {
       .withAutomaticReconnect()
       .build();
 
-    // ✅ لما يتوصل
+    // ✅ connected
     connection.onreconnected(() => {
       setConnected(true);
     });
 
-    // ❌ لما يفصل
     connection.onclose(() => {
       setConnected(false);
     });
@@ -32,8 +61,9 @@ export const useNotificationSocket = (token: string | null) => {
       setConnected(false);
     });
 
-    // 📩 استقبال notification
+    // 📩 receive notification
     connection.on('ReceiveNotification', (data) => {
+      // 🧠 update cache (infinite query)
       qc.setQueryData(['notifications'], (old: any) => {
         if (!old) return old;
 
@@ -52,27 +82,57 @@ export const useNotificationSocket = (token: string | null) => {
         };
       });
 
-      new Audio('/notification.mp3').play();
+      // 🚫 prevent duplicate toast (حتى بعد refresh)
+      if (shownRef.current.has(data.id)) return;
+
+      shownRef.current.add(data.id);
+
+      // 🧹 limit size (performance)
+      if (shownRef.current.size > 50) {
+        shownRef.current = new Set(Array.from(shownRef.current).slice(-50));
+      }
+
+      // 💾 save
+      localStorage.setItem(
+        'shown_notifications',
+        JSON.stringify(Array.from(shownRef.current)),
+      );
+
+      // 🔊 sound
+      const audio = new Audio('/notification.mp3');
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+
+      // 🔔 toast
+      toast[mapType(data.type)](data.title, {
+        description: data.message,
+        action: {
+          label: 'عرض',
+          onClick: () => navigate('/app/notifications'),
+        },
+        duration: 5000,
+        position: 'bottom-right',
+      });
     });
 
-    // 🚀 start
+    // 🚀 start connection
     connection
       .start()
       .then(() => {
-        setConnected(true); // ✅ أول ما يشتغل
+        setConnected(true);
       })
       .catch(() => {
         setConnected(false);
       });
 
-    ref.current = connection;
+    connectionRef.current = connection;
 
     return () => {
       connection.stop();
-      ref.current = null;
+      connectionRef.current = null;
       setConnected(false);
     };
   }, [token]);
 
-  return { connected }; // ✅ المهم
+  return { connected };
 };
