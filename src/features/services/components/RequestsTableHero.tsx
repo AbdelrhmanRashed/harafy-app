@@ -1,4 +1,4 @@
-import { CalendarCheck2, Sparkles } from 'lucide-react';
+import { CalendarCheck2 } from 'lucide-react';
 
 export const RequestsTableHero = () => {
   return (

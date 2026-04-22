@@ -2,7 +2,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import {
   MoreHorizontal,
   MessageSquare,
-  Bookmark,
   Clock,
   MessageSquareText,
 } from 'lucide-react';
@@ -45,9 +44,6 @@ const Post = ({
   // selected image
   const [selectedImage, setSelectedImage] = useState(0);
 
-  // saved
-  const [saved, setSaved] = useState(false);
-
   const totalReactions = post.topReactions.reduce((sum, r) => sum + r.count, 0);
 
   // comment icon
@@ -55,7 +51,7 @@ const Post = ({
 
   // images
   const images = post.imageUrls.map((url) => ({
-    src: getImageUrl(url),
+    src: getImageUrl(url) || '',
   }));
 
   // get current client id

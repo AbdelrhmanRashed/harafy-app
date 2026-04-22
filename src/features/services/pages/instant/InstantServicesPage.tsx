@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { X } from 'lucide-react';
 import MapView from '../../components/MapView';
 import {
   Step1RequestForm,
@@ -70,7 +70,9 @@ const InstantRequestPage = () => {
   const targetProviderId =
     step === 'IN_PROGRESS' ? assignedProviderId : selectedProvider?.id;
 
-  const { data: providerData }: any = useGetProviderData(targetProviderId);
+  const { data: providerData }: any = useGetProviderData(
+    String(targetProviderId),
+  );
 
   // 🗺️ map providers
   const mapProviders = useMemo(() => {
@@ -190,7 +192,7 @@ const InstantRequestPage = () => {
       <aside
         dir="rtl"
         className={cn(
-          'border-border bg-sidebar absolute inset-y-0 right-0 z-[1050] flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none',
+          'border-border bg-sidebar absolute inset-y-0 right-0 z-1050 flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none',
           sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
         )}
       >

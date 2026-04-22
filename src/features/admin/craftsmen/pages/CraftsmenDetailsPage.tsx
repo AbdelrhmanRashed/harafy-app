@@ -33,13 +33,15 @@ const ProviderDetailsPage = () => {
     return <p className="text-red-500">حصل خطأ: {error?.message}</p>;
   }
 
+  if (!data) return null;
+
   const { profile, documents }: { profile: any; documents: any } = data;
 
-  const docs = documents || [];
+  const docs: any[] = documents || [];
 
-  const hasInvalid = docs.some((doc) => doc.isApproved === false);
+  const hasInvalid = docs.some((doc: any) => doc.isApproved === false);
   const allValid =
-    docs.length > 0 && docs.every((doc) => doc.isApproved === true);
+    docs.length > 0 && docs.every((doc: any) => doc.isApproved === true);
 
   // ================= validate handler =================
   const handleValidate = (docId: number, isValid: boolean) => {

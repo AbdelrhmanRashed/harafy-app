@@ -14,7 +14,7 @@ function normalizeOffers(raw: unknown): RequestOfferItem[] {
     if (Array.isArray(d)) list = d;
   }
   return list
-    .map((o) => {
+    .map((o): RequestOfferItem | null => {
       const x = o as Record<string, unknown>;
       const providerId = Number(x.providerId ?? x.ProviderId);
       if (!Number.isFinite(providerId)) return null;
@@ -46,7 +46,7 @@ export default function Step2OffersSidebar({
   onCancel,
   isCancelling,
 }: Step2OffersSidebarProps) {
-  const { data: raw, isFetching } = useGetRequestOffer(requestId, {
+  const { data: raw } = useGetRequestOffer(requestId, {
     enabled: !!requestId,
     refetchInterval: 3000,
   });

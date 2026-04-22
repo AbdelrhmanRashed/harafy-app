@@ -53,7 +53,7 @@ const EditPostDialog = ({ post, open, onClose }: EditPostDialogProps) => {
 
   const onSubmit = (data: FormValues) => {
     mutate(
-      { Title: data.title, Description: data.description ?? undefined },
+      { Title: data.title, Description: data.description ?? '' },
       { onSuccess: onClose },
     );
   };

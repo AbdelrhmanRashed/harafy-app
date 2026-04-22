@@ -1,8 +1,7 @@
-import { useMemo, useEffect, useState } from "react";
-import RequestForm from "../RequestForm";
-import ProvidersList from "../ProvidersList";
-import { useGetNearbyProviders } from "../../hooks/useNearbyProviders";
-import type { Provider } from "../../types/types";
+import { useMemo, useEffect, useState } from 'react';
+import RequestForm from '../RequestForm';
+import { useGetNearbyProviders } from '../../hooks/useNearbyProviders';
+import type { Provider } from '../../types/types';
 
 type Step1RequestFormProps = {
   address: string;
@@ -29,29 +28,27 @@ export default function Step1RequestForm({
   onNearbyProvidersChange,
   serviceIdAI,
   descriptionAI,
-  selectedProvider,
-  onSelectProvider,
 }: Step1RequestFormProps) {
   const [selectedServiceId, setSelectedServiceId] = useState(0);
 
-  const { data: nearbyProviders, isFetching } = useGetNearbyProviders(
-    position?.lat.toString() ?? "",
-    position?.lng.toString() ?? "",
+  const { data: nearbyProviders } = useGetNearbyProviders(
+    position?.lat.toString() ?? '',
+    position?.lng.toString() ?? '',
     selectedServiceId,
   );
 
   const validProviders = useMemo(() => {
     const raw = Array.isArray(nearbyProviders)
       ? nearbyProviders
-      : (nearbyProviders as { data?: unknown } | undefined)?.data ?? [];
+      : ((nearbyProviders as { data?: unknown } | undefined)?.data ?? []);
     return (raw as Record<string, unknown>[]).map((p) => ({
       ...p,
       baseLocation: p.baseLocation || {
         latitude: (p.position as { lat?: number })?.lat,
         longitude: (p.position as { lng?: number })?.lng,
-        addressText: p.status || "موقع غير محدد",
+        addressText: p.status || 'موقع غير محدد',
       },
-      services: p.services || [{ id: p.profession, name: "خدمة" }],
+      services: p.services || [{ id: p.profession, name: 'خدمة' }],
     })) as Provider[];
   }, [nearbyProviders]);
 

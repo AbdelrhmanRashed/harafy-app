@@ -3,7 +3,6 @@ import CreatePost from '@/features/community/components/CreatePost';
 import FooterLinks from '@/features/community/components/FooterLinks';
 import ProfileCard from '@/features/community/components/ProfileCard';
 import QuickLinks from '@/features/community/components/QuickLinks';
-import WorkSpace from '../components/WorkSpace';
 import QuickRequest from '../components/QuickRequest';
 import DirectRequest from '../components/DirectRequest';
 import { useAuthStore } from '@/store/useAuthStore';

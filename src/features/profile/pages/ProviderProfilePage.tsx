@@ -343,7 +343,7 @@ const ProviderProfilePage = () => {
       <Lightbox
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
-        slides={[{ src: getImageUrl(data?.pictureUrl) }]}
+        slides={[{ src: getImageUrl(data?.pictureUrl) || '' }]}
         plugins={[Zoom, Download]}
         render={{
           buttonPrev: () => null,

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Loader2, SearchX } from 'lucide-react';
+import { SearchX } from 'lucide-react';
 
 import HeroSection from '../components/HeroSection';
 import CategoryList from '../components/CatagoryList';
@@ -10,12 +10,9 @@ import { useServices } from '@/features/onboarding/hooks/useServices';
 import type { Provider } from '../types/types';
 import ProvidersSearchList from '../components/ProvidersSearchList';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { normalizeProviders } from '../utils/providerUtils';
 import DirectServiceDrawer from '../components/DirectServiceDrawer';
 import ReviewDialog from '../components/ReviewDialog';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
+
 import ServiceSearchCardSkeleton from '../components/ServiceSearchCardSkeleton';
 
 type ServiceCategory = {

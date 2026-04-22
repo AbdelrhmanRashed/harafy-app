@@ -1,8 +1,6 @@
 import {
   CheckCircle2,
   Loader2,
-  Truck,
-  MapPin,
   Wrench,
   Phone,
   MessageSquare,
@@ -15,8 +13,8 @@ import { useSetReqCompleted } from '../../hooks/useSetReqCompleted';
 import { cn, getImageUrl, getTimeAgo } from '@/lib/utils';
 import { useGetProviderData } from '../../hooks/useGetProviderData';
 import { useTrackingSocket } from '@/realtime/useTrackingSocket';
-import { useEffect, useState } from 'react';
-import ReviewDialog from '../ReviewDialog';
+import { useState } from 'react';
+
 import { useGetRequestOffer } from '../../hooks/useGetRequestOffer';
 // ─── Tracking steps ───────────────────────────────────────────────────────────
 
@@ -100,7 +98,7 @@ export default function Step3TrackingSidebar({
   const currentTrackingStep = getTrackingStep(requestStatus);
   const isCompleted = requestStatus === 3;
 
-  const [providerPos, setProviderPos] = useState<{
+  const [, setProviderPos] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
@@ -117,12 +115,12 @@ export default function Step3TrackingSidebar({
       };
     });
 
-    onLocationChange?.(newLoc); // 🔥 أهم سطر
+    onLocationChange?.(newLoc);
   });
 
   const handleComplete = () => {
     completeMutate(requestId, {
-      onSuccess: () => onCompleteSuccess(), // بس كده
+      onSuccess: () => onCompleteSuccess(),
     });
   };
   console.log('Assigned ID:', assignedId);

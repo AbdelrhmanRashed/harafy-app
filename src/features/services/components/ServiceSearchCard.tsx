@@ -1,11 +1,4 @@
-import {
-  Star,
-  MapPin,
-  ShieldCheck,
-  ArrowLeft,
-  Heart,
-  Briefcase,
-} from 'lucide-react';
+import { Star, MapPin, ShieldCheck, ArrowLeft, Briefcase } from 'lucide-react';
 import { cn, getImageUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { Provider } from '@/features/services/types/types';
