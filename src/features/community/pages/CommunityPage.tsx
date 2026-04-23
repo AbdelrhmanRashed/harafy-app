@@ -18,7 +18,7 @@ const CommunityPage = () => {
   if (isLoading) return <CommunitySkeletonPage />;
 
   return (
-    <main className="container mx-auto px-4 py-6">
+    <main className="mx-auto max-w-7xl px-4 py-6">
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         <div className="hidden lg:sticky lg:top-20 lg:col-span-3 lg:block">
           <ProfileCard clientProfile={clientProfile} roles={roles} />

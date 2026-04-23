@@ -164,10 +164,10 @@ const Post = ({
                     }}
                     className={`w-full cursor-pointer ${
                       images.length === 1
-                        ? 'h-auto object-contain'
+                        ? 'h-auto max-h-[580px] object-contain'
                         : 'h-full object-cover'
                     }`}
-                    style={images.length === 1 ? { maxHeight: '600px' } : {}}
+                    style={images.length === 1 ? { maxHeight: '400px' } : {}}
                   />
                 </div>
               ))}

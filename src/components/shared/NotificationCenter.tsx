@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn, getTimeAgo } from '@/lib/utils';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NotificationCenterProps {
@@ -98,8 +98,52 @@ export default function NotificationCenter({
   isLoading,
 }: NotificationCenterProps) {
   const listRef = useRef<HTMLDivElement | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [open, setOpen] = useState(false);
+  const [filtersEl, setFiltersEl] = useState<HTMLDivElement | null>(null);
 
-  console.log(notifications);
+  useEffect(() => {
+    if (!filtersEl) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Ensure we are scrolling vertically to convert it to horizontal
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isRTL = window.getComputedStyle(filtersEl).direction === 'rtl';
+        // In RTL, positive deltaY (scrolling down) should move the view to the left
+        filtersEl.scrollLeft += isRTL ? -e.deltaY : e.deltaY;
+      }
+    };
+
+    // passive: false is critical to allow e.preventDefault()
+    filtersEl.addEventListener('wheel', handleWheel, { passive: false });
+    return () => filtersEl.removeEventListener('wheel', handleWheel);
+  }, [filtersEl]);
+
+  const filteredNotifications = notifications.filter((n) => {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'unread') return !n.isRead;
+    return mapType(n.type) === activeFilter;
+  });
+
+  const FILTER_OPTIONS = [
+    { id: 'all', label: 'الكل' },
+    { id: 'unread', label: 'غير مقروء' },
+    { id: 'info', label: 'معلومات', icon: <Info className="h-3.5 w-3.5" /> },
+    {
+      id: 'success',
+      label: 'نجاح',
+      icon: <CheckCircle2 className="h-3.5 w-3.5" />,
+    },
+    {
+      id: 'warning',
+      label: 'تحذير',
+      icon: <AlertTriangle className="h-3.5 w-3.5" />,
+    },
+    { id: 'error', label: 'خطأ', icon: <XCircle className="h-3.5 w-3.5" /> },
+  ];
 
   // Infinite Scroll via onScroll handler (works inside Popover)
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -112,7 +156,7 @@ export default function NotificationCenter({
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
@@ -140,7 +184,7 @@ export default function NotificationCenter({
 
       <PopoverContent
         align="end"
-        className="ring-border/50 z-[9999] w-80 overflow-hidden rounded-2xl p-0 shadow-2xl ring-1"
+        className="ring-border/50 z-9999 w-80 overflow-hidden rounded-2xl p-0 shadow-2xl ring-1"
       >
         {/* ── Header ────────────────────────────────────────── */}
         <div className="bg-muted/30 flex items-center justify-between border-b px-4 py-3">
@@ -163,7 +207,7 @@ export default function NotificationCenter({
                   )}
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="z-[10001]">
+              <TooltipContent side="bottom" className="z-10001">
                 {connected ? 'متصل' : 'غير متصل'}
               </TooltipContent>
             </Tooltip>
@@ -194,11 +238,58 @@ export default function NotificationCenter({
           </div>
         </div>
 
+        {/* ── Filters ────────────────────────────────────────── */}
+        {notifications.length > 0 && (
+          <div
+            ref={setFiltersEl}
+            className="bg-muted/10 relative flex items-center gap-1 overflow-x-auto border-b px-3 py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {FILTER_OPTIONS.map((filter) => {
+              const isActive = activeFilter === filter.id;
+              return (
+                <button
+                  key={filter.id}
+                  onClick={() => setActiveFilter(filter.id)}
+                  className={cn(
+                    'relative z-10 flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                    isActive
+                      ? 'text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+                  )}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="notification-filter-bubble"
+                      className="bg-primary absolute inset-0 -z-10 rounded-full shadow-sm"
+                      transition={{
+                        type: 'spring',
+                        bounce: 0.2,
+                        duration: 0.6,
+                      }}
+                    />
+                  )}
+                  {filter.icon && (
+                    <span
+                      className={cn(
+                        'shrink-0 transition-opacity',
+                        isActive ? 'opacity-100' : 'opacity-70',
+                      )}
+                    >
+                      {filter.icon}
+                    </span>
+                  )}
+                  <span>{filter.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* ── List ──────────────────────────────────────────── */}
         <div
           ref={listRef}
           onScroll={handleScroll}
-          className="max-h-[28rem] overflow-x-hidden overflow-y-auto p-1.5"
+          className="max-h-112 overflow-x-hidden overflow-y-auto p-1.5"
         >
           {/* Skeleton State */}
           {isLoading ? (
@@ -214,7 +305,7 @@ export default function NotificationCenter({
                 </div>
               ))}
             </div>
-          ) : notifications.length === 0 ? (
+          ) : filteredNotifications.length === 0 ? (
             /* Empty State */
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -228,11 +319,14 @@ export default function NotificationCenter({
               </div>
               <div className="space-y-1.5">
                 <p className="text-foreground text-sm font-bold">
-                  لا توجد إشعارات
+                  {notifications.length === 0
+                    ? 'لا توجد إشعارات'
+                    : 'لا توجد إشعارات مطابقة'}
                 </p>
                 <p className="text-muted-foreground mx-auto max-w-[190px] text-xs leading-relaxed">
-                  أنت على اطلاع بكل جديد. ستظهر الإشعارات الجديدة هنا فور
-                  وصولها.
+                  {notifications.length === 0
+                    ? 'أنت على اطلاع بكل جديد. ستظهر الإشعارات الجديدة هنا فور وصولها.'
+                    : 'لم يتم العثور على إشعارات تطابق الفلتر المحدد.'}
                 </p>
               </div>
             </motion.div>
@@ -240,7 +334,7 @@ export default function NotificationCenter({
             /* Notification Items */
             <div className="flex flex-col gap-0.5">
               <AnimatePresence initial={false}>
-                {notifications.map((n, idx) => {
+                {filteredNotifications.map((n, idx) => {
                   const type = mapType(n.type);
                   const config = typeConfig[type];
 
@@ -348,7 +442,10 @@ export default function NotificationCenter({
             <Button
               variant="ghost"
               className="w-full cursor-pointer rounded-full text-xs font-semibold"
-              onClick={onViewAll}
+              onClick={() => {
+                onViewAll();
+                setOpen(false);
+              }}
             >
               عرض كل الإشعارات
             </Button>

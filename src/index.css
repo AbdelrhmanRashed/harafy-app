@@ -458,7 +458,15 @@
     scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
   }
 
-  /* في ملف globals.css أو ملف التنسيقات الخاص بك */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
   @keyframes marker-pulse {
     0% {
       transform: scale(0.95);

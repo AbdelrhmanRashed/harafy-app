@@ -90,7 +90,7 @@ const RequestsPage = () => {
   }, []);
 
   return (
-    <div className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden font-[Cairo,sans-serif] md:flex-row">
+    <div className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden md:flex-row">
       {/* Mobile toggle button */}
       <button
         type="button"
