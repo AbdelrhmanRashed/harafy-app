@@ -111,7 +111,7 @@ const clientRoutes = [
 
       // profile routes
       {
-        path: 'profile/provider/:providerId',
+        path: 'profile/:providerId',
         element: <ProviderProfilePage />,
         handle: { title: 'الملف الشخصي' },
       },

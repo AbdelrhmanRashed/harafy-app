@@ -14,6 +14,7 @@ import EmojiContainer from './EmojiContainer';
 import { useReactToComment } from '../hooks/useReactToComment';
 import ReactionPicker from './ReactionPicker';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Comment = ({ comment }: { comment: CommentResponse }) => {
   const [open, setOpen] = useState(false);
@@ -41,7 +42,7 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
     }
   };
 
-  console.log(comment);
+  const userRole = useAuthStore().user?.role;
 
   const handleUpdateComment = () => {
     updateComment(
@@ -54,7 +55,9 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
     <div className="flex min-w-0 gap-2">
       <div className="bg-primary/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
         {comment.isProvider ? (
-          <Link to={`/app/profile/provider/${comment.providerId}`}>
+          <Link
+            to={`${userRole?.includes('Provider') ? '/provider' : '/app'}/profile/${comment.providerId}`}
+          >
             <Avatar className="ring-primary h-8 w-8 ring-2 ring-offset-2">
               <AvatarImage src={getImageUrl(comment.clientPictureUrl)} />
               <AvatarFallback>{comment.clientName[0]}</AvatarFallback>

@@ -15,14 +15,15 @@ import { useGetProviderReviews } from '../hooks/useGetProviderReviews';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface ReviewSectionProps {
-  providerId: string;
+  providerId?: string;
+  type?: 'client' | 'provider';
 }
-const ReviewSection = ({ providerId }: ReviewSectionProps) => {
+const ReviewSection = ({ providerId, type }: ReviewSectionProps) => {
   const {
     data: reviews,
     isLoading,
     isError,
-  } = useGetProviderReviews(providerId);
+  } = useGetProviderReviews(providerId, type);
 
   if (isLoading) {
     return (

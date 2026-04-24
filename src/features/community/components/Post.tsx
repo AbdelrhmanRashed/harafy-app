@@ -24,6 +24,7 @@ import { useReactToPost } from '../hooks/useReactToPost';
 import EditPostDialog from './EditPostDialog';
 import ReactionPicker from './ReactionPicker';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Post = ({
   post,
@@ -56,6 +57,9 @@ const Post = ({
 
   // get current client id
   const currentClientId = getIdFromToken();
+
+  // get user role
+  const userRole = useAuthStore().user?.role;
   // delete post
   const { mutate: deletePost, isPending: isDeletingPost } = useDeletePost();
   // react to post
@@ -68,8 +72,10 @@ const Post = ({
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-3">
-              {post.isProvider ? (
-                <Link to={`/app/profile/provider/${post.providerId}`}>
+              {post.isProvider && post.clientId !== currentClientId ? (
+                <Link
+                  to={`${userRole?.includes('Provider') ? '/provider' : '/app'}/profile/${post.providerId}`}
+                >
                   <Avatar
                     size="lg"
                     className="ring-primary ring-2 ring-offset-2"
@@ -85,8 +91,10 @@ const Post = ({
                 </Avatar>
               )}
               <div>
-                {post.isProvider ? (
-                  <Link to={`/app/profile/provider/${post.providerId}`}>
+                {post.isProvider && post.clientId !== currentClientId ? (
+                  <Link
+                    to={`${userRole?.includes('Provider') ? '/provider' : '/app'}/profile/${post.providerId}`}
+                  >
                     <p className="text-primary text-[16px] font-bold">
                       {post.clientName}
                     </p>
@@ -100,18 +108,20 @@ const Post = ({
                 </p>
               </div>
             </div>
-            {post.isProvider && (
-              <Button
-                variant="gradient"
-                size="sm"
-                className="cursor-pointer"
-                onClick={() =>
-                  post.providerId && handleOpenRequest(post.providerId)
-                }
-              >
-                طلب خدمه
-              </Button>
-            )}
+            {post.isProvider &&
+              post.clientId !== currentClientId &&
+              !userRole?.includes('Provider') && (
+                <Button
+                  variant="gradient"
+                  size="sm"
+                  className="cursor-pointer"
+                  onClick={() =>
+                    post.providerId && handleOpenRequest(post.providerId)
+                  }
+                >
+                  طلب خدمه
+                </Button>
+              )}
             {post.clientId === currentClientId && (
               <ActionsDropdown
                 onEdit={() => setEditPostOpen(true)}

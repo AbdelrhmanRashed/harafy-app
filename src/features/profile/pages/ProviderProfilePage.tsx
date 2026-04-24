@@ -34,7 +34,7 @@ const ProviderProfilePage = () => {
   const { providerId } = useParams();
   const { user } = useAuthStore();
 
-  const isMyProfile = user?.role.includes('Provider');
+  const isMyProfile = user?.role.includes('Provider') && !providerId;
 
   const { data: myData, isLoading: myIsLoading } =
     useMyProviderProfile(isMyProfile);
@@ -162,7 +162,7 @@ const ProviderProfilePage = () => {
                 </div>
 
                 {/* CTA Button - Only visible for clients */}
-                {!isMyProfile && (
+                {!user?.role.includes('Provider') && !isMyProfile && (
                   <div className="flex flex-col gap-2">
                     <Button
                       onClick={() => setIsDrawerOpen(true)}
@@ -280,7 +280,10 @@ const ProviderProfilePage = () => {
                 </section>
 
                 {/* REVIEWS SECTION */}
-                <ReviewSection providerId={providerId!} />
+                <ReviewSection
+                  providerId={providerId}
+                  type={isMyProfile ? 'provider' : 'client'}
+                />
               </div>
 
               {/* LEFT SIDEBAR */}
@@ -403,7 +406,7 @@ const ProviderProfilePage = () => {
       <Lightbox
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
-        slides={[{ src: getImageUrl(data?.pictureUrl) }]}
+        slides={[{ src: getImageUrl(data?.pictureUrl) ?? '' }]}
         plugins={[Zoom, Download]}
         render={{
           buttonPrev: () => null,

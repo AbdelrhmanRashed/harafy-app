@@ -2,7 +2,7 @@ import CommunityPage from '@/features/community/pages/CommunityPage';
 import ProviderDashboard from '@/features/dashboard/pages/ProviderDashboard';
 import SettingsLayout from '@/features/profile/layout/SettingsLayout';
 import NotificationsPage from '@/features/profile/pages/NotificationsPage';
-import ProfilePage from '@/features/profile/pages/ProviderProfilePage';
+import ProviderProfilePage from '@/features/profile/pages/ProviderProfilePage';
 import ProfileSettingsPage from '@/features/profile/pages/ProfileSettingsPage';
 import SecurityPage from '@/features/profile/pages/SecurityPage';
 import ProtectedRoute from '@/guards/ProtectedRoute';
@@ -54,7 +54,13 @@ const ProviderRoutes = [
       },
       {
         path: 'profile',
-        element: <ProfilePage />,
+        handle: { title: 'الملف الشخصي' },
+        element: <ProviderProfilePage />,
+      },
+      {
+        path: 'profile/:providerId',
+        handle: { title: 'الملف الشخصي' },
+        element: <ProviderProfilePage />,
       },
       {
         path: 'notifications',
