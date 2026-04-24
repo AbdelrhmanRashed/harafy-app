@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   TrendingUp,
   Sparkles,
+  PenIcon,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { useGetProviderProfile } from '../hooks/useGetProviderProfile';
@@ -25,6 +26,9 @@ import Download from 'yet-another-react-lightbox/plugins/download';
 import ReviewSection from '../components/ReviewSection';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useMyProviderProfile } from '@/features/dashboard/hooks/useMyProviderProfile';
+import LocationEditInput from '../components/LocationEditInput';
+import BioEditInput from '../components/BioEditInput';
+import ServiceEditInput from '../components/ServiceEditInput';
 
 const ProviderProfilePage = () => {
   const { providerId } = useParams();
@@ -43,6 +47,10 @@ const ProviderProfilePage = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const [editLocation, setEditLocation] = useState(false);
+  const [editBio, setEditBio] = useState(false);
+  const [editServices, setEditServices] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -130,26 +138,42 @@ const ProviderProfilePage = () => {
                         ({data?.reviewsCount} تقييم)
                       </span>
                     </div>
-                    <div className="text-muted-foreground flex items-center gap-2">
-                      <MapPin className="text-primary h-5 w-5" />
-                      <span className="font-medium">
-                        {data?.baseLocation?.addressText}
-                      </span>
-                    </div>
+                    {!editLocation ? (
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <MapPin className="text-primary h-5 w-5" />
+                        <span className="font-medium">
+                          {data?.baseLocation?.addressText}
+                        </span>
+                        {isMyProfile && (
+                          <PenIcon
+                            onClick={() => setEditLocation(true)}
+                            className="text-primary ms-2 h-5 w-5 cursor-pointer"
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <LocationEditInput
+                        provider={data}
+                        onCancel={() => setEditLocation(false)}
+                        onSaved={() => setEditLocation(false)}
+                      />
+                    )}
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <div className="flex flex-col gap-2">
-                  <Button
-                    onClick={() => setIsDrawerOpen(true)}
-                    size="lg"
-                    variant="gradient"
-                    className="shadow-primary-gradient hover:shadow-primary-gradient text-primary-foreground h-14 border-0 px-8 text-lg font-bold transition-all active:scale-95"
-                  >
-                    طلب خدمه
-                  </Button>
-                </div>
+                {/* CTA Button - Only visible for clients */}
+                {!isMyProfile && (
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      onClick={() => setIsDrawerOpen(true)}
+                      size="lg"
+                      variant="gradient"
+                      className="shadow-primary-gradient hover:shadow-primary-gradient text-primary-foreground h-14 border-0 px-8 text-lg font-bold transition-all active:scale-95"
+                    >
+                      طلب خدمه
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -163,60 +187,96 @@ const ProviderProfilePage = () => {
               <div className="space-y-8 lg:col-span-2">
                 {/* ABOUT SECTION */}
                 <section className="group">
-                  <div className="border-border mb-6 flex items-center gap-3 border-b pb-4">
-                    <div className="bg-primary/10 rounded-lg p-3">
-                      <Briefcase className="text-primary h-6 w-6" />
+                  <div className="border-border mb-6 flex items-center justify-between border-b pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 rounded-lg p-3">
+                        <Briefcase className="text-primary h-6 w-6" />
+                      </div>
+                      <h2 className="text-foreground text-2xl font-bold">
+                        نبذة تعريفية
+                      </h2>
                     </div>
-                    <h2 className="text-foreground text-2xl font-bold">
-                      نبذة تعريفية
-                    </h2>
+                    {isMyProfile && !editBio && (
+                      <PenIcon
+                        onClick={() => setEditBio(true)}
+                        className="text-primary h-5 w-5 cursor-pointer"
+                      />
+                    )}
                   </div>
                   <Card className="bg-card/50 hover:bg-card/70 shadow-md backdrop-blur">
                     <CardContent className="p-8">
-                      <p className="text-muted-foreground text-justify text-lg leading-relaxed whitespace-pre-line">
-                        {data?.bio || 'لا يوجد وصف حالياً.'}
-                      </p>
+                      {editBio ? (
+                        <BioEditInput
+                          provider={data}
+                          onCancel={() => setEditBio(false)}
+                          onSaved={() => setEditBio(false)}
+                        />
+                      ) : (
+                        <p className="text-muted-foreground text-justify text-lg leading-relaxed whitespace-pre-line">
+                          {data?.bio || 'لا يوجد وصف حالياً.'}
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 </section>
 
                 {/* SERVICES SECTION */}
                 <section>
-                  <div className="border-border mb-6 flex items-center gap-3 border-b pb-4">
-                    <div className="bg-primary/10 rounded-lg p-3">
-                      <CheckCircle2 className="text-primary h-6 w-6" />
+                  <div className="border-border mb-6 flex items-center justify-between border-b pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 rounded-lg p-3">
+                        <CheckCircle2 className="text-primary h-6 w-6" />
+                      </div>
+                      <h2 className="text-foreground text-2xl font-bold">
+                        الخدمات المتاحة
+                      </h2>
                     </div>
-                    <h2 className="text-foreground text-2xl font-bold">
-                      الخدمات المتاحة
-                    </h2>
+                    {isMyProfile && !editServices && (
+                      <PenIcon
+                        onClick={() => setEditServices(true)}
+                        className="text-primary h-5 w-5 cursor-pointer"
+                      />
+                    )}
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {data?.services.map((service: any) => (
-                      <Card
-                        key={service.id}
-                        className="bg-card/50 hover:bg-card/80 group overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg"
-                      >
-                        <CardContent className="relative p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-4">
-                              <div className="bg-primary-gradient mt-1 rounded-lg p-2">
-                                <Sparkles className="text-primary-foreground h-4 w-4" />
+                  {editServices ? (
+                    <Card className="bg-card/50 shadow-md backdrop-blur">
+                      <CardContent className="p-8">
+                        <ServiceEditInput
+                          provider={data}
+                          onCancel={() => setEditServices(false)}
+                          onSaved={() => setEditServices(false)}
+                        />
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {data?.services.map((service: any) => (
+                        <Card
+                          key={service.id}
+                          className="bg-card/50 hover:bg-card/80 group overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg"
+                        >
+                          <CardContent className="relative p-6">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-4">
+                                <div className="bg-primary-gradient mt-1 rounded-lg p-2">
+                                  <Sparkles className="text-primary-foreground h-4 w-4" />
+                                </div>
+                                <div>
+                                  <h3 className="text-foreground text-lg font-bold">
+                                    {service.name}
+                                  </h3>
+                                  <p className="text-muted-foreground mt-1 text-sm">
+                                    خدمة موثوقة
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <h3 className="text-foreground text-lg font-bold">
-                                  {service.name}
-                                </h3>
-                                <p className="text-muted-foreground mt-1 text-sm">
-                                  خدمة موثوقة
-                                </p>
-                              </div>
+                              <CheckCircle2 className="h-6 w-6 shrink-0 text-green-500" />
                             </div>
-                            <CheckCircle2 className="h-6 w-6 shrink-0 text-green-500" />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </section>
 
                 {/* REVIEWS SECTION */}
@@ -343,7 +403,7 @@ const ProviderProfilePage = () => {
       <Lightbox
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
-        slides={[{ src: getImageUrl(data?.pictureUrl) || '' }]}
+        slides={[{ src: getImageUrl(data?.pictureUrl) }]}
         plugins={[Zoom, Download]}
         render={{
           buttonPrev: () => null,
