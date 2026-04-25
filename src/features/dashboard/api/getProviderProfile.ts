@@ -6,6 +6,9 @@ export type ProviderProfile = {
   bio?: string | null;
   yearsOfExperience?: number | null;
   isAvailable?: boolean;
+  credits?: number | null;
+  jobsCount?: number | null;
+  avgRating?: number | null;
 };
 
 export const getProviderProfile = async (): Promise<ProviderProfile> => {

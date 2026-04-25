@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ClipboardClock, Tag, Star, Briefcase } from "lucide-react";
+import { ClipboardClock, Tag, Star, Briefcase, Wallet } from "lucide-react";
 import { useMyOffers } from "../../hooks/useMyOffers";
 import { useGetAvailableRequests } from "../../../Requests/hooks/useGetAvailableRequests";
 import { useGetMyReviews } from "../../../reviews/hooks/useGetMyReviews";
@@ -27,13 +27,13 @@ const StatsCards = () => {
   title: "إجمالي الأعمال",
   value: profile?.jobsCount ?? "—",
   icon: Briefcase,
-  onClick: () => navigate("/provider/requests/assigned-requests"), 
+  onClick: () => navigate("/provider/requests/assigned-requests"),
 },
     {
       title: "العروض المقدمة",
       value: myOffers?.length ?? "—",
       icon: Tag,
-      onClick: () => navigate("/provider/requests/my-offers"),    
+      onClick: () => navigate("/provider/requests/my-offers"),
 },
     {
       title: "تقييمات العملاء",
@@ -41,10 +41,17 @@ const StatsCards = () => {
       icon: Star,
       onClick: () => navigate("/provider/reviews"),
     },
+    {
+      title: "الرصيد الحالي",
+      value: profile?.credits ?? "—",
+      icon: Wallet,
+      onClick: () => navigate("/provider/wallet"),
+    }
+
   ];
 
   return (
-    <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
       {stats.map((item, i) => (
         <div
           key={i}

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Calendar, X } from "lucide-react";
+import { Loader2, MapPin, Calendar, X, Wallet } from "lucide-react";
 import { useStartRequest } from "../../hooks/useStartRequest";
 import type { AssignedRequest } from "../../../Requests/types/providerOfferTypes";
 import axiosInstance from "@/lib/axios";
@@ -18,6 +18,7 @@ export default function DirectRequestCard({ data }: Props) {
   const navigate = useNavigate();
   const { mutate: start, isPending } = useStartRequest();
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false); // ← NEW
 
   const images = (data.imageUrls ?? []).map((url: string) =>
     url.startsWith("http") ? url : `${BASE_URL}/${url}`
@@ -40,7 +41,8 @@ export default function DirectRequestCard({ data }: Props) {
       })
     : null;
 
-  const handleAccept = () => {
+  const handleAcceptConfirmed = () => {
+    setShowConfirm(false);
     start(
       { id: data.id, isAccepted: true },
       {
@@ -118,12 +120,12 @@ export default function DirectRequestCard({ data }: Props) {
             </p>
           )}
 
-          {/* Final price*/}
+          {/* Final price */}
           {data.finalPrice && (
             <p className="text-sm font-bold text-primary">
               {Number(data.finalPrice).toLocaleString("ar-EG")} جنيه
             </p>
-          )} 
+          )}
 
           {/* Images */}
           {images.length > 0 && (
@@ -143,6 +145,7 @@ export default function DirectRequestCard({ data }: Props) {
               ))}
             </div>
           )}
+
           {/* Location */}
           {data.serviceRequestLocation && (
             <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -151,11 +154,12 @@ export default function DirectRequestCard({ data }: Props) {
               {data.serviceRequestLocation.longitude.toFixed(3)}
             </p>
           )}
+
           {/* Actions */}
           <div className="flex gap-2">
             <Button
               className="flex-1 rounded-2xl py-2 font-bold"
-              onClick={handleAccept}
+              onClick={() => setShowConfirm(true)} // ← opens dialog
               disabled={isPending}
             >
               {isPending ? (
@@ -180,6 +184,56 @@ export default function DirectRequestCard({ data }: Props) {
 
         </CardContent>
       </Card>
+
+      {/* Confirmation Dialog */}
+      {showConfirm && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/60 px-4 pb-6 sm:pb-0"
+          onClick={() => setShowConfirm(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-card rounded-3xl border-2 border-border p-6 flex flex-col gap-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon + text */}
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Wallet className="h-6 w-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-base font-black text-foreground">تأكيد قبول الطلب</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  سيتم خصم{" "}
+                  <span className="font-black text-primary">25 جنيه</span>{" "}
+                  من رصيدك عند قبول الطلب
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirm(false)}
+                className="flex-1 h-12 rounded-2xl border-2 border-border bg-background text-sm font-bold text-foreground"
+              >
+                إلغاء
+              </Button>
+              <Button
+                onClick={handleAcceptConfirmed}
+                className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-bold"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "تأكيد القبول"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox */}
       {lightbox && (

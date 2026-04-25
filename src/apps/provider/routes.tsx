@@ -15,6 +15,8 @@ import DirectPage from '@/features/Requests/pages/direct/DirectPage';
 import AssignedRequestsPage from '@/features/Requests/pages/asignRequest/AllRequests';
 import MyOffersPage from '@/features/Requests/pages/offer/MyOffersPage';
 import OrderTrackPage from '@/features/Requests/pages/track/OrderTrackPage';
+import path from 'path';
+import Creadit from '@/features/creadit/pages/Creadit';
 
 const ProviderRoutes = [
   {
@@ -57,6 +59,10 @@ const ProviderRoutes = [
       {
         path: 'profile',
         element: <ProfilePage />,
+      },
+      {
+        path:'wallet',
+        element:<Creadit/>
       },
       {
         path: 'settings',
