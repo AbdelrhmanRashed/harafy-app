@@ -20,17 +20,26 @@ export const verificationSchema = z.object({
     .array(z.coerce.number())
     .min(1, 'لازم تختار خدمة واحدة على الأقل'),
 
-  personalImage: z.any().refine((f) => f instanceof File, {
-    message: 'الصورة الشخصية مطلوبة',
-  }),
+  personalImage: z
+    .any()
+    .optional()
+    .refine((f) => f === undefined || f instanceof File, {
+      message: 'الصورة الشخصية مطلوبة',
+    }),
 
-  nationalId: z.any().refine((f) => f instanceof File, {
-    message: 'صورة البطاقة مطلوبة',
-  }),
+  nationalId: z
+    .any()
+    .optional()
+    .refine((f) => f === undefined || f instanceof File, {
+      message: 'صورة البطاقة مطلوبة',
+    }),
 
-  criminalRecord: z.any().refine((f) => f instanceof File, {
-    message: 'صحيفة الحالة الجنائية مطلوبة',
-  }),
+  criminalRecord: z
+    .any()
+    .optional()
+    .refine((f) => f === undefined || f instanceof File, {
+      message: 'صحيفة الحالة الجنائية مطلوبة',
+    }),
 });
 
 export type RegisterFormValuesVerify = z.infer<typeof verificationSchema>;

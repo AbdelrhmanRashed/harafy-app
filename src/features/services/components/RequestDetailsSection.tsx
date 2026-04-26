@@ -59,11 +59,11 @@ const RequestDetailsSection = ({
   const getServiceType = (serviceId: number) => {
     return (
       services?.find((service: any) => service.id === serviceId)?.name ||
-      'خدمه مباشره'
+      'خدمة مباشرة'
     );
   };
   return (
-    <div className="bg-card border-border/50 sticky top-6 overflow-hidden rounded-3xl border shadow-sm">
+    <div className="bg-card border-border/50 sticky top-20 overflow-hidden rounded-3xl border shadow-sm">
       <div className="bg-muted/30 border-border border-b px-5 py-4">
         <h3 className="text-foreground text-right text-lg font-extrabold">
           ملخص الطلب

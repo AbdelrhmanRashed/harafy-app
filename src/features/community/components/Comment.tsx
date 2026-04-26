@@ -86,7 +86,9 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
             )}
           >
             {comment.isProvider ? (
-              <Link to={`/app/profile/provider/${comment.providerId}`}>
+              <Link
+                to={`${userRole?.includes('Provider') ? '/provider' : '/app'}/profile/${comment.providerId}`}
+              >
                 <p className="text-primary mb-1 cursor-pointer text-sm font-semibold">
                   {comment.clientName}
                 </p>
@@ -99,7 +101,7 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
               <div className="relative flex w-full flex-col gap-4">
                 <div className="relative">
                   {showEmoji && (
-                    <div className="absolute bottom-0 left-0 z-50 mb-2">
+                    <div className="absolute bottom-0 left-0 z-999999 mb-2">
                       <EmojiContainer
                         showEmoji={showEmoji}
                         setShowEmoji={setShowEmoji}

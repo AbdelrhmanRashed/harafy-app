@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, FormProvider } from 'react-hook-form'; // ← add FormProvider
+import { useForm, FormProvider } from 'react-hook-form';
+import { useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,41 +30,213 @@ import {
   AlignLeft,
   MapPin,
   Loader2,
+  CheckCircle2,
+  XCircle,
+  type LucideIcon,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import ServicesDropdown from '../components/ServicesDropdown';
+import { cn, getImageUrl } from '@/lib/utils';
 
 import { verificationSchema } from '../schemas/verification.schema';
-
 import { useUpdateProviderProfile } from '../hooks/useUpdateProviderProfile';
 import { useUploadDocuments } from '../hooks/useUploadDocuments';
+import { useGetProviderDocs } from '../hooks/useGetProviderDocs';
+import { useUpdateProviderDocs } from '../hooks/useUpdateProviderDocs';
 import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
+import { toast } from 'sonner';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type VerificationFormData = z.infer<typeof verificationSchema>;
 
+interface ProviderDoc {
+  id: number;
+  documentUrl: string;
+  documentType: number; // 1 = personalImage | 2 = nationalId | 3 = criminalRecord
+  isApproved: boolean;
+  providerId: number;
+}
+
+// Single source of truth for all doc-slot metadata
+const DOC_META: Record<
+  number,
+  {
+    field: keyof VerificationFormData;
+    title: string;
+    icon: LucideIcon;
+    description: string;
+    accept: Record<string, string[]>;
+  }
+> = {
+  1: {
+    field: 'personalImage',
+    title: 'صورة شخصية',
+    icon: SquareUser,
+    description: 'PNG, JPG ≤5MB',
+    accept: { 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'] },
+  },
+  2: {
+    field: 'nationalId',
+    title: 'صورة البطاقة الشخصية',
+    icon: IdCard,
+    description: 'PNG, JPG, PDF ≤5MB',
+    accept: {
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'application/pdf': ['.pdf'],
+    },
+  },
+  3: {
+    field: 'criminalRecord',
+    title: 'صحيفة الحالة الجنائية',
+    icon: FileText,
+    description: 'PNG, JPG, PDF ≤5MB',
+    accept: {
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'application/pdf': ['.pdf'],
+    },
+  },
+};
+
+// ─── Per-doc slot (used in update mode) ──────────────────────────────────────
+
+interface DocSlotProps {
+  doc: ProviderDoc;
+  title: string;
+  icon: LucideIcon;
+  accept: Record<string, string[]>;
+  description: string;
+  onFileChange: (file: File | undefined) => void;
+  errorMessage?: string;
+}
+
+const DocSlot = ({
+  doc,
+  title,
+  icon: Icon,
+  accept,
+  description,
+  onFileChange,
+  errorMessage,
+}: DocSlotProps) => {
+  const [hasNewFile, setHasNewFile] = useState(false);
+
+  const isPdf = doc.documentUrl?.toLowerCase().endsWith('.pdf');
+  const existingImgUrl = getImageUrl(doc.documentUrl);
+
+  return (
+    <div className="space-y-2">
+      {/* Status badge */}
+      <div
+        className={cn(
+          'flex w-fit items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium',
+          doc.isApproved
+            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+            : 'bg-destructive/10 text-destructive',
+        )}
+      >
+        {doc.isApproved ? (
+          <>
+            <CheckCircle2 size={13} />
+            مقبول — التحديث اختياري
+          </>
+        ) : (
+          <>
+            <XCircle size={13} />
+            مرفوض — يجب إعادة الرفع
+          </>
+        )}
+      </div>
+
+      {/* Existing doc preview — hidden once user picks a new file */}
+      {!hasNewFile && existingImgUrl && (
+        <div
+          className={cn(
+            'flex flex-col items-center gap-2 rounded-xl border-2 border-dashed p-4',
+            doc.isApproved
+              ? 'border-green-300 bg-green-50/50 dark:bg-green-950/20'
+              : 'border-destructive/40 bg-destructive/5',
+          )}
+        >
+          <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
+            المستند الحالي
+          </p>
+          {isPdf ? (
+            <div className="bg-primary/10 flex h-20 w-20 items-center justify-center rounded-2xl">
+              <FileText className="text-primary h-10 w-10" />
+            </div>
+          ) : (
+            <div className="border-border h-28 w-28 overflow-hidden rounded-lg border shadow-md">
+              <img
+                src={existingImgUrl}
+                alt={title}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Upload card for replacement */}
+      <FileUploadCard
+        title={hasNewFile ? title : `تغيير ${title}`}
+        description={description}
+        icon={Icon}
+        accept={accept}
+        onChange={(file) => {
+          setHasNewFile(!!file);
+          onFileChange(file);
+        }}
+        errorMessage={!doc.isApproved ? errorMessage : undefined}
+      />
+    </div>
+  );
+};
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 const VerificationPage = () => {
   const { data: profile } = useClientProfile();
+  const { data: existingDocs, isLoading: isLoadingDocs } = useGetProviderDocs();
 
   const { mutateAsync: updateProfile, isPending: isUpdatingProfile } =
     useUpdateProviderProfile();
   const { mutateAsync: uploadDocs, isPending: isUploadingDocs } =
     useUploadDocuments();
+  const { mutateAsync: updateDoc, isPending: isUpdatingDocs } =
+    useUpdateProviderDocs();
+
+  console.log(existingDocs);
+
   const governorateId = profile?.governorateId;
   const regionId = profile?.regionId;
 
-  const isSubmitting = isUpdatingProfile || isUploadingDocs;
+  // Track newly selected files in update-mode (keyed by documentType)
+  const [newFiles, setNewFiles] = useState<Record<number, File | undefined>>(
+    {},
+  );
+  // Track validation errors for refused docs
+  const [docErrors, setDocErrors] = useState<Record<number, string>>({});
+
+  const isFirstUpload =
+    !isLoadingDocs && Array.isArray(existingDocs) && existingDocs.length === 0;
+  const hasExistingDocs =
+    !isLoadingDocs && Array.isArray(existingDocs) && existingDocs.length > 0;
+
+  const docs = hasExistingDocs ? (existingDocs as ProviderDoc[]) : [];
+
+  const isSubmitting = isUpdatingProfile || isUploadingDocs || isUpdatingDocs;
+
   const methods = useForm<VerificationFormData>({
     resolver: zodResolver(verificationSchema as any),
     defaultValues: {
       Bio: '',
       Nickname: '',
-      BaseLocation: {
-        Latitude: 0,
-        Longitude: 0,
-        AddressText: '',
-      },
+      BaseLocation: { Latitude: 0, Longitude: 0, AddressText: '' },
       GovernorateId: 0,
       RegionId: 0,
       ServiceIds: [],
@@ -78,39 +251,71 @@ const VerificationPage = () => {
     formState: { errors },
   } = methods;
 
+  // ── Submit handler ──────────────────────────────────────────────────────────
+
   const onSubmit = async (data: VerificationFormData) => {
     const profileData = {
       Bio: data.Bio || '',
       Nickname: data.Nickname || '',
       GovernorateId: governorateId,
       RegionId: regionId,
-
       BaseLocation: {
         Latitude: data.BaseLocation.Latitude,
         Longitude: data.BaseLocation.Longitude,
         AddressText: data.BaseLocation.AddressText,
       },
-
       ServiceIds: data.ServiceIds,
     };
-    console.log(data);
-    try {
-      // 1) profile
 
+    try {
+      // 1) Always update profile
       await updateProfile(profileData);
 
-      // 2) docs
-      const docs = [
-        { file: data.personalImage, type: 1 },
-        { file: data.nationalId, type: 2 },
-        { file: data.criminalRecord, type: 3 },
-      ];
+      if (isFirstUpload) {
+        // 2a) First time → all 3 docs are required
+        if (!data.personalImage || !data.nationalId || !data.criminalRecord) {
+          toast.error('يرجى رفع جميع المستندات المطلوبة');
+          return;
+        }
 
-      await uploadDocs(docs);
+        const docsToUpload = [
+          { file: data.personalImage as File, type: 1 },
+          { file: data.nationalId as File, type: 2 },
+          { file: data.criminalRecord as File, type: 3 },
+        ];
+        await uploadDocs(docsToUpload);
+        console.log(docsToUpload);
+      } else {
+        // 2b) Has existing docs → validate refused ones have a new file
+        const errors: Record<number, string> = {};
+        docs.forEach((doc) => {
+          if (!doc.isApproved && !newFiles[doc.documentType]) {
+            errors[doc.documentType] = 'يجب رفع مستند جديد';
+          }
+        });
 
-      console.log('DONE');
+        if (Object.keys(errors).length > 0) {
+          setDocErrors(errors);
+          toast.error('يرجى رفع المستندات المرفوضة قبل الإرسال');
+          return;
+        }
+
+        setDocErrors({});
+
+        // Build payload array and let the hook run Promise.all internally
+        const docsToUpdate = docs
+          .filter((doc) => !!newFiles[doc.documentType])
+          .map((doc) => ({ docId: doc.id, file: newFiles[doc.documentType]! }));
+
+        if (docsToUpdate.length > 0) {
+          await updateDoc(docsToUpdate);
+        }
+      }
+
+      toast.success('تم الإرسال بنجاح');
     } catch (err) {
       console.error(err);
+      toast.error('حدث خطأ أثناء الإرسال');
     }
   };
 
@@ -118,8 +323,6 @@ const VerificationPage = () => {
     <div>
       <Card className="rounded-lg shadow-lg">
         <CardContent className="space-y-4 p-4">
-          {/* ── wrap the whole form with FormProvider so LocationSection
-               can call useFormContext() internally ── */}
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Header */}
@@ -211,7 +414,7 @@ const VerificationPage = () => {
 
               <Separator />
 
-              {/* ── Location (now uses the smart LocationSection) ── */}
+              {/* Location */}
               <div className="space-y-3">
                 <div className="text-md flex items-center gap-2 font-bold">
                   <MapPin size={16} className="text-primary" />
@@ -228,66 +431,87 @@ const VerificationPage = () => {
                   <FileText size={16} className="text-primary" />
                   المستندات المطلوبة
                 </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  <FileUploadCard
-                    title="صورة شخصية"
-                    description="PNG, JPG ≤5MB"
-                    icon={SquareUser}
-                    accept={{
-                      'image/png': ['.png'],
-                      'image/jpeg': ['.jpg', '.jpeg'],
-                    }}
-                    onChange={(file) =>
-                      setValue('personalImage', file, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      })
-                    }
-                    errorMessage={
-                      typeof errors.personalImage?.message === 'string'
-                        ? errors.personalImage.message
-                        : undefined
-                    }
-                  />
-                  <FileUploadCard
-                    title="صورة البطاقة الشخصية"
-                    description="PNG, JPG, PDF ≤5MB"
-                    icon={IdCard}
-                    accept={{
-                      'image/png': ['.png'],
-                      'image/jpeg': ['.jpg', '.jpeg'],
-                      'application/pdf': ['.pdf'],
-                    }}
-                    onChange={(file) =>
-                      setValue('nationalId', file, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      })
-                    }
-                    errorMessage={
-                      typeof errors.nationalId?.message === 'string'
-                        ? errors.nationalId.message
-                        : undefined
-                    }
-                  />
-                  <FileUploadCard
-                    title="صحيفة الحالة الجنائية"
-                    description="PNG, JPG, PDF ≤5MB"
-                    icon={FileText}
-                    accept={{
-                      'image/png': ['.png'],
-                      'image/jpeg': ['.jpg', '.jpeg'],
-                      'application/pdf': ['.pdf'],
-                    }}
-                    onChange={(file) =>
-                      setValue('criminalRecord', file, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      })
-                    }
-                    errorMessage={errors.criminalRecord?.message as string}
-                  />
-                </div>
+
+                {isLoadingDocs ? (
+                  <div className="text-muted-foreground flex items-center justify-center gap-2 py-8 text-sm">
+                    <Loader2 className="animate-spin" size={18} />
+                    جاري تحميل المستندات...
+                  </div>
+                ) : (
+                  <>
+                    {/* Global status banner for existing docs */}
+                    {hasExistingDocs && docs.some((d) => !d.isApproved) && (
+                      <Alert className="border-destructive/30 bg-destructive/5 rounded-xl border p-4">
+                        <AlertDescription className="text-destructive flex items-center gap-2 text-sm">
+                          <XCircle size={16} />
+                          بعض مستنداتك مرفوضة. يرجى إعادة رفعها ثم اضغط إرسال.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    {hasExistingDocs && docs.every((d) => d.isApproved) && (
+                      <Alert className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
+                        <AlertDescription className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+                          <CheckCircle2 size={16} />
+                          جميع مستنداتك مقبولة. يمكنك تحديثها إذا أردت.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {/* ── Update mode: show status per doc slot ── */}
+                      {hasExistingDocs &&
+                        docs.map((doc) => {
+                          const meta = DOC_META[doc.documentType];
+                          if (!meta) return null;
+
+                          return (
+                            <DocSlot
+                              key={doc.id}
+                              doc={doc}
+                              title={meta.title}
+                              icon={meta.icon}
+                              accept={meta.accept}
+                              description={meta.description}
+                              onFileChange={(file) =>
+                                setNewFiles((prev) => ({
+                                  ...prev,
+                                  [doc.documentType]: file,
+                                }))
+                              }
+                              errorMessage={docErrors[doc.documentType]}
+                            />
+                          );
+                        })}
+
+                      {/* ── First-time upload: driven by DOC_META ── */}
+                      {isFirstUpload &&
+                        Object.entries(DOC_META).map(([type, meta]) => {
+                          const field = meta.field;
+                          const err = errors[field];
+                          return (
+                            <FileUploadCard
+                              key={type}
+                              title={meta.title}
+                              description={meta.description}
+                              icon={meta.icon}
+                              accept={meta.accept}
+                              onChange={(file) =>
+                                setValue(field, file, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                })
+                              }
+                              errorMessage={
+                                typeof err?.message === 'string'
+                                  ? err.message
+                                  : undefined
+                              }
+                            />
+                          );
+                        })}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Info Box */}
@@ -304,10 +528,11 @@ const VerificationPage = () => {
                 </AlertDescription>
               </Alert>
 
-              {/* Submit */}
+              {/* Single submit button — always visible */}
               <div className="flex items-center justify-end gap-4 pt-4">
                 <Button
                   variant="outline"
+                  type="button"
                   className="h-11 cursor-pointer rounded-lg px-6"
                 >
                   حفظ كمسودة
@@ -315,7 +540,7 @@ const VerificationPage = () => {
                 <Button
                   variant="gradient"
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoadingDocs}
                   className="h-11 cursor-pointer rounded-lg px-6"
                 >
                   {isSubmitting ? (

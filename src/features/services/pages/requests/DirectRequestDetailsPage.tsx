@@ -124,6 +124,7 @@ const DirectRequestDetailsPage = () => {
     );
   }
 
+  console.log(requestDetails);
   const isCompleted = requestDetails.requestStatus === ServiceStatus.COMPLETED;
   const isCancelled = requestDetails.requestStatus === ServiceStatus.CANCELLED;
 
@@ -136,7 +137,7 @@ const DirectRequestDetailsPage = () => {
             {/* Title & Badge */}
             <div className="w-full space-y-1 md:w-auto">
               <h1 className="text-foreground text-3xl font-black">
-                تفاصيل الطلب المباشر
+                تفاصيل الطلب
               </h1>
               <div className="flex items-center gap-2">
                 <Badge
@@ -187,14 +188,25 @@ const DirectRequestDetailsPage = () => {
               )}
 
               {(isCompleted || isCancelled) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-10 flex-1 cursor-pointer rounded-full px-5 text-xs font-bold md:flex-auto"
-                  onClick={() => navigate('/app/services')}
-                >
-                  العودة للرئيسية
-                </Button>
+                <div className="flex w-full gap-2 md:w-auto">
+                  {isCompleted && (
+                    <Button
+                      onClick={() => setIsReviewOpen(true)}
+                      size="sm"
+                      className="bg-primary hover:bg-primary/90 h-10 flex-1 cursor-pointer rounded-full px-5 text-xs font-bold md:flex-auto"
+                    >
+                      {requestDetails.reviewId ? 'تعديل التقييم' : 'إضافة تقييم'}
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-10 flex-1 cursor-pointer rounded-full px-5 text-xs font-bold md:flex-auto"
+                    onClick={() => navigate('/app/services')}
+                  >
+                    العودة للرئيسية
+                  </Button>
+                </div>
               )}
             </div>
           </div>
@@ -244,6 +256,7 @@ const DirectRequestDetailsPage = () => {
         open={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}
         providerId={requestDetails.providerId}
+        reviewId={requestDetails.reviewId}
       />
     </>
   );

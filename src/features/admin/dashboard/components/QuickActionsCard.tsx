@@ -2,8 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
 import { Megaphone, Settings, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const QuickActionsCard = () => {
+  const navigate = useNavigate();
   return (
     <Card className="rounded-2xl">
       <CardHeader>
@@ -21,6 +23,7 @@ const QuickActionsCard = () => {
         <Button
           variant="secondary"
           className="h-12 w-full cursor-pointer justify-start gap-2 rounded-lg"
+          onClick={() => navigate('/admin/craftsmen')}
         >
           <Settings className="h-4 w-4" />
           إدارة الحرفيين

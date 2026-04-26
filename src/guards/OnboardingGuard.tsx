@@ -21,9 +21,16 @@ const isProfileComplete = (profile: any): boolean => {
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
   const { data: accountStatus, isLoading } = useAccountStatus();
+  const location = useLocation();
 
   if (!user) return null;
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   const role = getMainRole(
     accountStatus?.role ?? user.role,
@@ -37,8 +44,12 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (role === 'Provider') {
-    if (status === 'UnderReview')
-      return <Navigate to="/onboarding/review" replace />;
+    if (status === 'UnderReview') {
+      if (location.pathname !== '/onboarding/review') {
+        return <Navigate to="/onboarding/review" replace />;
+      }
+      return <>{children}</>;
+    }
     if (status === 'Approved') return <Navigate to="/provider" replace />;
     if (status === 'Pending')
       return <ProviderPendingGuard>{children}</ProviderPendingGuard>;

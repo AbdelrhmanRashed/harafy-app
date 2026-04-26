@@ -11,17 +11,37 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { reviewSchema, type ReviewInput } from '../schemas/review.schema';
 import { useCreateReview } from '../hooks/useCreateReview';
+import { useUpdateReview } from '../hooks/useUpdateReview';
+import { useEffect } from 'react';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   requestId: number;
   providerId?: number;
+  reviewId?: number | null;
 };
 
-const ReviewDialog = ({ open, onClose, requestId, providerId }: Props) => {
+const ReviewDialog = ({
+  open,
+  onClose,
+  requestId,
+  providerId,
+  reviewId,
+}: Props) => {
   const [hover, setHover] = useState(0);
-  const { mutate, isPending } = useCreateReview(String(providerId));
+  const { mutate: createReview, isPending: isCreating } = useCreateReview(
+    String(providerId),
+    String(requestId),
+  );
+  const { mutate: updateReview, isPending: isUpdating } = useUpdateReview(
+    reviewId || 0,
+    String(requestId),
+    String(providerId),
+  );
+
+  // const { data: myReviews } = useGetMyReviews(requestId);
+  const existingReview = null;
 
   const form = useForm<ReviewInput>({
     resolver: zodResolver(reviewSchema),
@@ -31,23 +51,43 @@ const ReviewDialog = ({ open, onClose, requestId, providerId }: Props) => {
     },
   });
 
+  useEffect(() => {
+    if (open && reviewId && existingReview) {
+      // form.setValue('rating', existingReview.rating);
+      // form.setValue('message', existingReview.message || '');
+    } else if (open && !reviewId) {
+      form.reset({
+        rating: undefined as any,
+        message: '',
+      });
+    }
+  }, [open, reviewId, existingReview, form]);
+
   const rating = form.watch('rating');
 
   const onSubmit = (data: ReviewInput) => {
-    mutate(
-      {
-        ServiceRequestId: requestId,
-        Rating: Number(data.rating),
-        Message: data.message,
-      },
-      {
-        onSuccess: () => {
-          form.reset();
-          onClose();
-        },
-      },
-    );
+    const payload = {
+      ServiceRequestId: requestId,
+      Rating: Number(data.rating),
+      Message: data.message,
+    };
+
+    const handleSuccess = () => {
+      form.reset();
+      onClose();
+    };
+
+    if (reviewId) {
+      updateReview(
+        { Rating: payload.Rating, Message: payload.Message ?? '' },
+        { onSuccess: handleSuccess },
+      );
+    } else {
+      createReview(payload, { onSuccess: handleSuccess });
+    }
   };
+
+  const isPending = isCreating || isUpdating;
 
   return (
     <Dialog
@@ -63,7 +103,7 @@ const ReviewDialog = ({ open, onClose, requestId, providerId }: Props) => {
       >
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-black">
-            ما رأيك في الخدمة؟
+            {reviewId ? 'تعديل التقييم' : 'ما رأيك في الخدمة؟'}
           </DialogTitle>
           <p className="text-muted-foreground text-center text-sm">
             تقييمك يساعدنا على تحسين تجربتك القادمة
@@ -133,6 +173,8 @@ const ReviewDialog = ({ open, onClose, requestId, providerId }: Props) => {
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 جارٍ الإرسال...
               </span>
+            ) : reviewId ? (
+              'تحديث التقييم'
             ) : (
               'إرسال التقييم'
             )}

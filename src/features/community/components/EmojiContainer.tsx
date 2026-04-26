@@ -31,7 +31,7 @@ const EmojiContainer = ({
     <div
       ref={emojiRef}
       className={cn(
-        'absolute z-999',
+        'absolute z-999999',
         // desktop
         'bottom-12 left-2',
         // mobile

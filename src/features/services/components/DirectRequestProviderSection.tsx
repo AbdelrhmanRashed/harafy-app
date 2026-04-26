@@ -91,7 +91,7 @@ const DirectRequestProviderSection = ({
               <div className="flex-1 space-y-4 text-center md:mt-2 md:text-right">
                 <div>
                   <Link
-                    to={`/app/profile/provider/${providerProfile?.id}`}
+                    to={`/app/profile/${providerProfile?.id}`}
                     className="text-foreground hover:text-primary text-2xl font-black transition-colors"
                   >
                     {name}

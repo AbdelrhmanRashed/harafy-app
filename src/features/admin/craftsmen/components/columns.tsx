@@ -7,6 +7,7 @@ import { getImageUrl } from '@/lib/utils';
 import type { IProvider } from '../types/providers';
 
 import { Link } from 'react-router-dom';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const columns: ColumnDef<IProvider>[] = [
   {
@@ -58,11 +59,17 @@ export const columns: ColumnDef<IProvider>[] = [
     header: () => <span className="hidden sm:inline-block">الصورة</span>,
     cell: ({ row }) => (
       <div className="hidden items-center justify-start sm:flex">
-        <img
-          src={getImageUrl(row.getValue('pictureUrl'))}
-          alt=""
-          className="h-12 w-12 rounded-full object-cover shadow-sm ring-2 ring-slate-100"
-        />
+        <Avatar className="h-10 w-10 rounded-lg">
+          <AvatarImage src={getImageUrl(row.getValue('pictureUrl'))} />
+          <AvatarFallback className="bg-secondary text-secondary-foreground">
+            {row
+              .getValue('name')
+              ?.toString()
+              ?.split(' ')
+              ?.map((n: string) => n.charAt(0))
+              .join('')}
+          </AvatarFallback>
+        </Avatar>
       </div>
     ),
   },

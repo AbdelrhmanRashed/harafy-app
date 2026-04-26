@@ -67,7 +67,7 @@ const Post = ({
 
   return (
     <>
-      <Card className="bg-card rounded-xl">
+      <Card className="bg-card overflow-visible rounded-xl">
         <CardContent className="space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between">

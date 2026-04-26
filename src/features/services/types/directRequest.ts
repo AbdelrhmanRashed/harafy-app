@@ -10,4 +10,5 @@ export interface DirectRequestDetails {
   requestStatus: number;
   serviceId: number;
   serviceRequestLocation: { latitude: number; longitude: number };
+  reviewId?: number;
 }

@@ -21,3 +21,21 @@ export const updateProviderProfile = async (profile: any) => {
 
   return res.data;
 };
+
+export const fetchProviderDocs = async () => {
+  const res = await axiosInstance.get('/api/Document/get-documents');
+  return res.data;
+};
+
+export const updateProviderDocs = async (docId: number, docs: FormData) => {
+  try {
+    const res = await axiosInstance.put(
+      `/api/Document/update-document/${docId}`,
+      docs,
+    );
+    return res.data;
+  } catch (error) {
+    console.error('Error updating documentation:', error);
+    throw error;
+  }
+};

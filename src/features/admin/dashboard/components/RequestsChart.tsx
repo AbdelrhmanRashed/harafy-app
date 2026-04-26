@@ -1,4 +1,5 @@
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { useMemo } from 'react';
 
 import {
   Card,
@@ -23,13 +24,6 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 
-const data = [
-  { week: 'الأسبوع 1', value: 200 },
-  { week: 'الأسبوع 2', value: 800 },
-  { week: 'الأسبوع 3', value: 300 },
-  { week: 'الأسبوع 4', value: 600 },
-];
-
 const chartConfig = {
   value: {
     label: 'عدد الطلبات',
@@ -37,30 +31,57 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const RequestsChart = () => {
+type RequestsChartProps = {
+  requestsPerDay: { date: string; count: number }[];
+  period: number;
+  onPeriodChange: (period: number) => void;
+};
+
+const RequestsChart = ({ requestsPerDay, period, onPeriodChange }: RequestsChartProps) => {
+  const chartData = useMemo(() => {
+    return requestsPerDay.map((item) => {
+      const date = new Date(item.date);
+      let formattedDate = '';
+      if (period === 0) {
+        formattedDate = new Intl.DateTimeFormat('ar-EG', { weekday: 'short' }).format(date);
+      } else if (period === 1) {
+        formattedDate = new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'short' }).format(date);
+      } else {
+        formattedDate = new Intl.DateTimeFormat('ar-EG', { month: 'short', year: 'numeric' }).format(date);
+      }
+      
+      return {
+        dateLabel: formattedDate,
+        value: item.count,
+      };
+    });
+  }, [requestsPerDay, period]);
+
+  const totalRequests = requestsPerDay.reduce((acc, curr) => acc + curr.count, 0);
+
   return (
     <Card className="rounded-2xl">
       <CardHeader className="flex flex-row-reverse items-start justify-between space-y-0">
         <div>
           <CardTitle>طلبات الخدمة عبر الوقت</CardTitle>
-          <CardDescription>الإجمالي: ٢٬٤٥٠ طلب</CardDescription>
+          <CardDescription>الإجمالي: {totalRequests.toLocaleString('ar-EG')} طلب</CardDescription>
         </div>
 
-        <Select defaultValue="30">
+        <Select value={period.toString()} onValueChange={(val) => onPeriodChange(Number(val))}>
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="آخر 30 يوم" />
+            <SelectValue placeholder="اختر الفترة" />
           </SelectTrigger>
           <SelectContent className="p-2">
-            <SelectItem value="7">آخر 7 أيام</SelectItem>
-            <SelectItem value="30">آخر 30 يوم</SelectItem>
-            <SelectItem value="90">آخر 90 يوم</SelectItem>
+            <SelectItem value="0">هذا الأسبوع</SelectItem>
+            <SelectItem value="1">هذا الشهر</SelectItem>
+            <SelectItem value="2">هذا العام</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
 
       <CardContent className="px-2">
         <ChartContainer config={chartConfig}>
-          <AreaChart data={data}>
+          <AreaChart data={chartData}>
             <defs>
               <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
                 <stop
@@ -79,7 +100,7 @@ const RequestsChart = () => {
             <CartesianGrid vertical={false} />
 
             <XAxis
-              dataKey="week"
+              dataKey="dateLabel"
               tickLine={false}
               axisLine={false}
               padding={{ left: 20, right: 20 }}
@@ -88,7 +109,7 @@ const RequestsChart = () => {
             <ChartTooltip content={<ChartTooltipContent />} />
 
             <Area
-              type="natural"
+              type="monotone"
               dataKey="value"
               stroke="var(--color-value)"
               strokeWidth={2}
