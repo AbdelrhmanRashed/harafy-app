@@ -78,10 +78,16 @@ const ProfileSidebar = () => {
       {/* ── User card ── */}
       <div className="flex items-center gap-2">
         <div className="size-12 overflow-hidden rounded-xl">
-          <img
-            className="h-full w-full object-cover"
-            src={getImageUrl(clientProfile?.pictureUrl)}
-          />
+          {clientProfile?.pictureUrl ? (
+            <img
+              className="h-full w-full object-cover"
+              src={getImageUrl(clientProfile?.pictureUrl)}
+            />
+          ) : (
+            <div className="bg-primary/10 text-primary flex h-full w-full items-center justify-center">
+              <User className="size-6" />
+            </div>
+          )}
         </div>
         <div className="flex flex-col">
           <p className="text-md font-bold">
