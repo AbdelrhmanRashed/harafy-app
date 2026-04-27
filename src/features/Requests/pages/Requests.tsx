@@ -1,6 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useLocation as useRouterLocation, useNavigate } from 'react-router-dom';
+import {
+  useLocation as useRouterLocation,
+  useNavigate,
+} from 'react-router-dom';
 import MapView from '../../services/components/MapView';
 import { cn } from '@/lib/utils';
 import { useLocationCustom } from '../../services/hooks/useLocation';
@@ -17,7 +20,7 @@ import type {
   SubmittedOffer,
 } from '../types/providerOfferTypes';
 
-const SIDEBAR_TITLES: Record<ProviderOfferStep, string> = {
+const SIDEBAR_TITLES: Record<string, string> = {
   REQUESTS: 'الطلبات المتاحة',
   CREATE_OFFER: 'تقديم عرض',
   WAITING: 'قيد الانتظار',
@@ -29,20 +32,26 @@ const RequestsPage = () => {
   const { data: myOffers } = useGetMyOffers();
 
   const [sidebarOpen, setSidebarOpen] = useState(
-    !!(state?.request && typeof window !== 'undefined' && window.innerWidth < 768),
+    !!(
+      state?.request &&
+      typeof window !== 'undefined' &&
+      window.innerWidth < 768
+    ),
   );
 
   const [selectedRequest, setSelectedRequest] =
     useState<AvailableRequestItem | null>(state?.request ?? null);
 
   const [step, setStep] = useState<ProviderOfferStep>(
-    state?.step === 'WAITING' ? 'WAITING'
-    : state?.request ? 'CREATE_OFFER'
-    : 'REQUESTS'
+    state?.step === 'WAITING'
+      ? 'WAITING'
+      : state?.request
+        ? 'CREATE_OFFER'
+        : 'REQUESTS',
   );
 
   const [submittedOffer, setSubmittedOffer] = useState<SubmittedOffer | null>(
-    state?.offer ?? null
+    state?.offer ?? null,
   );
 
   const {
@@ -60,7 +69,10 @@ const RequestsPage = () => {
   }, [selectedRequest]);
 
   const { route } = useRoute(requestPos, providerPos);
-  const mapCenter = useMemo(() => requestPos ?? providerPos, [requestPos, providerPos]);
+  const mapCenter = useMemo(
+    () => requestPos ?? providerPos,
+    [requestPos, providerPos],
+  );
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -72,20 +84,23 @@ const RequestsPage = () => {
     }
   }, []);
 
-  const handleOpenExistingOffer = useCallback((request: AvailableRequestItem) => {
-    const offerData = myOffers?.find((o) => o.id === request.offerId);
-    setSelectedRequest(request);
-    setSubmittedOffer({
-      offerId: request.offerId!,
-      serviceRequestId: request.id,
-      price: offerData?.price ?? 0,
-      message: offerData?.message ?? undefined,
-    });
-    setStep('WAITING');
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      setSidebarOpen(false);
-    }
-  }, [myOffers]);
+  const handleOpenExistingOffer = useCallback(
+    (request: AvailableRequestItem) => {
+      const offerData = myOffers?.find((o) => o.id === request.offerId);
+      setSelectedRequest(request);
+      setSubmittedOffer({
+        offerId: request.offerId!,
+        serviceRequestId: request.id,
+        price: offerData?.price ?? 0,
+        message: offerData?.message ?? undefined,
+      });
+      setStep('WAITING');
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        setSidebarOpen(false);
+      }
+    },
+    [myOffers],
+  );
 
   const handleOfferCreated = useCallback((offer: SubmittedOffer) => {
     setSubmittedOffer(offer);
@@ -98,14 +113,16 @@ const RequestsPage = () => {
     setStep('REQUESTS');
   }, []);
 
-const handleAccepted = useCallback(() => {
-  if (submittedOffer?.serviceRequestId) {
-    navigate(`/provider/requests/ordertrack/${submittedOffer.serviceRequestId}`, {
-      state: { request: selectedRequest }, // ← pass selectedRequest
-    });
-  }
-}, [submittedOffer, selectedRequest, navigate]);
-
+  const handleAccepted = useCallback(() => {
+    if (submittedOffer?.serviceRequestId) {
+      navigate(
+        `/provider/requests/ordertrack/${submittedOffer.serviceRequestId}`,
+        {
+          state: { request: selectedRequest }, // ← pass selectedRequest
+        },
+      );
+    }
+  }, [submittedOffer, selectedRequest, navigate]);
 
   return (
     <div className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden md:flex-row">
@@ -133,7 +150,9 @@ const handleAccepted = useCallback(() => {
       >
         {/* Mobile header */}
         <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
-          <h2 className="text-foreground text-sm font-bold">{SIDEBAR_TITLES[step]}</h2>
+          <h2 className="text-foreground text-sm font-bold">
+            {SIDEBAR_TITLES[step]}
+          </h2>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
