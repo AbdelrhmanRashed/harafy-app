@@ -24,7 +24,11 @@ export const getTimeAgo = (date: Date) => {
     return `${diffInMinutes} دقائق`;
   } else if (diffInHours < 24) {
     return `${diffInHours} ساعات`;
-  } else if (diffInDays >= 1 && diffInDays < 11) {
+  } else if (diffInDays === 1) {
+    return `يوم`;
+  } else if (diffInDays === 2) {
+    return `يومان`;
+  } else if (diffInDays >= 3 && diffInDays < 11) {
     return `${diffInDays} أيام`;
   } else if (diffInDays >= 11 && diffInDays < 30) {
     return `${diffInDays} يوم`;
