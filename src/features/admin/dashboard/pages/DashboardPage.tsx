@@ -4,7 +4,7 @@ import RequestsChart from '../components/RequestsChart';
 import StatCard from '../components/StatCard';
 import type { StatCardProps } from '../components/StatCard';
 import UserDistributionCard from '../components/UserDistributionCard';
-import { Users, ClipboardList, Zap, UserCog, Loader2 } from 'lucide-react';
+import { Users, ClipboardList, Zap, UserCog } from 'lucide-react';
 import { useDashboardStats } from '../hooks/useDashboardStats';
 import DashboardSkeleton from '../components/DashboardSkeleton';
 

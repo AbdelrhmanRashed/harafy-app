@@ -6,8 +6,8 @@ export interface ServiceRequestType {
   createdAt: string;
   preferredTime: string | null;
   clientId?: number;
-  clientName:string;
-  clientPictureUrl:string
+  clientName: string;
+  clientPictureUrl: string;
   providerId: number | null;
   serviceRequestLocation: {
     latitude: number;
@@ -17,7 +17,12 @@ export interface ServiceRequestType {
   imageUrls: string[];
 }
 
-export type ProviderOfferStep = "REQUESTS" | "CREATE_OFFER" | "WAITING";
+export type ProviderOfferStep =
+  | 'REQUESTS'
+  | 'CREATE_OFFER'
+  | 'WAITING'
+  | 'ACCEPTED'
+  | 'REVIEW';
 export type CreateOfferPayload = {
   serviceRequestId: number;
   price: number;

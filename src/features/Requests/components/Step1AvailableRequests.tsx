@@ -1,4 +1,4 @@
-import { Loader2, ClipboardList, MapPin, Zap, RefreshCw } from 'lucide-react';
+import { Loader2, ClipboardList, MapPin, RefreshCw } from 'lucide-react';
 import { useGetAvailableRequests } from '../hooks/useGetAvailableRequests';
 import { useGetServices } from '../hooks/useGetServices';
 import type { AvailableRequestItem } from '../types/providerOfferTypes';
