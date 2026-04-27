@@ -87,7 +87,7 @@ const Post = ({
               ) : (
                 <Avatar size="lg">
                   <AvatarImage src={getImageUrl(post.clientPictureUrl)} />
-                  <AvatarFallback>{post.clientName[0]}</AvatarFallback>
+                  <AvatarFallback>{post.clientName[0] || 'م'}</AvatarFallback>
                 </Avatar>
               )}
               <div>
@@ -100,7 +100,9 @@ const Post = ({
                     </p>
                   </Link>
                 ) : (
-                  <p className="text-[16px] font-bold">{post.clientName}</p>
+                  <p className="text-[16px] font-bold">
+                    {post.clientName || 'مستخدم محذوف'}
+                  </p>
                 )}
                 <p className="flex items-center gap-1 text-xs text-gray-500">
                   <Clock className="size-3.5" />

@@ -34,8 +34,8 @@ const ProviderActions = () => {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const variant: Record<string, string> = {
-    '/provider/home': 'إضافة خدمة',
-    '/provider/services': 'إضافة خدمة',
+    // '/provider/home': 'إضافة خدمة',
+    // '/provider/services': 'إضافة خدمة',
     '/provider/community': 'إنشاء منشور',
   };
 

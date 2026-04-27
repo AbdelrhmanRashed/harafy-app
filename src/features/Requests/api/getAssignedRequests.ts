@@ -8,16 +8,17 @@ export const getAssignedRequests = async (inProgressStatus = false): Promise<Ass
     params: { inProgressStatus },
   });
 
-  const data: AssignedRequest[] = Array.isArray(res.data)
-    ? res.data
-    : res.data.data ?? [];
+  const list = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
 
-  return data.map((item) => ({
+  return list.map((item: any) => ({
     ...item,
     clientPictureUrl: item.clientPictureUrl
       ? item.clientPictureUrl.startsWith("http")
         ? item.clientPictureUrl
         : `${BASE_URL}/${item.clientPictureUrl}`
       : null,
+    imageUrls: (item.imageUrls ?? []).map((url: string) =>
+      url.startsWith("http") ? url : `${BASE_URL}/${url}`
+    ),
   }));
 };

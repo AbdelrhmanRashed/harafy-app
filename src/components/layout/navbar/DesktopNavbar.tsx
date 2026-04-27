@@ -17,7 +17,7 @@ const DesktopNavbar = ({ role }: DesktopNavbarProps) => {
       {/* Right Side: Logo & Links */}
       <div className="flex items-center gap-8">
         <Logo />
-        <NavLinks navLinks={getNavLinks(role)} />
+        {role !== 'Provider' && <NavLinks navLinks={getNavLinks(role)} />}
       </div>
 
       {/* Center: Search */}

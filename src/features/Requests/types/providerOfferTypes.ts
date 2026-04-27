@@ -17,7 +17,7 @@ export interface ServiceRequestType {
   imageUrls: string[];
 }
 
-export type ProviderOfferStep = "REQUESTS" | "CREATE_OFFER" | "WAITING" | "ACCEPTED" | "REVIEW";
+export type ProviderOfferStep = "REQUESTS" | "CREATE_OFFER" | "WAITING";
 export type CreateOfferPayload = {
   serviceRequestId: number;
   price: number;
@@ -40,6 +40,8 @@ export type AvailableRequestItem = ServiceRequestType & {
   clientName?: string;
   clientPictureUrl?: string | null;
   serviceName?: string;
+  hasOffer?: boolean;
+  offerId?: number | null;
 };
 
 export type AssignedRequest = {

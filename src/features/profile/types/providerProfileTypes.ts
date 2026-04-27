@@ -25,4 +25,5 @@ export interface ProviderProfile {
   baseLocation: ProviderLocation;
   services: ProviderService[];
   phoneNumbers: string[];
+  credits: number;
 }

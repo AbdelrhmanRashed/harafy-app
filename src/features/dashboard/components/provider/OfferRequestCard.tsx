@@ -25,78 +25,92 @@ export default function OfferRequestCard({ data }: Props) {
     : null;
 
   return (
-    <Card className="rounded-xl border-r-4 border-primary">
-      <CardContent className="px-4 py-3 space-y-3">
-
+    <Card className="hover:border-primary/50 relative overflow-hidden rounded-3xl border-2 shadow-[0_2px_20px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_25px_rgb(0,0,0,0.08)]">
+      <div className="bg-primary/5 absolute right-0 top-0 h-full w-2" />
+      <CardContent className="space-y-4 p-5">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-primary/10 border border-border shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="border-border bg-primary/5 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-sm">
               {data.clientPictureUrl ? (
                 <img
                   src={data.clientPictureUrl}
                   alt={data.clientName}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-xs font-black text-primary">
+                <span className="text-primary text-sm font-black">
                   {data.clientName?.charAt(0)}
                 </span>
               )}
             </div>
-            <p className="text-sm font-extrabold text-foreground">{data.clientName}</p>
+            <div>
+              <p className="text-foreground text-base font-black">
+                {data.clientName}
+              </p>
+            </div>
           </div>
-          <Badge className="text-[11px] text-muted-foreground bg-muted px-4 py-2">{createdAt}</Badge>
+          {createdAt && (
+            <span className="bg-secondary/50 text-muted-foreground rounded-full px-3 py-1 text-xs font-semibold">
+              {createdAt}
+            </span>
+          )}
         </div>
 
-        {/* Service name */}
-        {serviceName && (
-          <p className="text-sm font-bold text-primary text-right">{serviceName}</p>
-        )}
+        {/* Service name & Description */}
+        <div className="space-y-1">
+          {serviceName && (
+            <p className="text-primary text-sm font-bold text-right">
+              {serviceName}
+            </p>
+          )}
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed font-medium text-right">
+            {data.description || "لا يوجد وصف"}
+          </p>
+        </div>
 
-        {/* Description */}
-        <p className="text-sm text-muted-foreground text-right line-clamp-2">
-          {data.description || "لا يوجد وصف"}
-        </p>
-
-        {/* Images */}
-        {images.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto scrollbar-none">
-            {images.map((url, i) => (
-              <div
-                key={i}
-                className="w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-border"
-              >
-                <img
-                  src={url}
-                  alt={`صورة ${i + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Location */}
+        {/* Location Row */}
         {data.serviceRequestLocation && (
-          <div className="flex items-center  gap-1 text-[11px] text-muted-foreground">
-            <MapPin className="h-3 w-3 shrink-0" />
-            <span>
+          <div className="bg-secondary/30 flex items-center gap-2 rounded-2xl p-3">
+            <div className="bg-amber-500/10 rounded-full p-1.5">
+              <MapPin className="text-amber-600 h-4 w-4 shrink-0" />
+            </div>
+            <span className="text-foreground text-xs font-semibold" dir="ltr">
               {data.serviceRequestLocation.latitude.toFixed(3)},{" "}
               {data.serviceRequestLocation.longitude.toFixed(3)}
             </span>
           </div>
         )}
 
+        {/* Images */}
+        {images.length > 0 && (
+          <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
+            {images.map((url, i) => (
+              <div
+                key={i}
+                className="border-border hover:border-primary/50 h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 transition-all hover:scale-105"
+              >
+                <img
+                  src={url}
+                  alt={`صورة ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Button */}
-        <Button
-          className="w-full"
-          onClick={() =>
-            navigate("/provider/requests", { state: { request: data } })
-          }
-        >
-          تقديم عرض
-        </Button>
+        <div className="pt-2">
+          <Button
+            className="h-12 w-full rounded-2xl text-sm font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] cursor-pointer"
+            onClick={() =>
+              navigate("/provider/requests", { state: { request: data } })
+            }
+          >
+            تقديم عرض
+          </Button>
+        </div>
 
       </CardContent>
     </Card>

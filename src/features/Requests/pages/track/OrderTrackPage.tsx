@@ -1,33 +1,41 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Clock, Calendar, X, Star, Menu } from 'lucide-react';
-import { useGetServices } from '../../../../Requests/hooks/useGetServices';
-import MapView from '../../../../services/components/MapView';
-import { useLocationCustom as useProviderLocation } from '../../../../services/hooks/useLocation';
-import { useRoute } from '../../../../services/hooks/useRoute';
+import { useGetServices } from '../../../Requests/hooks/useGetServices';
+import MapView from '../../../services/components/MapView';
+import { useLocationCustom } from '../../../services/hooks/useLocation';
+import { useRoute } from '../../../services/hooks/useRoute';
 import { Button } from '@/components/ui/button';
 import axiosInstance from '@/lib/axios';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import type { AssignedRequest } from '../../types/providerOfferTypes';
+import { useLiveLocation } from '../../hooks/useUpdateLiveLocation';
 
 const BASE_URL = axiosInstance.defaults.baseURL ?? '';
 
-const DirectRequestPage = () => {
-  const { state } = useLocation();
+const OrderTrackPage = () => {
+  const { serviceId } = useParams();
   const navigate = useNavigate();
-  const request = state?.request;
+  const { state } = useLocation();
   const { data: services } = useGetServices();
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const request = state?.request as AssignedRequest | undefined;
+
   const {
     position: providerPos,
     setPosition: setProviderPos,
-    detect,
-    searchAddress,
-  } = useProviderLocation();
+    detect: detectMyPosition
+  } = useLocationCustom();
 
+//update provider position every 10 seconds
+  useLiveLocation(true, (pos) => {
+    setProviderPos(pos);
+  });
+//when i open the page for the first time i want to get the provider position
   useEffect(() => {
-    detect();
+    detectMyPosition();
   }, []);
 
   const clientPos = request?.serviceRequestLocation
@@ -37,12 +45,24 @@ const DirectRequestPage = () => {
       }
     : null;
 
-  const { route } = useRoute(clientPos, providerPos);
+  const { route } = useRoute(providerPos, clientPos);
+
+  const getDynamicZoom = () => {
+    if (!providerPos || !clientPos) return 13;
+    
+    const latDiff = Math.abs(providerPos.lat - clientPos.lat);
+    const lngDiff = Math.abs(providerPos.lng - clientPos.lng);
+    
+    if (latDiff < 0.005 && lngDiff < 0.005) {
+      return 18; 
+    }
+    return 14; 
+  };
 
   const serviceName =
-    services?.find((s) => s.id === request.serviceId)?.name ?? '';
+    services?.find((s) => s.id === request?.serviceId)?.name ?? '';
 
-  const createdAt = request.createdAt
+  const createdAt = request?.createdAt
     ? new Date(request.createdAt).toLocaleDateString('ar-EG', {
         year: 'numeric',
         month: 'long',
@@ -52,7 +72,7 @@ const DirectRequestPage = () => {
       })
     : null;
 
-  const preferredTime = request.preferredTime
+  const preferredTime = request?.preferredTime
     ? new Date(request.preferredTime).toLocaleDateString('ar-EG', {
         year: 'numeric',
         month: 'long',
@@ -62,13 +82,13 @@ const DirectRequestPage = () => {
       })
     : null;
 
-  const clientPictureUrl = request.clientPictureUrl
+  const clientPictureUrl = request?.clientPictureUrl
     ? request.clientPictureUrl.startsWith('http')
       ? request.clientPictureUrl
       : `${BASE_URL}/${request.clientPictureUrl}`
     : null;
 
-  const images: string[] = (request.imageUrls ?? []).map((url: string) =>
+  const images: string[] = (request?.imageUrls ?? []).map((url: string) =>
     url.startsWith('http') ? url : `${BASE_URL}/${url}`,
   );
 
@@ -113,65 +133,82 @@ const DirectRequestPage = () => {
           {/* Client header */}
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-3">
-              <div className="border-border bg-primary/10 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+              <div className="border-border bg-primary/5 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-sm">
                 {clientPictureUrl ? (
                   <img
                     src={clientPictureUrl}
-                    alt={request.clientName ?? ''}
+                    alt={request?.clientName ?? ''}
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <span className="text-primary text-sm font-bold">
-                    {request.clientName?.charAt(0) ?? 'ع'}
+                  <span className="text-primary text-base font-black">
+                    {request?.clientName?.charAt(0) ?? 'ع'}
                   </span>
                 )}
               </div>
               <div className="min-w-0">
-                <h2 className="truncate text-base font-bold">
-                  {request.clientName}
+                <h2 className="text-foreground truncate text-lg font-black">
+                  {request?.clientName ?? 'عميل'}
                 </h2>
                 {serviceName && (
-                  <p className="text-primary truncate text-sm font-semibold">
+                  <p className="text-primary truncate text-sm font-bold">
                     {serviceName}
                   </p>
                 )}
               </div>
             </div>
-            <span className="text-muted-foreground shrink-0">
-              رقم الطلب: ORD-{request.id}
-            </span>
+            <div className="bg-secondary/50 text-muted-foreground shrink-0 rounded-full px-3 py-1 font-semibold">
+              #{serviceId}
+            </div>
           </div>
 
           {/* Description */}
-          <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-            {request.description ?? 'لا يوجد وصف'}
+          <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed font-medium">
+            {request?.description ?? 'لا يوجد وصف'}
           </p>
 
-          {/* Meta */}
-          <div className="flex flex-col gap-1.5">
+          {/* Meta Details */}
+          <div className="bg-secondary/30 flex flex-col gap-3 rounded-3xl p-4">
             {preferredTime && (
-              <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <Calendar className="h-3.5 w-3.5 shrink-0" />
-                {preferredTime}
-              </span>
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 rounded-full p-2">
+                  <Calendar className="text-primary h-4 w-4" />
+                </div>
+                <span className="text-foreground text-sm font-semibold">
+                  {preferredTime}
+                </span>
+              </div>
             )}
             {createdAt && (
-              <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <Clock className="h-3.5 w-3.5 shrink-0" />
-                {createdAt}
-              </span>
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 rounded-full p-2">
+                  <Clock className="text-primary h-4 w-4" />
+                </div>
+                <span className="text-foreground text-sm font-semibold">
+                  {createdAt}
+                </span>
+              </div>
             )}
-            {request.serviceRequestLocation && (
-              <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <MapPin className="h-3.5 w-3.5 shrink-0" />
-                {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
-                {request.serviceRequestLocation.longitude.toFixed(3)}
-              </span>
+            {request?.serviceRequestLocation && (
+              <div className="flex items-center gap-3">
+                <div className="bg-amber-500/10 rounded-full p-2">
+                  <MapPin className="text-amber-600 h-4 w-4" />
+                </div>
+                <span className="text-foreground text-sm font-semibold" dir="ltr">
+                  {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
+                  {request.serviceRequestLocation.longitude.toFixed(3)}
+                </span>
+              </div>
             )}
-            {request.finalPrice && (
-              <span className="text-primary text-sm font-bold">
-                {Number(request.finalPrice).toLocaleString('ar-EG')} جنيه
-              </span>
+            {request?.finalPrice && (
+              <div className="border-border/50 mt-1 border-t pt-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-xs font-bold uppercase">السعر المتفق عليه</span>
+                  <span className="text-primary text-xl font-black">
+                    {Number(request.finalPrice).toLocaleString('ar-EG')} جنيه
+                  </span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -224,7 +261,6 @@ const DirectRequestPage = () => {
             </div>
           )}
 
-          {/* Spacer */}
           <div className="flex-1" />
 
           {/* Button */}
@@ -251,16 +287,27 @@ const DirectRequestPage = () => {
         />
       )}
 
-      {/* Map — provider real GPS + client location from request */}
+      {/* Map */}
       <MapView
-        center={clientPos ?? providerPos}
+        center={providerPos??clientPos}
         customerPos={clientPos ?? providerPos}
         providers={[]}
-        selectedProvider={null}
+        selectedProvider={
+          {
+            id: 'current-provider',
+            name: 'أنا (الفني)',
+            pictureUrl: '',
+            services: [{ name: serviceName }],
+            rating: 5,
+          } as any
+        }
+        liveProviderPos={providerPos}
         route={route}
         onLocationSelect={setProviderPos}
         onProviderSelect={() => {}}
-        onAddressSearch={searchAddress}
+        onAddressSearch={() => {}}
+        allowMapPickLocation={false}
+        zoom={getDynamicZoom()}
       />
 
       {/* Lightbox */}
@@ -286,4 +333,4 @@ const DirectRequestPage = () => {
   );
 };
 
-export default DirectRequestPage;
+export default OrderTrackPage;

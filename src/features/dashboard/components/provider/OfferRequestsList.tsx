@@ -6,6 +6,8 @@ import OfferRequestCard from './OfferRequestCard';
 export default function OfferRequestsList() {
   const { data: requests, isLoading } = useGetAvailableRequests();
 
+  const filtered = (requests ?? []).filter((req) => !req.hasOffer);
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-10">
@@ -14,7 +16,7 @@ export default function OfferRequestsList() {
     );
   }
 
-  if (!requests?.length) {
+  if (!filtered.length) {
     return (
       <Card className="bg-muted border-muted-foreground rounded-xl border-r-4">
         <CardContent className="p-10">
@@ -28,7 +30,7 @@ export default function OfferRequestsList() {
 
   return (
     <div className="space-y-4">
-      {requests.map((req) => (
+      {filtered.map((req) => (
         <OfferRequestCard key={req.id} data={req} />
       ))}
     </div>

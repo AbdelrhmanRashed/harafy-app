@@ -60,13 +60,13 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
           >
             <Avatar className="ring-primary h-8 w-8 ring-2 ring-offset-2">
               <AvatarImage src={getImageUrl(comment.clientPictureUrl)} />
-              <AvatarFallback>{comment.clientName[0]}</AvatarFallback>
+              <AvatarFallback>{comment.clientName[0] || 'م'}</AvatarFallback>
             </Avatar>
           </Link>
         ) : (
           <Avatar>
             <AvatarImage src={getImageUrl(comment.clientPictureUrl)} />
-            <AvatarFallback>{comment.clientName[0]}</AvatarFallback>
+            <AvatarFallback>{comment.clientName[0] || 'م'}</AvatarFallback>
           </Avatar>
         )}
       </div>
@@ -90,11 +90,13 @@ const Comment = ({ comment }: { comment: CommentResponse }) => {
                 to={`${userRole?.includes('Provider') ? '/provider' : '/app'}/profile/${comment.providerId}`}
               >
                 <p className="text-primary mb-1 cursor-pointer text-sm font-semibold">
-                  {comment.clientName}
+                  {comment.clientName || 'مستخدم محذوف'}
                 </p>
               </Link>
             ) : (
-              <p className="text-sm font-semibold">{comment.clientName}</p>
+              <p className="text-sm font-semibold">
+                {comment.clientName || 'مستخدم محذوف'}
+              </p>
             )}
 
             {isEditing ? (

@@ -6,28 +6,27 @@ import { cn } from '@/lib/utils';
 
 type Step1AvailableRequestsProps = {
   onSelectRequest: (request: AvailableRequestItem) => void;
+  onOpenExistingOffer: (request: AvailableRequestItem) => void;
   selectedRequestId?: number | null;
 };
 
 export default function Step1AvailableRequests({
   onSelectRequest,
+  onOpenExistingOffer,
   selectedRequestId,
 }: Step1AvailableRequestsProps) {
   // const { data: services } = useGetServices();
 
-  const {
-    data: raw,
-    isFetching,
-    refetch,
-  } = useGetAvailableRequests({
-    refetchInterval: 15000,
-  });
+  const { data: raw, isFetching, refetch } = useGetAvailableRequests();
 
   const requests: AvailableRequestItem[] = Array.isArray(raw) ? raw : [];
+  console.log('requests length:', requests.length);
+  const newRequests = requests.filter((r) => !r.hasOffer);
+  const offeredRequests = requests.filter((r) => r.hasOffer);
 
   return (
     <div
-      className="relative flex h-full flex-col gap-6 px-4 py-4 pb-8 sm:px-5"
+      className="relative flex h-full flex-col gap-5 px-4 pt-4 pb-8 sm:px-5"
       dir="rtl"
     >
       {/* Header */}
@@ -35,8 +34,8 @@ export default function Step1AvailableRequests({
         <h2 className="text-foreground text-xl font-black">الطلبات المتاحة</h2>
         <button
           onClick={() => refetch()}
-          className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl p-1.5 transition-colors"
           disabled={isFetching}
+          className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl p-1.5 transition-colors"
         >
           <RefreshCw
             className={cn('h-4 w-4', isFetching && 'text-primary animate-spin')}
@@ -44,15 +43,6 @@ export default function Step1AvailableRequests({
         </button>
       </div>
 
-      {/* Info bar */}
-      <div className="bg-primary/5 flex items-center gap-4 rounded-2xl px-5 py-4">
-        <RefreshCw className="text-primary h-5 w-5 shrink-0" />
-        <p className="text-muted-foreground text-xs leading-relaxed font-semibold">
-          يتم التحديث تلقائياً كل 15 ثانية. اضغط على طلب لتقديم عرضك.
-        </p>
-      </div>
-
-      {/* Content */}
       {isFetching && requests.length === 0 ? (
         <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-2 py-12 text-sm font-bold">
           <Loader2 className="text-primary h-8 w-8 animate-spin" />
@@ -64,28 +54,46 @@ export default function Step1AvailableRequests({
             <div className="bg-primary/5 outline-primary/5 flex h-32 w-32 items-center justify-center rounded-full outline outline-12">
               <ClipboardList className="text-primary/40 h-14 w-14" />
             </div>
-            <div className="bg-primary/10 border-background absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full border-[3px] shadow-sm">
-              <Zap className="text-primary h-3 w-3 fill-current" />
-            </div>
           </div>
           <h3 className="text-foreground text-xl font-black">
             لا توجد طلبات متاحة
           </h3>
           <p className="text-muted-foreground mt-3 max-w-[280px] text-[13px] leading-relaxed">
-            لا توجد طلبات في منطقتك حالياً. سنعلمك فور وصول طلب جديد.
+            لا توجد طلبات في منطقتك حالياً.
           </p>
         </div>
       ) : (
-        <ul className="-mr-1 flex flex-1 flex-col gap-3 overflow-y-auto pr-1">
-          {requests.map((req) => (
-            <RequestCard
-              key={req.id}
-              request={req}
-              isSelected={selectedRequestId === req.id}
-              onSelect={() => onSelectRequest(req)}
-            />
-          ))}
-        </ul>
+        <div className="-mr-1 flex flex-1 flex-col gap-5 overflow-y-auto pr-1">
+          {/* New requests — no offer yet */}
+          {newRequests.length > 0 && (
+            <div className="flex flex-col gap-3">
+              {newRequests.map((req) => (
+                <RequestCard
+                  key={req.id}
+                  request={req}
+                  isSelected={selectedRequestId === req.id}
+                  onSelect={() => onSelectRequest(req)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Already offered — go to Step3 */}
+          {offeredRequests.length > 0 && (
+            <div className="flex flex-col gap-3">
+              {offeredRequests.map((req) => (
+                <RequestCard
+                  key={req.id}
+                  request={req}
+                  isSelected={selectedRequestId === req.id}
+                  onSelect={() => onOpenExistingOffer(req)} // ← goes to Step3
+                  badge=" قيد الانتظار"
+                  badgeColor="text-primary bg-primary/10"
+                />
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
@@ -95,10 +103,14 @@ function RequestCard({
   request,
   isSelected,
   onSelect,
+  badge,
+  badgeColor,
 }: {
   request: AvailableRequestItem;
   isSelected: boolean;
   onSelect: () => void;
+  badge?: string;
+  badgeColor?: string;
 }) {
   const createdAt = request.createdAt
     ? new Date(request.createdAt).toLocaleTimeString('ar-EG', {
@@ -110,6 +122,7 @@ function RequestCard({
   const serviceName =
     services?.find((s) => s.id === request.serviceId)?.name ?? '';
   const images = request.imageUrls ?? [];
+
   return (
     <li>
       <button
@@ -141,11 +154,18 @@ function RequestCard({
               <p className="text-foreground truncate text-sm font-extrabold">
                 {request.clientName ?? ''}
               </p>
-              {createdAt && (
-                <span className="text-muted-foreground mr-2 shrink-0 text-[11px]">
-                  {createdAt}
-                </span>
-              )}
+              <div className="flex shrink-0 items-center gap-2">
+                {badge && (
+                  <span
+                    className={cn(
+                      'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                      badgeColor,
+                    )}
+                  >
+                    {badge}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -157,13 +177,20 @@ function RequestCard({
               <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
                 {request.description || 'لا يوجد وصف'}
               </p>
-              {request.serviceRequestLocation && (
-                <span className="text-muted-foreground flex items-center gap-1 pt-1 text-[11px]">
-                  <MapPin className="h-3 w-3 shrink-0" />
-                  {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
-                  {request.serviceRequestLocation.longitude.toFixed(3)}
-                </span>
-              )}
+              <div className="flex min-w-0 flex-1 items-center justify-between">
+                {request.serviceRequestLocation && (
+                  <span className="text-muted-foreground flex items-center gap-1 pt-1 text-[11px]">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
+                    {request.serviceRequestLocation.longitude.toFixed(3)}
+                  </span>
+                )}
+                {createdAt && (
+                  <span className="text-muted-foreground text-[11px]">
+                    {createdAt}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

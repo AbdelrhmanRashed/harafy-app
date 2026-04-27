@@ -12,8 +12,13 @@ import ProviderLayout from './layout/ProviderLayout';
 import Requests from '@/features/Requests/pages/Requests';
 import ReviewsPage from '@/features/reviews/pages/ReviewsPage';
 import DirectPage from '@/features/Requests/pages/direct/DirectPage';
-import DirectRequestPage from '@/features/Requests/pages/direct/Accepted/DirectRequestPage';
+
 import AllNotificationsPage from '@/features/notifications/pages/AllNotificationsPage';
+
+import AssignedRequestsPage from '@/features/Requests/pages/asignRequest/AllRequests';
+import MyOffersPage from '@/features/Requests/pages/offer/MyOffersPage';
+import OrderTrackPage from '@/features/Requests/pages/track/OrderTrackPage';
+import Creadit from '@/features/creadit/pages/Creadit';
 
 const ProviderRoutes = [
   {
@@ -44,8 +49,10 @@ const ProviderRoutes = [
         path: 'requests',
         children: [
           { index: true, element: <Requests /> },
+          { path: 'assigned-requests', element: <AssignedRequestsPage /> },
+          { path: 'my-offers', element: <MyOffersPage /> },
           { path: 'direct', element: <DirectPage /> },
-          { path: 'direct/:serviceRequestId', element: <DirectRequestPage /> },
+          { path: 'ordertrack/:serviceId', element: <OrderTrackPage /> },
         ],
       },
       {
@@ -66,6 +73,10 @@ const ProviderRoutes = [
         path: 'notifications',
         handle: { title: 'الإشعارات' },
         element: <AllNotificationsPage />,
+      },
+      {
+        path: 'wallet',
+        element: <Creadit />,
       },
       {
         path: 'settings',

@@ -48,24 +48,25 @@ const iconColorMap: Record<string, string> = {
 };
 
 // Quick access items with color configs
-const quickAccessItems = [
+const getQuickAccessItems = (role: UserRole) => [
   {
     label: 'الملف الشخصي',
-    path: '/app/settings/info',
+    path: role === 'Provider' ? '/provider/profile' : '/app/settings/info',
     icon: UserIcon,
     color: 'bg-amber-500/10 text-amber-500',
     description: 'بياناتك وإعداداتك الشخصية',
   },
   {
     label: 'الإشعارات',
-    path: '/app/notifications',
+    path:
+      role === 'Provider' ? '/provider/notifications' : '/app/notifications',
     icon: Bell,
     color: 'bg-red-500/10 text-red-500',
     description: 'تنبيهاتك وتحديثاتك',
   },
   {
     label: 'الإعدادات',
-    path: '/app/settings/info',
+    path: role === 'Provider' ? '/provider/settings' : '/app/settings/info',
     icon: Settings,
     color: 'bg-slate-500/10 text-slate-500',
     description: 'ضبط حسابك وتفضيلاتك',
@@ -226,7 +227,7 @@ const SearchInputField = () => {
                     <span className="text-xs font-bold">الوصول السريع</span>
                   }
                 >
-                  {quickAccessItems.map((item) => {
+                  {getQuickAccessItems(userRole).map((item) => {
                     const Icon = item.icon;
                     return (
                       <CommandItem

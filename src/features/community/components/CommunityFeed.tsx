@@ -116,7 +116,7 @@ const CommunityFeed = ({
   };
 
   const posts = data?.pages.flatMap((page) => page.data) ?? [];
-
+  console.log('all posts', posts);
   if (isLoading)
     return (
       <div className="space-y-4">
