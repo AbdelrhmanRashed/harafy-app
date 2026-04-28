@@ -76,8 +76,8 @@ export default function OfferRequestCard({ data }: Props) {
               <MapPin className="h-4 w-4 shrink-0 text-amber-600" />
             </div>
             <span className="text-foreground text-xs font-semibold" dir="ltr">
-              {data.serviceRequestLocation.latitude.toFixed(3)},{' '}
-              {data.serviceRequestLocation.longitude.toFixed(3)}
+              {data.serviceRequestLocation.address ?? 
+  `${data.serviceRequestLocation.latitude.toFixed(3)}, ${data.serviceRequestLocation.longitude.toFixed(3)}`}
             </span>
           </div>
         )}

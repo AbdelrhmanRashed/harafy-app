@@ -22,9 +22,7 @@ interface NavLink {
 
 export const NAV_LINKS: Record<UserRole, NavLink[]> = {
   Guest: [
-    { title: 'الرئيسية', path: '/', icon: Home },
-    { title: 'الخدمات', path: '/services', icon: Compass },
-    { title: 'المجتمع', path: '/community', icon: MessageCircle },
+
   ],
 
   Client: [

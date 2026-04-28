@@ -114,9 +114,9 @@ function RequestCard({
 }) {
   const createdAt = request.createdAt
     ? new Date(request.createdAt).toLocaleTimeString('ar-EG', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+      hour: '2-digit',
+      minute: '2-digit',
+    })
     : null;
   const { data: services } = useGetServices();
   const serviceName =
@@ -181,8 +181,8 @@ function RequestCard({
                 {request.serviceRequestLocation && (
                   <span className="text-muted-foreground flex items-center gap-1 pt-1 text-[11px]">
                     <MapPin className="h-3 w-3 shrink-0" />
-                    {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
-                    {request.serviceRequestLocation.longitude.toFixed(3)}
+                    {request.serviceRequestLocation.address ??
+                      `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
                   </span>
                 )}
                 {createdAt && (

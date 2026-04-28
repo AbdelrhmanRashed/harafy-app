@@ -128,8 +128,8 @@ export default function Step2CreateOffer({
               {request.serviceRequestLocation && (
                 <span className="text-muted-foreground flex items-center gap-1 pt-0.5 text-[11px]">
                   <MapPin className="h-3 w-3 shrink-0" />
-                  {request.serviceRequestLocation.latitude.toFixed(3)},{' '}
-                  {request.serviceRequestLocation.longitude.toFixed(3)}
+                  {request.serviceRequestLocation.address ?? 
+  `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
                 </span>
               )}
             </div>

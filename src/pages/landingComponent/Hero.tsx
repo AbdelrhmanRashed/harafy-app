@@ -3,8 +3,12 @@ import { Badge } from '@/components/ui/badge';
 import { BadgeCheck, User, ArrowLeft, Star } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
-const Hero = () => (
+const Hero = () => {
+    const navigate = useNavigate();
+
+  return (
   <div className="relative mx-auto flex min-h-[90vh] w-full max-w-7xl flex-col items-center justify-center gap-12 overflow-hidden px-8 py-20 md:flex-row">
     
     {/* Decorative Background Elements */}
@@ -34,6 +38,7 @@ const Hero = () => (
       </p>
       <div className="flex flex-wrap items-center gap-4">
         <Button
+        onClick={() => navigate('/auth/register')}
           className="bg-primary-gradient shadow-primary/25 rounded-2xl px-8 py-6 text-base font-bold shadow-lg transition-all hover:scale-105 hover:shadow-xl"
         >
           ابحث عن حرفي
@@ -41,6 +46,7 @@ const Hero = () => (
         </Button>
         <Button
           variant="outline"
+          onClick={() => navigate('/auth/register')}
           className="rounded-2xl border-2 px-8 py-6 text-base font-bold transition-all hover:bg-primary/5 hover:border-primary/50"
         >
           اكتشف الخدمات
@@ -104,6 +110,7 @@ const Hero = () => (
       </div>
     </motion.div>
   </div>
-);
+  );
+};
 
 export default Hero;

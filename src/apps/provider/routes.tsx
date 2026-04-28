@@ -1,4 +1,3 @@
-import CommunityPage from '@/features/community/pages/CommunityPage';
 import ProviderDashboard from '@/features/dashboard/pages/ProviderDashboard';
 import SettingsLayout from '@/features/profile/layout/SettingsLayout';
 import NotificationsPage from '@/features/profile/pages/NotificationsPage';
@@ -19,6 +18,7 @@ import AssignedRequestsPage from '@/features/Requests/pages/asignRequest/AllRequ
 import MyOffersPage from '@/features/Requests/pages/offer/MyOffersPage';
 import OrderTrackPage from '@/features/Requests/pages/track/OrderTrackPage';
 import Creadit from '@/features/creadit/pages/Creadit';
+import ProviderCommunityPage from '@/features/community/pages/ProviderCommunityPage';
 
 const ProviderRoutes = [
   {
@@ -42,7 +42,7 @@ const ProviderRoutes = [
       },
       {
         path: 'community',
-        element: <CommunityPage />,
+        element: <ProviderCommunityPage />,
       },
       // requests routes
       {
