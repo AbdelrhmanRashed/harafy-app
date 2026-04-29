@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import DirectRequestsList from '../components/provider/DirectRequestsList';
 import OfferRequestsList from '../components/provider/OfferRequestsList';
 import { useNavigate } from 'react-router-dom';
+import HeaderCard from '../components/provider/HeaderCard';
 
 const ProviderDashboard = () => {
   const navigate = useNavigate();
@@ -11,24 +12,7 @@ const ProviderDashboard = () => {
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       {/* ── Header Section ── */}
-      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-700 to-indigo-900 p-8 text-white shadow-2xl">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/20 blur-2xl" />
-        <div className="relative z-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
-              مرحباً بك في لوحة التحكم 👋
-            </h1>
-            <p className="mt-2 text-base font-medium text-white/80">
-              تابع نشاطاتك، عروضك، وطلباتك الجديدة في مكان واحد.
-            </p>
-          </div>
-          <button className="flex items-center gap-2 rounded-full bg-white/20 px-6 py-3 text-sm font-bold backdrop-blur-md transition-all hover:bg-white/30">
-            <Rocket className="h-5 w-5" />
-            تصفح الطلبات
-          </button>
-        </div>
-      </div>
+      <HeaderCard/>
 
       {/* ── Stats Section ── */}
       <div className="mb-8">

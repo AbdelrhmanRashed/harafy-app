@@ -78,7 +78,7 @@ const RequestsPage = () => {
     setSelectedRequest(request);
     setStep('CREATE_OFFER');
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      setSidebarOpen(false);
+      setSidebarOpen(true);
     }
   }, []);
 
@@ -93,9 +93,7 @@ const RequestsPage = () => {
         message: offerData?.message ?? undefined,
       });
       setStep('WAITING');
-      if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        setSidebarOpen(false);
-      }
+      setSidebarOpen(true);
     },
     [myOffers],
   );
@@ -116,33 +114,20 @@ const RequestsPage = () => {
       navigate(
         `/provider/requests/ordertrack/${submittedOffer.serviceRequestId}`,
         {
-          state: { request: selectedRequest }, // ← pass selectedRequest
+          state: { request: selectedRequest },
         },
       );
     }
   }, [submittedOffer, selectedRequest, navigate]);
 
   return (
-    <div className="bg-background flex h-[calc(100vh-64px)] flex-col overflow-hidden md:flex-row">
-      {/* Mobile toggle button */}
-      <button
-        type="button"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="absolute top-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-transform hover:scale-105 md:hidden"
-      >
-        {sidebarOpen ? (
-          <X className="text-foreground h-5 w-5" />
-        ) : (
-          <Menu className="text-foreground h-5 w-5" />
-        )}
-      </button>
+    <div className="bg-background relative flex h-[calc(100vh-64px)] flex-col md:flex-row">
 
-      {/* Sidebar */}
+      {/* Sidebar — fixed on mobile so it escapes all overflow clipping */}
       <aside
-        dir="rtl"
         className={cn(
-          'border-border bg-sidebar absolute inset-y-0 right-0 z-30 flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
-          'md:relative md:w-full md:max-w-md md:translate-x-0 md:transition-none',
+          'border-border bg-sidebar fixed inset-y-0 right-0 z-1100 flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
+          'md:absolute md:w-full md:max-w-md md:translate-x-0 md:transition-none',
           sidebarOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >
@@ -189,27 +174,41 @@ const RequestsPage = () => {
         )}
       </aside>
 
-      {/* Mobile overlay */}
+      {/* Backdrop — fixed to match the fixed sidebar */}
       {sidebarOpen && (
         <button
           type="button"
           aria-label="إغلاق"
           onClick={() => setSidebarOpen(false)}
-          className="absolute inset-0 z-20 bg-black/50 md:hidden"
+          className="fixed inset-0 z-90 bg-black/50 md:hidden"
         />
       )}
 
+      {/* Toggle button */}
+      {!sidebarOpen && (
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(true)}
+          className="absolute bottom-6 left-4 z-9999 flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md md:hidden"
+        >
+          <Menu className="text-foreground h-5 w-5" />
+        </button>
+      )}
+
       {/* Map */}
-      <MapView
-        onLocationSelect={setProviderPos}
-        center={mapCenter}
-        customerPos={requestPos ?? providerPos}
-        providers={[]}
-        selectedProvider={null}
-        route={route}
-        onProviderSelect={() => {}}
-        onAddressSearch={searchAddress}
-      />
+      <div className="relative h-full w-full flex-1 overflow-hidden">
+        <MapView
+          onLocationSelect={setProviderPos}
+          center={mapCenter}
+          customerPos={requestPos ?? providerPos}
+          providers={[]}
+          selectedProvider={null}
+          route={route}
+          onProviderSelect={() => { }}
+          onAddressSearch={searchAddress}
+        />
+      </div>
+
     </div>
   );
 };

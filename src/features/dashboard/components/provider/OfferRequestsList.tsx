@@ -2,11 +2,16 @@ import { Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useGetAvailableRequests } from '../../../Requests/hooks/useGetAvailableRequests';
 import OfferRequestCard from './OfferRequestCard';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 
 export default function OfferRequestsList() {
   const { data: requests, isLoading } = useGetAvailableRequests();
+  const navigate = useNavigate();
 
   const filtered = (requests ?? []).filter((req) => !req.hasOffer);
+  const displayed = filtered.slice(0, 2);
+  const hasMore = filtered.length > 2;
 
   if (isLoading) {
     return (
@@ -30,9 +35,19 @@ export default function OfferRequestsList() {
 
   return (
     <div className="space-y-4">
-      {filtered.map((req) => (
+      {displayed.map((req) => (
         <OfferRequestCard key={req.id} data={req} />
       ))}
+
+      {hasMore && (
+        <button
+          onClick={() => navigate('/provider/requests')}
+          className="text-primary hover:bg-primary/5 flex w-full items-center justify-center gap-1 rounded-2xl py-3 text-sm font-bold transition-colors"
+        >
+          المزيد
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 }
