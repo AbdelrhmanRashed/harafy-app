@@ -28,17 +28,17 @@ export const ADMIN_NAV_LINKS: Record<'main' | 'settings', NavLink[]> = {
       icon: UserRoundCog,
       path: '/admin/craftsmen',
     },
-    {
-      title: 'العملاء',
-      icon: Users,
-      path: '/admin/clients',
-      badge: 7,
-    },
-    {
-      title: 'الطلبات',
-      icon: NotepadText,
-      path: '/admin/orders',
-    },
+    // {
+    //   title: 'العملاء',
+    //   icon: Users,
+    //   path: '/admin/clients',
+    //   badge: 7,
+    // },
+    // {
+    //   title: 'الطلبات',
+    //   icon: NotepadText,
+    //   path: '/admin/orders',
+    // },
     {
       title: 'التقارير',
       icon: FileText,

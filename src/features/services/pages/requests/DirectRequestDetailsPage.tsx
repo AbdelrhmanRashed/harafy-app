@@ -9,10 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { ServiceStatus } from '@/constants/service-status';
 import StatusTimeLine from '../../components/StatusTimeLine';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Flag } from 'lucide-react';
 import RequestDetailsSection from '../../components/RequestDetailsSection';
 import DirectRequestProviderSection from '../../components/DirectRequestProviderSection';
 import ReviewDialog from '../../components/ReviewDialog';
+import ReportDialog from '@/features/reports/components/ReportDialog';
 import { useEffect, useState } from 'react';
 import DirectRequestDetailsSkeleton from '../../components/DirectRequestDetailsSkeleton';
 
@@ -20,6 +21,7 @@ const DirectRequestDetailsPage = () => {
   const { requestId } = useParams();
   const navigate = useNavigate();
   const [isReviewOpen, setIsReviewOpen] = useState<boolean>(false);
+  const [isReportOpen, setIsReportOpen] = useState<boolean>(false);
 
   // ─── Get Service Request By ID Hook ──────────────────────────────────────────────────
   const {
@@ -195,7 +197,9 @@ const DirectRequestDetailsPage = () => {
                       size="sm"
                       className="bg-primary hover:bg-primary/90 h-10 flex-1 cursor-pointer rounded-full px-5 text-xs font-bold md:flex-auto"
                     >
-                      {requestDetails.reviewId ? 'تعديل التقييم' : 'إضافة تقييم'}
+                      {requestDetails.reviewId
+                        ? 'تعديل التقييم'
+                        : 'إضافة تقييم'}
                     </Button>
                   )}
                   <Button
@@ -206,6 +210,18 @@ const DirectRequestDetailsPage = () => {
                   >
                     العودة للرئيسية
                   </Button>
+                  {(isCompleted || isCancelled) &&
+                    requestDetails.providerId && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10 cursor-pointer rounded-full border-rose-200 px-4 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                        onClick={() => setIsReportOpen(true)}
+                      >
+                        <Flag className="h-3.5 w-3.5" />
+                        إبلاغ
+                      </Button>
+                    )}
                 </div>
               )}
             </div>
@@ -258,6 +274,13 @@ const DirectRequestDetailsPage = () => {
         providerId={requestDetails.providerId}
         reviewId={requestDetails.reviewId}
       />
+      {requestDetails.providerId && (
+        <ReportDialog
+          open={isReportOpen}
+          onClose={() => setIsReportOpen(false)}
+          serviceRequestId={requestDetails.id}
+        />
+      )}
     </>
   );
 };
