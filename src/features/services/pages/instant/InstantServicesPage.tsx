@@ -72,8 +72,10 @@ const InstantRequestPage = () => {
 
   const { data: providerData }: any = useGetProviderData(
     String(targetProviderId),
+    {
+      enabled: !!targetProviderId,
+    },
   );
-
   // 🗺️ map providers
   const mapProviders = useMemo(() => {
     if (request?.providerId && providerData) {
@@ -172,14 +174,14 @@ const InstantRequestPage = () => {
 
   //  const getDynamicZoom = () => {
   //   if (!providerLivePos || !customerPos) return 13;
-    
+
   //   const latDiff = Math.abs(providerLivePos.lat - customerPos.lat);
   //   const lngDiff = Math.abs(providerLivePos.lng - customerPos.lng);
-    
+
   //   if (latDiff < 0.005 && lngDiff < 0.005) {
-  //     return 18; 
+  //     return 18;
   //   }
-  //   return 14; 
+  //   return 14;
   // };
 
   return (

@@ -29,11 +29,14 @@ function MapClickHandler({
 }
 
 // ─── Fly to center ────────────────────────────────────────────
-function ChangeView({ center, zoom }: { center: LatLng, zoom?: number }) {
+function ChangeView({ center, zoom }: { center: LatLng; zoom?: number }) {
   const map = useMap();
 
   useEffect(() => {
-    map.flyTo([center.lat, center.lng], zoom || 14, { duration: 1.5, animate: true });
+    map.flyTo([center.lat, center.lng], zoom || 14, {
+      duration: 1.5,
+      animate: true,
+    });
   }, [center.lat, center.lng, zoom, map]);
 
   return null;
@@ -63,14 +66,16 @@ export default function MapView({
   selectedProvider = null,
   route = [],
   allowMapPickLocation = true,
-  onLocationSelect = () => { },
+  onLocationSelect = () => {},
   // onProviderSelect = () => {},
-  onAddressSearch = () => { },
+  onAddressSearch = () => {},
   liveProviderPos,
   zoom,
 }: MapViewProps) {
   const [mapSearch, setMapSearch] = useState('');
-  const effectiveCenter = liveProviderPos ? { lat: liveProviderPos.lat, lng: liveProviderPos.lng } : center;
+  const effectiveCenter = liveProviderPos
+    ? { lat: liveProviderPos.lat, lng: liveProviderPos.lng }
+    : center;
   return (
     <div className="relative h-full w-full">
       {!liveProviderPos && selectedProvider && (
@@ -132,8 +137,8 @@ export default function MapView({
         <ChangeView center={effectiveCenter} zoom={zoom} />
 
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution="&copy; OpenStreetMap"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         {/* 📍 pick location */}

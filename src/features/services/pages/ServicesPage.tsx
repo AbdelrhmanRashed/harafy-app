@@ -253,7 +253,7 @@ export default function ServicesPage() {
               isLoading={isProvidersLoading}
               onServiceRequest={handleOpenRequest}
               onViewProfile={(provider) =>
-                navigate(`/app/profile/provider/${provider.id}`)
+                navigate(`/app/profile/${provider.id}`)
               }
             />
           ) : (
