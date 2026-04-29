@@ -12,6 +12,7 @@ export interface ServiceRequestType {
   serviceRequestLocation: {
     latitude: number;
     longitude: number;
+    address: string | null;
   };
   serviceId: number;
   imageUrls: string[];
@@ -65,6 +66,7 @@ export type AssignedRequest = {
   serviceRequestLocation: {
     latitude: number;
     longitude: number;
+    address: string | null;
   } | null;
 };
 

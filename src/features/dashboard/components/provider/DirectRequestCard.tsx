@@ -133,8 +133,8 @@ export default function DirectRequestCard({ data }: Props) {
                   <MapPin className="h-4 w-4 text-amber-600" />
                 </div>
                 <p className="text-foreground text-xs font-semibold" dir="ltr">
-                  {data.serviceRequestLocation.latitude.toFixed(3)},{' '}
-                  {data.serviceRequestLocation.longitude.toFixed(3)}
+                  {data.serviceRequestLocation.address ?? 
+  `${data.serviceRequestLocation.latitude.toFixed(3)}, ${data.serviceRequestLocation.longitude.toFixed(3)}`}
                 </p>
               </div>
             )}

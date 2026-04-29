@@ -74,8 +74,6 @@ const RequestsPage = () => {
     [requestPos, providerPos],
   );
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
-
   const handleSelectRequest = useCallback((request: AvailableRequestItem) => {
     setSelectedRequest(request);
     setStep('CREATE_OFFER');

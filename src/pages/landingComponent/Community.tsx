@@ -2,8 +2,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { User, Wrench, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Community = () => {
+    const navigate = useNavigate();
+
   return (
     <div className="px-8 py-32 relative overflow-hidden">
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
@@ -41,6 +44,7 @@ const Community = () => {
                 جودة وسعر في السوق بكل أمان.
               </p>
               <Button
+              onClick={() => navigate('/auth/register')}
                 className="bg-primary-gradient mt-4 rounded-2xl px-12 py-6 font-bold text-base shadow-lg transition-transform hover:scale-105 w-full sm:w-auto"
               >
                 ابدأ البحث الآن
@@ -69,6 +73,7 @@ const Community = () => {
                 الذين يبحثون عن مهاراتك يومياً.
               </p>
               <Button
+              onClick={() => navigate('/auth/register')}
                 variant="outline"
                 className="border-2 mt-4 rounded-2xl px-12 py-6 font-bold text-base transition-colors hover:bg-primary/5 hover:border-primary/50 w-full sm:w-auto text-primary group-hover:text-primary"
               >

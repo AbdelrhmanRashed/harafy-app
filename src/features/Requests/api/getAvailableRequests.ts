@@ -1,18 +1,18 @@
-import axiosInstance from "@/lib/axios";
-import type { AvailableRequestItem } from "../types/providerOfferTypes";
+import axiosInstance from '@/lib/axios';
+import type { AvailableRequestItem } from '../types/providerOfferTypes';
 
-const BASE_URL = axiosInstance.defaults.baseURL ?? "";
+const BASE_URL = axiosInstance.defaults.baseURL ?? '';
 
 export const getAvailableRequests = async (
-  services?: { id: number; name: string }[]
+  services?: { id: number; name: string }[],
 ): Promise<AvailableRequestItem[]> => {
-  const res = await axiosInstance.get("/api/ServiceRequest/available-requests");
+  const res = await axiosInstance.get('/api/ServiceRequest/available-requests');
 
-  console.log("raw response:", res.data); // ← add this
+  console.log('raw response:', res.data); // ← add this
 
   const list = res.data.data ?? [];
 
-  console.log("list length:", list.length); // ← add this
+  console.log('list length:', list.length); // ← add this
 
   return list.map((item: any) => ({
     ...item,
@@ -24,7 +24,7 @@ export const getAvailableRequests = async (
       ? `${BASE_URL}/${item.clientPictureUrl}`
       : null,
     imageUrls: (item.imageUrls ?? []).map((url: string) =>
-      url.startsWith("http") ? url : `${BASE_URL}/${url}`
+      url.startsWith('http') ? url : `${BASE_URL}/${url}`,
     ),
   }));
 };

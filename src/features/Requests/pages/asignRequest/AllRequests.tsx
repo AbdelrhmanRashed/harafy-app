@@ -147,8 +147,8 @@ export default function AssignedRequestsPage() {
                             className="text-xs font-bold text-amber-700"
                             dir="ltr"
                           >
-                            {req.serviceRequestLocation.latitude.toFixed(2)},{' '}
-                            {req.serviceRequestLocation.longitude.toFixed(2)}
+                            {req.serviceRequestLocation.address ??
+                              `${req.serviceRequestLocation.latitude.toFixed(3)}, ${req.serviceRequestLocation.longitude.toFixed(3)}`}
                           </span>
                         </div>
                       )}
