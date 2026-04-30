@@ -25,12 +25,12 @@ const StatsCards = () => {
       icon: ClipboardClock,
       onClick: () => navigate('/provider/requests'),
     },
-    {
-      title: 'إجمالي الأعمال',
-      value: profile?.jobsCount ?? '—',
-      icon: Briefcase,
-      onClick: () => navigate('/provider/requests/assigned-requests'),
-    },
+    // {
+    //   title: 'إجمالي الأعمال',
+    //   value: profile?.jobsCount ?? '—',
+    //   icon: Briefcase,
+    //   onClick: () => navigate('/provider/requests/assigned-requests'),
+    // },
     {
       title: 'العروض المقدمة',
       value: myOffers?.length ?? '—',
@@ -52,7 +52,7 @@ const StatsCards = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
       {stats.map((item, i) => (
         <div
           key={i}

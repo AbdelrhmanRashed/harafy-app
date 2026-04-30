@@ -88,7 +88,7 @@ export default function DirectRequestCard({ data }: Props) {
           </div>
 
           {/* Client */}
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-3 ">
             <div className="border-border bg-primary/5 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-sm">
               {data.clientPictureUrl ? (
                 <img
@@ -116,17 +116,6 @@ export default function DirectRequestCard({ data }: Props) {
 
           {/* Details Row */}
           <div className="bg-secondary/30 flex flex-wrap items-center gap-4 rounded-2xl p-3">
-            {preferredTimeFormatted && (
-              <div className="flex items-center gap-2">
-                <div className="bg-primary/10 rounded-full p-1.5">
-                  <Calendar className="text-primary h-4 w-4" />
-                </div>
-                <p className="text-foreground text-xs font-semibold">
-                  {preferredTimeFormatted}
-                </p>
-              </div>
-            )}
-            
             {data.serviceRequestLocation && (
               <div className="flex items-center gap-2">
                 <div className="bg-amber-500/10 rounded-full p-1.5">
@@ -139,18 +128,6 @@ export default function DirectRequestCard({ data }: Props) {
               </div>
             )}
           </div>
-
-          {/* Final price */}
-          {data.finalPrice && (
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-muted-foreground text-sm font-bold">
-                السعر النهائي:
-              </span>
-              <p className="text-primary text-lg font-black">
-                {Number(data.finalPrice).toLocaleString('ar-EG')} جنيه
-              </p>
-            </div>
-          )}
           {images.length > 0 && (
             <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
               {images.map((url, i) => (
@@ -170,7 +147,7 @@ export default function DirectRequestCard({ data }: Props) {
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 ">
             <Button
               className="h-12 flex-1 cursor-pointer rounded-2xl text-sm font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
               onClick={() => setShowConfirm(true)}

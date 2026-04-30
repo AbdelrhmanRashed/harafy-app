@@ -107,7 +107,7 @@ export default function ReviewsPage() {
         <div className="relative z-10 flex flex-col items-center justify-between gap-8 md:flex-row md:items-start">
           <div className="text-center md:text-right">
             <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
-              سجل التقييمات والآراء ⭐️
+              سجل التقييمات والآراء
             </h1>
             <p className="mt-3 max-w-md text-base leading-relaxed font-medium text-white/80">
               تعرف على آراء عملائك ومستوى رضاهم. نحن فخورون بمستوى الخدمة التي
@@ -115,7 +115,7 @@ export default function ReviewsPage() {
             </p>
           </div>
 
-          <div className="flex min-w-[180px] flex-col items-center rounded-2xl border border-white/10 bg-white/10 p-6 shadow-inner backdrop-blur-md">
+          <div className="flex min-w-45 flex-col items-center rounded-2xl border border-white/10 bg-white/10 p-6 shadow-inner backdrop-blur-md">
             <p className="text-sm font-bold text-white/70">التقييم العام</p>
             <div className="mt-1 flex items-baseline gap-1">
               <span className="text-5xl font-black">{avg}</span>
@@ -138,7 +138,7 @@ export default function ReviewsPage() {
           {isLoading ? (
             <ReviewsSkeleton />
           ) : !reviews?.length ? (
-            <div className="border-border bg-muted/20 flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed p-8 text-center">
+            <div className="border-border bg-muted/20 flex min-h-75 flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed p-8 text-center">
               <div className="bg-primary/5 flex h-20 w-20 items-center justify-center rounded-full">
                 <Star className="text-primary/30 h-10 w-10" />
               </div>
