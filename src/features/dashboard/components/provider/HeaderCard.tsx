@@ -8,7 +8,7 @@ const HeaderCard = () => {
   console.log('assigned:', assignedRequests); 
   const inProgressStatus = (assignedRequests?.length ?? 0) > 0;
   return inProgressStatus ? (
-    <div className="relative overflow-hidden rounded-3xl bg-linear-to-t from-[#4e45e4] to-[#842cd3] p-8 text-white shadow-2xl h-40">
+    <div className="relative overflow-hidden rounded-3xl bg-linear-to-t from-[#4e45e4] to-[#842cd3] p-8 text-white shadow-2xl">
       <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
       <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/20 blur-2xl" />
       <div className="relative z-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
@@ -30,7 +30,7 @@ const HeaderCard = () => {
       </div>
     </div>
   ) : (
-    <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-[#842cd3] to-[#4e45e4] p-8 text-white shadow-2xl h-40">
+    <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-[#842cd3] to-[#4e45e4] p-8 text-white shadow-2xl">
       <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
       <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/20 blur-2xl" />
       <div className="relative z-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">

@@ -1,4 +1,4 @@
-import { LocateFixedIcon, Rocket, BellRing } from 'lucide-react';
+import { LocateFixedIcon,BellRing } from 'lucide-react';
 import StatsCards from '../components/provider/StatsCards';
 import { Badge } from '@/components/ui/badge';
 import DirectRequestsList from '../components/provider/DirectRequestsList';
@@ -59,7 +59,7 @@ const ProviderDashboard = () => {
               </h3>
             </div>
             <Badge className="bg-amber-500/10 text-amber-600 px-3 py-1 font-bold">
-              نطاق 15 كم
+              نطاق 10 كم
             </Badge>
           </div>
           <div className="rounded-3xl bg-secondary/30 p-2">

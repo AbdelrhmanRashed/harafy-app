@@ -4,7 +4,7 @@ import {
   Loader2,
   MapPin,
   SendHorizonal,
-  Zap,
+  Clock,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -54,9 +54,9 @@ export default function Step2CreateOffer({
   };
   const createdAt = request.createdAt
     ? new Date(request.createdAt).toLocaleTimeString('ar-EG', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+      hour: '2-digit',
+      minute: '2-digit',
+    })
     : null;
   const { data: services } = useGetServices();
   const serviceName =
@@ -80,11 +80,11 @@ export default function Step2CreateOffer({
       </div>
 
       {/* Request summary card — same style as RequestCard */}
-      <div className="border-border bg-card overflow-hidden rounded-2xl border-2">
-        <div className="space-y-3 p-4">
-          {/* Client row */}
+      <div className="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+        <div className="flex flex-col gap-3 p-4">
+          {/* Header: Avatar, Name, Service */}
           <div className="flex items-center gap-3">
-            <div className="bg-primary/10 border-border flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+            <div className="bg-primary/10 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-primary/10">
               {request.clientPictureUrl ? (
                 <img
                   src={request.clientPictureUrl}
@@ -92,62 +92,59 @@ export default function Step2CreateOffer({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-primary text-sm font-black">
+                <span className="text-primary text-base font-black">
                   {request.clientName?.charAt(0) ?? 'ع'}
                 </span>
               )}
             </div>
-            <div className="flex min-w-0 flex-1 items-center justify-between">
-              <p className="text-foreground truncate text-sm font-extrabold">
+
+            <div className="flex min-w-0 flex-1 flex-col">
+              <p className="text-foreground truncate text-sm font-bold">
                 {request.clientName ?? 'عميل'}
               </p>
-              <div className="flex shrink-0 items-center gap-2">
-                {createdAt && (
-                  <span className="text-muted-foreground text-[11px]">
-                    {createdAt}
-                  </span>
-                )}
-              </div>
+              <p className="text-primary mt-0.5 truncate text-xs font-semibold">
+                {serviceName}
+              </p>
             </div>
           </div>
 
-          {/* Service + description */}
-          <div className="flex items-start gap-3">
-            <div className="bg-primary/10 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
-              <Zap className="text-primary h-4 w-4" />
-            </div>
-            <div className="min-w-0 flex-1 space-y-1">
-              <p className="text-primary truncate text-sm font-bold">
-                {serviceName}
-              </p>
-              {request.description && (
-                <p className="text-muted-foreground line-clamp-3 text-xs leading-relaxed">
-                  {request.description}
-                </p>
-              )}
-              {request.serviceRequestLocation && (
-                <span className="text-muted-foreground flex items-center gap-1 pt-0.5 text-[11px]">
-                  <MapPin className="h-3 w-3 shrink-0" />
-                  {request.serviceRequestLocation.address ?? 
-  `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
+          {/* Description */}
+          <p className="text-muted-foreground line-clamp-3 text-xs leading-relaxed">
+            {request.description || 'لا يوجد وصف مضاف لهذا الطلب.'}
+          </p>
+
+          {/* Meta Details: Location & Time */}
+          <div className="border-border/50 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+            {request.serviceRequestLocation && (
+              <span className="text-muted-foreground flex items-center gap-1.5 text-[11px] font-medium">
+                <MapPin className="text-primary/70 h-3.5 w-3.5 shrink-0" />
+                <span className="truncate max-w-[150px] md:max-w-[200px]">
+                  {request.serviceRequestLocation.address ??
+                    `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
                 </span>
-              )}
-            </div>
+              </span>
+            )}
+            {createdAt && (
+              <span className="text-muted-foreground flex items-center gap-1.5 text-[11px] font-medium">
+                <Clock className="text-primary/70 h-3 w-3 shrink-0" />
+                {createdAt}
+              </span>
+            )}
           </div>
 
           {/* Images */}
           {images.length > 0 && (
-            <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1">
+            <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
               {images.map((url, i) => (
                 <div
                   key={i}
-                  className="border-border h-30 w-30 shrink-0 overflow-hidden rounded-xl border"
+                  className="border-border/50 group/img h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border"
+                  onClick={() => setLightbox(url)}
                 >
                   <img
                     src={url}
                     alt={`صورة ${i + 1}`}
-                    className="h-full w-full object-cover"
-                    onClick={() => setLightbox(url)}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover/img:scale-110"
                   />
                 </div>
               ))}

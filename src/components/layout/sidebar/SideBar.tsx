@@ -33,10 +33,11 @@ const links: NavItem[] = [
 
 const ProviderSidebar = () => {
   const { pathname } = useLocation();
-
-  const collapsed =
-    pathname.startsWith('/provider/requests') ||
-    pathname.startsWith('/provider/community');
+  
+//  const collapsed =
+//     pathname.startsWith('/provider/requests') ||
+//     pathname.startsWith('/provider/community');
+  const collapsed = false;
 
   return (
     <TooltipProvider delayDuration={150}>

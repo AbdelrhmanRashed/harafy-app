@@ -121,13 +121,15 @@ const RequestsPage = () => {
   }, [submittedOffer, selectedRequest, navigate]);
 
   return (
-    <div className="bg-background relative flex h-[calc(100vh-64px)] flex-col md:flex-row">
+    <div className="bg-background relative flex h-[calc(100vh-64px)] flex-col md:flex-row overflow-hidden">
 
-      {/* Sidebar — fixed on mobile so it escapes all overflow clipping */}
+      {/* Sidebar */}
       <aside
         className={cn(
-          'border-border bg-sidebar fixed inset-y-0 right-0 z-1100 flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
-          'md:absolute md:w-full md:max-w-md md:translate-x-0 md:transition-none',
+          // Mobile: fixed full-screen drawer from right
+          'border-border bg-sidebar fixed inset-y-0 right-0 z-[1100] flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
+          // Desktop: static side panel, always visible, not overlapping the map
+          'md:relative md:inset-auto md:z-auto md:w-[420px] md:shrink-0 md:translate-x-0 md:transition-none md:border-l',
           sidebarOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >
@@ -195,8 +197,8 @@ const RequestsPage = () => {
         </button>
       )}
 
-      {/* Map */}
-      <div className="relative h-full w-full flex-1 overflow-hidden">
+      {/* Map — fills all remaining space beside the sidebar */}
+      <div className="relative h-full min-h-[300px] flex-1 overflow-hidden">
         <MapView
           onLocationSelect={setProviderPos}
           center={mapCenter}

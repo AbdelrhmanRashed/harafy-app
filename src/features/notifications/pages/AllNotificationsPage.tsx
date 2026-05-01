@@ -93,8 +93,8 @@ const FILTER_OPTIONS = [
 
 // ── Skeleton Item ─────────────────────────────────────────────────────────────
 const NotificationSkeleton = () => (
-  <div className="border-border bg-card flex items-start gap-4 rounded-2xl border p-5 shadow-sm">
-    <Skeleton className="mt-0.5 h-12 w-12 shrink-0 rounded-xl" />
+  <div className="border-border bg-card flex items-start gap-3 sm:gap-6 rounded-2xl border p-4 sm:p-5 shadow-sm">
+    <Skeleton className="mt-0.5 h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-xl" />
     <div className="flex-1 space-y-3 pt-1">
       <Skeleton className="h-4 w-1/3 rounded-lg" />
       <Skeleton className="h-3 w-full rounded-lg" />
@@ -143,9 +143,9 @@ export default function AllNotificationsPage() {
   };
 
   return (
-    <div className="mx-auto mt-2 min-h-screen max-w-7xl pb-12" dir="rtl">
+    <div className="mx-auto mt-2 max-w-7xl pb-12" dir="rtl">
       {/* ── Hero Banner ─────────────────────────────────────────────── */}
-      <div className="relative mx-5 overflow-hidden rounded-3xl px-6 py-10 shadow-xl sm:px-10">
+      <div className="relative mx-4 sm:mx-5 overflow-hidden rounded-3xl px-5 py-8 shadow-xl sm:px-10 sm:py-10">
         <div className="bg-primary-gradient absolute inset-0" />
 
         {/* Animated Background Orbs */}
@@ -170,9 +170,9 @@ export default function AllNotificationsPage() {
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-center gap-3 text-3xl font-black text-white md:justify-start"
+              className="flex items-center justify-center gap-3 text-2xl font-black text-white sm:text-3xl md:justify-start"
             >
-              <Bell className="h-8 w-8" />
+              <Bell className="h-7 w-7 sm:h-8 sm:w-8" />
               مركز الإشعارات
             </motion.h1>
             <motion.p
@@ -192,8 +192,8 @@ export default function AllNotificationsPage() {
             transition={{ delay: 0.2 }}
             className="flex w-full flex-col gap-4 sm:flex-row md:w-auto"
           >
-            <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-8 py-5 text-center shadow-inner backdrop-blur-md md:min-w-[140px]">
-              <p className="text-4xl font-black tracking-tight text-white">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-center shadow-inner backdrop-blur-md sm:px-8 sm:py-5 md:min-w-[140px]">
+              <p className="text-3xl sm:text-4xl font-black tracking-tight text-white">
                 {isLoading ? '-' : unreadCount}
               </p>
               <p className="mt-1.5 text-xs font-bold tracking-wider text-white/90 uppercase">
@@ -208,7 +208,7 @@ export default function AllNotificationsPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   onClick={handleMarkAll}
-                  className="group text-primary hover:shadow-primary/30 flex flex-1 cursor-pointer flex-col items-center justify-center rounded-2xl bg-white px-6 py-5 shadow-2xl transition-all hover:-translate-y-1 active:scale-95 md:min-w-[140px]"
+                  className="group text-primary hover:shadow-primary/30 flex flex-1 cursor-pointer flex-col items-center justify-center rounded-2xl bg-white px-4 py-4 shadow-2xl transition-all hover:-translate-y-1 active:scale-95 sm:px-6 sm:py-5 md:min-w-[140px]"
                 >
                   <div className="bg-primary/10 mb-2 rounded-full p-2 transition-transform group-hover:scale-110">
                     <CheckCheck className="h-6 w-6" />
@@ -225,7 +225,7 @@ export default function AllNotificationsPage() {
         {/* ── Toolbar (Search & Filters) ─────────────────────────────────── */}
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           {/* Filters */}
-          <div className="bg-card flex items-center gap-1.5 overflow-x-auto rounded-2xl border p-1.5 shadow-sm [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap [&::-webkit-scrollbar]:hidden">
+          <div className="bg-card flex flex-wrap items-center gap-1.5 rounded-2xl border p-1.5 shadow-sm">
             {FILTER_OPTIONS.map((filter) => {
               const isActive = activeFilter === filter.id;
               return (
@@ -360,7 +360,7 @@ export default function AllNotificationsPage() {
                         if (!n.isRead) markAsRead([n.id]);
                       }}
                       className={cn(
-                        'group bg-card relative flex cursor-pointer items-start gap-4 rounded-2xl border p-5 shadow-sm transition-all duration-300 hover:shadow-md sm:gap-6',
+                        'group bg-card relative flex cursor-pointer items-start gap-3 rounded-2xl border p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:gap-6 sm:p-5',
                         !n.isRead
                           ? 'border-primary/20 bg-primary/[0.03]'
                           : 'border-border/50 hover:border-border hover:bg-muted/30',
@@ -377,7 +377,7 @@ export default function AllNotificationsPage() {
                       {/* Icon badge */}
                       <div
                         className={cn(
-                          'mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1 transition-transform group-hover:scale-105',
+                          'mt-1 flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl ring-1 transition-transform group-hover:scale-105',
                           config.bg,
                           config.ring,
                         )}

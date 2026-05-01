@@ -20,7 +20,7 @@ const StatsCards = () => {
 
   const stats = [
     {
-      title: 'الطلبات النشطة',
+      title: 'الطلبات المتاحة',
       value: availableRequests?.length ?? '—',
       icon: ClipboardClock,
       onClick: () => navigate('/provider/requests'),
@@ -44,7 +44,7 @@ const StatsCards = () => {
       onClick: () => navigate('/provider/reviews'),
     },
     {
-      title: 'الرصيد الحالي',
+      title: 'النقاط الحالية',
       value: profile?.credits ?? '—',
       icon: Wallet,
       onClick: () => navigate('/provider/wallet'),

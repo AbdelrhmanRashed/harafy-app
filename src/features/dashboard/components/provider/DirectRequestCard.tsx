@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, MapPin, Calendar, X, Wallet } from "lucide-react";
+import { Loader2, MapPin, Calendar, MessageSquare, Wallet, X } from "lucide-react";
 import { useStartRequest } from "../../hooks/useStartRequest";
 import type { AssignedRequest } from "../../../Requests/types/providerOfferTypes";
 import axiosInstance from "@/lib/axios";
@@ -18,7 +17,7 @@ export default function DirectRequestCard({ data }: Props) {
   const navigate = useNavigate();
   const { mutate: start, isPending } = useStartRequest();
   const [lightbox, setLightbox] = useState<string | null>(null);
-  const [showConfirm, setShowConfirm] = useState(false); // ← NEW
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const images = (data.imageUrls ?? []).map((url: string) =>
     url.startsWith("http") ? url : `${BASE_URL}/${url}`
@@ -32,10 +31,10 @@ export default function DirectRequestCard({ data }: Props) {
     : null;
 
   const preferredTimeFormatted = data.preferredTime
-    ? new Date(data.preferredTime).toLocaleDateString("ar-EG", {
-        year: "numeric",
-        month: "long",
+    ? new Date(data.preferredTime).toLocaleString("ar-EG", {
+        weekday: "short",
         day: "numeric",
+        month: "short",
         hour: "2-digit",
         minute: "2-digit",
       })
@@ -72,64 +71,93 @@ export default function DirectRequestCard({ data }: Props) {
 
   return (
     <>
-      <Card className="border-primary/20 hover:border-primary/50 relative overflow-hidden rounded-3xl border-2 shadow-sm transition-all duration-300 hover:shadow-md">
-        <div className="bg-primary/5 absolute right-0 top-0 h-full w-2" />
-        <CardContent className="space-y-4 p-5">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <Badge className="bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1 font-bold shadow-none">
-              طلب مباشر
-            </Badge>
-            {createdAt && (
-              <span className="bg-secondary/50 text-muted-foreground rounded-full px-3 py-1 text-xs font-semibold">
-                {createdAt}
-              </span>
-            )}
-          </div>
+      <Card className="hover:border-primary/50 relative overflow-hidden rounded-3xl border-2 shadow-[0_2px_20px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_4px_25px_rgb(0,0,0,0.08)]">
+        <div className="bg-primary/5 absolute top-0 right-0 h-full w-2" />
+        <CardContent className="space-y-2 px-5">
 
-          {/* Client */}
-          <div className="flex items-center gap-3 ">
-            <div className="border-border bg-primary/5 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-sm">
-              {data.clientPictureUrl ? (
-                <img
-                  src={data.clientPictureUrl}
-                  alt={data.clientName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-sm font-black text-primary">
-                  {data.clientName?.charAt(0)}
+          {/* Header: avatar + name + time */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="border-border bg-primary/5 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 shadow-sm">
+                {data.clientPictureUrl ? (
+                  <img
+                    src={data.clientPictureUrl}
+                    alt={data.clientName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-primary text-sm font-black">
+                    {data.clientName?.charAt(0)}
+                  </span>
+                )}
+              </div>
+              <div>
+                <p className="text-foreground text-lg font-black">{data.clientName}</p>
+                {data.serviceName && (
+                  <p className="text-primary text-sm font-bold">{data.serviceName}</p>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              {createdAt && (
+                <span className="bg-secondary/50 text-muted-foreground rounded-full px-3 py-1 text-xs font-semibold">
+                  {createdAt}
                 </span>
               )}
-            </div>
-            <div>
-              <p className="text-foreground text-base font-black">
-                {data.clientName}
-              </p>
+              <span className="bg-primary/10 text-primary rounded-full px-3 py-0.5 text-[11px] font-bold">
+                طلب مباشر
+              </span>
             </div>
           </div>
 
-          {/* Description */}
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed font-medium">
-            {data.description}
-          </p>
+          {/* Description bubble — same as OfferRequestCard */}
+          <div className="bg-muted/40 relative mt-2 rounded-2xl p-4">
+            <MessageSquare className="text-primary/70 absolute top-5.5 right-4 h-5 w-5 rotate-12" />
+            <p className="text-muted-foreground ms-10 text-right text-base font-medium leading-relaxed">
+              {data.description || 'لا يوجد وصف'}
+            </p>
+          </div>
 
-          {/* Details Row */}
-          <div className="bg-secondary/30 flex flex-wrap items-center gap-4 rounded-2xl p-3">
-            {data.serviceRequestLocation && (
-              <div className="flex items-center gap-2">
-                <div className="bg-amber-500/10 rounded-full p-1.5">
-                  <MapPin className="h-4 w-4 text-amber-600" />
-                </div>
-                <p className="text-foreground text-xs font-semibold" dir="ltr">
-                  {data.serviceRequestLocation.address ?? 
-  `${data.serviceRequestLocation.latitude.toFixed(3)}, ${data.serviceRequestLocation.longitude.toFixed(3)}`}
-                </p>
+          {/* Location row — same as OfferRequestCard */}
+          {data.serviceRequestLocation && (
+            <div className="bg-secondary/30 flex items-center gap-2 rounded-2xl p-3">
+              <div className="rounded-full bg-amber-500/10 p-1.5">
+                <MapPin className="h-4 w-4 shrink-0 text-amber-600" />
               </div>
-            )}
-          </div>
+              <span className="text-foreground text-xs font-semibold" dir="ltr">
+                {data.serviceRequestLocation.address ??
+                  `${data.serviceRequestLocation.latitude.toFixed(3)}, ${data.serviceRequestLocation.longitude.toFixed(3)}`}
+              </span>
+            </div>
+          )}
+
+          {/* Preferred time */}
+          {preferredTimeFormatted && (
+            <div className="bg-secondary/30 flex items-center gap-2 rounded-2xl p-3">
+              <div className="rounded-full bg-primary/10 p-1.5">
+                <Calendar className="text-primary h-4 w-4 shrink-0" />
+              </div>
+              <span className="text-foreground text-xs font-semibold">
+                {preferredTimeFormatted}
+              </span>
+            </div>
+          )}
+
+          {/* Budget */}
+          {data.finalPrice != null && data.finalPrice > 0 && (
+            <div className="bg-secondary/30 flex items-center gap-2 rounded-2xl p-3">
+              <div className="rounded-full bg-primary/10 p-1.5">
+                <Wallet className="text-primary h-4 w-4 shrink-0" />
+              </div>
+              <span className="text-foreground text-xs font-semibold">
+                الميزانية: {Number(data.finalPrice).toLocaleString("ar-EG")} ج.م
+              </span>
+            </div>
+          )}
+
+          {/* Images — same scroll style as OfferRequestCard */}
           {images.length > 0 && (
-            <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-2 pt-1">
+            <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pt-1 pb-2">
               {images.map((url, i) => (
                 <div
                   key={i}
@@ -146,18 +174,14 @@ export default function DirectRequestCard({ data }: Props) {
             </div>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-3 ">
+          {/* Action buttons */}
+          <div className="flex gap-3 pt-2 pb-1">
             <Button
-              className="h-12 flex-1 cursor-pointer rounded-2xl text-sm font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
+              className="shadow-primary/20 h-12 flex-1 cursor-pointer rounded-2xl text-sm font-black shadow-lg transition-all hover:scale-[1.02]"
               onClick={() => setShowConfirm(true)}
               disabled={isPending}
             >
-              {isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                'قبول الطلب'
-              )}
+              {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'قبول الطلب'}
             </Button>
             <Button
               variant="outline"
@@ -165,60 +189,51 @@ export default function DirectRequestCard({ data }: Props) {
               onClick={handleReject}
               disabled={isPending}
             >
-              {isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                'رفض'
-              )}
+              {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 'رفض'}
             </Button>
           </div>
+
         </CardContent>
       </Card>
 
       {/* Confirmation Dialog */}
       {showConfirm && (
         <div
-          className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/60 px-4 pb-6 sm:pb-0"
+          className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 px-4 pb-6 sm:items-center sm:pb-0"
           onClick={() => setShowConfirm(false)}
         >
           <div
-            className="w-full max-w-sm bg-card rounded-3xl border-2 border-border p-6 flex flex-col gap-5"
+            className="bg-card border-border flex w-full max-w-sm flex-col gap-5 rounded-3xl border-2 p-6"
             onClick={(e) => e.stopPropagation()}
+            dir="rtl"
           >
-            {/* Icon + text */}
             <div className="flex flex-col items-center gap-3 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Wallet className="h-6 w-6 text-primary" />
+              <div className="bg-primary/10 flex h-14 w-14 items-center justify-center rounded-2xl">
+                <Wallet className="text-primary h-6 w-6" />
               </div>
               <div className="space-y-1">
-                <p className="text-base font-black text-foreground">تأكيد قبول الطلب</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-foreground text-base font-black">تأكيد قبول الطلب</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   سيتم خصم{" "}
-                  <span className="font-black text-primary">25 جنيه</span>{" "}
+                  <span className="text-primary font-black">25 نقطة</span>{" "}
                   من رصيدك عند قبول الطلب
                 </p>
               </div>
             </div>
-
-            {/* Actions */}
             <div className="flex gap-3">
               <Button
                 variant="outline"
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 h-12 rounded-2xl border-2 border-border bg-background text-sm font-bold text-foreground"
+                className="border-border h-12 flex-1 rounded-2xl border-2 text-sm font-bold"
               >
                 إلغاء
               </Button>
               <Button
                 onClick={handleAcceptConfirmed}
-                className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-bold"
+                className="h-12 flex-1 rounded-2xl text-sm font-bold"
                 disabled={isPending}
               >
-                {isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "تأكيد القبول"
-                )}
+                {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "تأكيد القبول"}
               </Button>
             </div>
           </div>
@@ -228,11 +243,11 @@ export default function DirectRequestCard({ data }: Props) {
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90"
           onClick={() => setLightbox(null)}
         >
           <button
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition"
+            className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
             onClick={() => setLightbox(null)}
           >
             <X className="h-5 w-5" />
@@ -240,7 +255,7 @@ export default function DirectRequestCard({ data }: Props) {
           <img
             src={lightbox}
             alt="صورة مكبرة"
-            className="max-w-[90vw] max-h-[80vh] rounded-2xl object-contain"
+            className="max-h-[80vh] max-w-[90vw] rounded-2xl object-contain"
             onClick={(e) => e.stopPropagation()}
           />
         </div>

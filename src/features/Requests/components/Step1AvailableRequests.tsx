@@ -1,4 +1,4 @@
-import { Loader2, ClipboardList, MapPin, RefreshCw } from 'lucide-react';
+import { Loader2, ClipboardList, MapPin, RefreshCw, Clock } from 'lucide-react';
 import { useGetAvailableRequests } from '../hooks/useGetAvailableRequests';
 import { useGetServices } from '../hooks/useGetServices';
 import type { AvailableRequestItem } from '../types/providerOfferTypes';
@@ -128,37 +128,38 @@ function RequestCard({
       <button
         onClick={onSelect}
         className={cn(
-          'w-full overflow-hidden rounded-2xl border-2 text-right transition-all',
+          'group relative w-full overflow-hidden rounded-2xl border text-right transition-all duration-300',
           isSelected
-            ? 'border-primary bg-primary/5 shadow-primary/10 shadow-sm'
-            : 'border-border bg-card hover:border-primary/40 hover:bg-primary/[0.02]',
+            ? 'border-primary bg-primary/[0.03] shadow-md shadow-primary/10 ring-1 ring-primary'
+            : 'border-border bg-card hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5',
         )}
       >
-        <div className="space-y-3 p-4">
-          {/* Client row */}
+        <div className="flex flex-col gap-3 p-4">
+          {/* Header: Avatar, Name, Badge */}
           <div className="flex items-center gap-3">
-            <div className="bg-primary/10 border-border flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+            <div className="bg-primary/10 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-primary/10 transition-all group-hover:ring-primary/30">
               {request.clientPictureUrl ? (
                 <img
                   src={request.clientPictureUrl}
                   alt={request.clientName ?? ''}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
-                <span className="text-primary text-sm font-black">
+                <span className="text-primary text-base font-black">
                   {request.clientName?.charAt(0) ?? ''}
                 </span>
               )}
             </div>
-            <div className="flex min-w-0 flex-1 items-center justify-between">
-              <p className="text-foreground truncate text-sm font-extrabold">
-                {request.clientName ?? ''}
-              </p>
-              <div className="flex shrink-0 items-center gap-2">
+
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-foreground truncate text-sm font-bold">
+                  {request.clientName ?? 'عميل'}
+                </p>
                 {badge && (
                   <span
                     className={cn(
-                      'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                      'shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide',
                       badgeColor,
                     )}
                   >
@@ -166,46 +167,48 @@ function RequestCard({
                   </span>
                 )}
               </div>
+              <p className="text-primary mt-0.5 truncate text-xs font-semibold">
+                {serviceName}
+              </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="min-w-0 flex-1 space-y-1">
-              <p className="text-primary truncate text-sm font-bold">
-                {serviceName}
-              </p>
-              <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
-                {request.description || 'لا يوجد وصف'}
-              </p>
-              <div className="flex min-w-0 flex-1 items-center justify-between">
-                {request.serviceRequestLocation && (
-                  <span className="text-muted-foreground flex items-center gap-1 pt-1 text-[11px]">
-                    <MapPin className="h-3 w-3 shrink-0" />
-                    {request.serviceRequestLocation.address ??
-                      `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
-                  </span>
-                )}
-                {createdAt && (
-                  <span className="text-muted-foreground text-[11px]">
-                    {createdAt}
-                  </span>
-                )}
-              </div>
-            </div>
+          {/* Description */}
+          <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
+            {request.description || 'لا يوجد وصف مضاف لهذا الطلب.'}
+          </p>
+
+          {/* Meta Details: Location & Time */}
+          <div className="border-border/50 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+            {request.serviceRequestLocation && (
+              <span className="text-muted-foreground flex items-center gap-1.5 text-[11px] font-medium">
+                <MapPin className="text-primary/70 h-3.5 w-3.5 shrink-0" />
+                <span className="truncate max-w-[150px] md:max-w-[200px]">
+                  {request.serviceRequestLocation.address ??
+                    `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
+                </span>
+              </span>
+            )}
+            {createdAt && (
+              <span className="text-muted-foreground flex items-center gap-1.5 text-[11px] font-medium">
+                <Clock className="text-primary/70 h-3 w-3 shrink-0" />
+                {createdAt}
+              </span>
+            )}
           </div>
 
           {/* Images */}
           {images.length > 0 && (
-            <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1">
+            <div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
               {images.map((url, i) => (
                 <div
                   key={i}
-                  className="border-border h-24 w-24 shrink-0 overflow-hidden rounded-xl border"
+                  className="border-border/50 group/img h-16 w-16 shrink-0 overflow-hidden rounded-xl border"
                 >
                   <img
                     src={url}
                     alt={`صورة ${i + 1}`}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                 </div>
               ))}

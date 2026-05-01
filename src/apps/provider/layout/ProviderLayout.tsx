@@ -10,7 +10,7 @@ const ProviderLayout = () => {
         <Navbar  />
 
       {/* Main */}
-      <div className="flex-1 flex flex-row min-h-screen">
+      <div className="flex-1 flex flex-row">
         
       {/* Sidebar */}
         <ProviderSidebar />
