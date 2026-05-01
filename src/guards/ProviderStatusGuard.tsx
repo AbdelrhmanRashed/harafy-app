@@ -18,6 +18,10 @@ const ProviderStatusGuard = ({ children }: { children: React.ReactNode }) => {
 
   const status = mapStatus(accountStatus?.status ?? user.status);
 
+  if (status === 'Suspended') {
+    return <Navigate to="/suspended" replace />;
+  }
+
   if (status !== 'Approved') {
     return <Navigate to="/onboarding" replace />;
   }

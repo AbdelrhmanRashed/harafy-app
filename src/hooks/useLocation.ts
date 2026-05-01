@@ -37,10 +37,10 @@ function getCurrentPosition(): Promise<GeolocationPosition> {
 
 export function useLocationCustom(): UseLocationReturn {
   const [position, setPosition] = useState<{ lat: number; lng: number }>({
-    lat: 31.2001,
-    lng: 29.9187,
+    lat: 0,
+    lng: 0,
   });
-  const [address, setAddress] = useState('جاري تحديد الموقع...');
+  const [address, setAddress] = useState('');
   const [locating, setLocating] = useState(false);
   const [denied, setDenied] = useState(false);
 

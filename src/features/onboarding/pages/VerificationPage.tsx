@@ -32,6 +32,7 @@ import {
   Loader2,
   CheckCircle2,
   XCircle,
+  Clock,
   type LucideIcon,
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -56,7 +57,7 @@ interface ProviderDoc {
   id: number;
   documentUrl: string;
   documentType: number; // 1 = personalImage | 2 = nationalId | 3 = criminalRecord
-  isApproved: boolean;
+  isApproved: boolean | null;
   providerId: number;
 }
 
@@ -134,15 +135,22 @@ const DocSlot = ({
       <div
         className={cn(
           'flex w-fit items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium',
-          doc.isApproved
+          doc.isApproved === true
             ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
-            : 'bg-destructive/10 text-destructive',
+            : doc.isApproved === null
+              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400'
+              : 'bg-destructive/10 text-destructive',
         )}
       >
-        {doc.isApproved ? (
+        {doc.isApproved === true ? (
           <>
             <CheckCircle2 size={13} />
             مقبول — التحديث اختياري
+          </>
+        ) : doc.isApproved === null ? (
+          <>
+            <Clock size={13} />
+            قيد المراجعة
           </>
         ) : (
           <>
@@ -157,9 +165,11 @@ const DocSlot = ({
         <div
           className={cn(
             'flex flex-col items-center gap-2 rounded-xl border-2 border-dashed p-4',
-            doc.isApproved
+            doc.isApproved === true
               ? 'border-green-300 bg-green-50/50 dark:bg-green-950/20'
-              : 'border-destructive/40 bg-destructive/5',
+              : doc.isApproved === null
+                ? 'border-yellow-300 bg-yellow-50/50 dark:bg-yellow-950/20'
+                : 'border-destructive/40 bg-destructive/5',
           )}
         >
           <p className="text-muted-foreground text-[10px] font-medium tracking-wider uppercase">
@@ -209,8 +219,6 @@ const VerificationPage = () => {
     useUploadDocuments();
   const { mutateAsync: updateDoc, isPending: isUpdatingDocs } =
     useUpdateProviderDocs();
-
-  console.log(existingDocs);
 
   const governorateId = profile?.governorateId;
   const regionId = profile?.regionId;
@@ -289,7 +297,7 @@ const VerificationPage = () => {
         // 2b) Has existing docs → validate refused ones have a new file
         const errors: Record<number, string> = {};
         docs.forEach((doc) => {
-          if (!doc.isApproved && !newFiles[doc.documentType]) {
+          if (doc.isApproved === false && !newFiles[doc.documentType]) {
             errors[doc.documentType] = 'يجب رفع مستند جديد';
           }
         });
@@ -407,7 +415,7 @@ const VerificationPage = () => {
                     </FieldError>
                   )}
                   <FieldDescription>
-                    يمكنك اختيار أكثر من خدمة واحدة
+                    يمكنك اختيار خدمتين كحد أقصى
                   </FieldDescription>
                 </Field>
               </div>
@@ -440,7 +448,7 @@ const VerificationPage = () => {
                 ) : (
                   <>
                     {/* Global status banner for existing docs */}
-                    {hasExistingDocs && docs.some((d) => !d.isApproved) && (
+                    {hasExistingDocs && docs.some((d) => d.isApproved === false) && (
                       <Alert className="border-destructive/30 bg-destructive/5 rounded-xl border p-4">
                         <AlertDescription className="text-destructive flex items-center gap-2 text-sm">
                           <XCircle size={16} />
@@ -448,7 +456,15 @@ const VerificationPage = () => {
                         </AlertDescription>
                       </Alert>
                     )}
-                    {hasExistingDocs && docs.every((d) => d.isApproved) && (
+                    {hasExistingDocs && docs.some((d) => d.isApproved === null) && !docs.some((d) => d.isApproved === false) && (
+                      <Alert className="border-yellow-300/50 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl border p-4">
+                        <AlertDescription className="text-yellow-700 dark:text-yellow-500 flex items-center gap-2 text-sm">
+                          <Clock size={16} />
+                          بعض مستنداتك لا تزال قيد المراجعة.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    {hasExistingDocs && docs.every((d) => d.isApproved === true) && (
                       <Alert className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
                         <AlertDescription className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
                           <CheckCircle2 size={16} />

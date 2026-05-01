@@ -130,6 +130,7 @@ const DirectRequestDetailsPage = () => {
   const isCompleted = requestDetails.requestStatus === ServiceStatus.COMPLETED;
   const isCancelled = requestDetails.requestStatus === ServiceStatus.CANCELLED;
 
+  console.log(requestDetails);
   return (
     <>
       <div className="bg-background min-h-screen pb-20">
@@ -211,7 +212,8 @@ const DirectRequestDetailsPage = () => {
                     العودة للرئيسية
                   </Button>
                   {(isCompleted || isCancelled) &&
-                    requestDetails.providerId && (
+                    requestDetails.providerId &&
+                    !requestDetails.isReported && (
                       <Button
                         variant="outline"
                         size="sm"

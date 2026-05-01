@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
-import { Megaphone, Settings, Mail } from 'lucide-react';
+import { Megaphone, Settings, ShieldBan } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const QuickActionsCard = () => {
@@ -14,9 +14,12 @@ const QuickActionsCard = () => {
 
       <CardContent className="space-y-4">
         {/* Primary Button */}
-        <Button className="h-12 w-full cursor-pointer justify-start gap-2 rounded-lg shadow-md">
+        <Button
+          className="h-12 w-full cursor-pointer justify-start gap-2 rounded-lg shadow-md"
+          onClick={() => navigate('/admin/reports')}
+        >
           <Megaphone className="h-4 w-4" />
-          إنشاء عرض جديد
+          التقارير
         </Button>
 
         {/* Secondary Buttons */}
@@ -32,9 +35,10 @@ const QuickActionsCard = () => {
         <Button
           variant="secondary"
           className="h-12 w-full cursor-pointer justify-start gap-2 rounded-lg"
+          onClick={() => navigate('/admin/banned-users')}
         >
-          <Mail className="h-4 w-4" />
-          إرسال إشعار جماعي
+          <ShieldBan className="h-4 w-4" />
+          قائمه المحظورين
         </Button>
       </CardContent>
     </Card>

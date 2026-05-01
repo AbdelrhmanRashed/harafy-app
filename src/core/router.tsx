@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
 // Shared Routes
 import NotFoundPage from '@/pages/NotFoundPage';
 import UnauthorizedPage from '@/pages/UnauthorizedPage';
+import SuspendedPage from '@/pages/SuspendedPage';
 
 // Apps Routes
 import authRoutes from '@/apps/auth/routes';
@@ -11,6 +12,7 @@ import clientRoutes from '@/apps/client/routes';
 import ProviderRoutes from '@/apps/provider/routes';
 import RootRedirect from '@/guards/RootRedirect';
 import onboardingRoutes from '@/apps/onboarding/routes';
+import SuspendedGuard from '@/guards/SuspendedGuard';
 
 import { useMatches } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -46,6 +48,14 @@ const routes = [
       {
         path: '/unauthorized',
         element: <UnauthorizedPage />,
+      },
+      {
+        path: '/suspended',
+        element: (
+          <SuspendedGuard>
+            <SuspendedPage />
+          </SuspendedGuard>
+        ),
       },
       {
         path: '*',

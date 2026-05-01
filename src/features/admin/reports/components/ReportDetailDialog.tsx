@@ -338,12 +338,10 @@ const ReportDetailDialog = ({ open, onClose, report }: Props) => {
                 <div className="space-y-2">
                   <label className="text-foreground flex items-center gap-2 text-sm font-bold">
                     <StickyNote className="text-muted-foreground h-4 w-4" />
-                    ملاحظة الإدارة{' '}
-                    <span className="text-muted-foreground font-normal">
-                      (اختياري)
-                    </span>
+                    ملاحظة الإدارة <span className="text-destructive">*</span>
                   </label>
                   <textarea
+                    required
                     value={adminNote}
                     onChange={(e) => setAdminNote(e.target.value)}
                     placeholder="أضف ملاحظة توضيحية للقرار..."
@@ -370,7 +368,7 @@ const ReportDetailDialog = ({ open, onClose, report }: Props) => {
                   <Button
                     type="button"
                     onClick={handleSave}
-                    disabled={isPending || selectedStatus === null}
+                    disabled={isPending || selectedStatus === null || !adminNote.trim()}
                     className="h-12 flex-1 cursor-pointer rounded-2xl bg-slate-800 font-bold text-white hover:bg-slate-900 disabled:opacity-50 dark:bg-slate-700 dark:hover:bg-slate-600"
                   >
                     {isPending ? (

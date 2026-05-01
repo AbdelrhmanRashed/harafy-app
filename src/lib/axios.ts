@@ -55,6 +55,7 @@ axiosInstance.interceptors.response.use(
     // if token expired or invalid
     if (
       (error.response?.status === 401 ||
+        error.response?.status === 403 ||
         error.response?.status === 400 ||
         error.response?.status === 404) &&
       !originalRequest._retry &&
@@ -88,6 +89,9 @@ axiosInstance.interceptors.response.use(
 
         // save new token
         localStorage.setItem('token', newToken);
+        import('@/store/useAuthStore').then((module) => {
+          module.useAuthStore.getState().updateUser({ accessToken: newToken });
+        });
 
         // update header
         axiosInstance.defaults.headers.common['Authorization'] =

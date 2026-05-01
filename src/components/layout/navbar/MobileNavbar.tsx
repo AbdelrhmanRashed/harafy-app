@@ -8,9 +8,10 @@ import GuestActions from './sections/GuestActions';
 
 interface MobileNavbarProps {
   role: UserRole;
+  hideLinks?: boolean;
 }
 
-const MobileNavbar = ({ role }: MobileNavbarProps) => {
+const MobileNavbar = ({ role, hideLinks }: MobileNavbarProps) => {
   return (
     <>
       <header className="bg-background/93 border-border sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b px-4 font-sans backdrop-blur-md md:hidden">
@@ -23,7 +24,7 @@ const MobileNavbar = ({ role }: MobileNavbarProps) => {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      {role !== 'Provider' && <NavLinks navLinks={getNavLinks(role)} mobile />}
+      {!hideLinks && role !== 'Provider' && <NavLinks navLinks={getNavLinks(role)} mobile />}
     </>
   );
 };

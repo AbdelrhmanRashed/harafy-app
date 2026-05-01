@@ -4,11 +4,12 @@ import { mapStatus } from '@/lib/auth/mapProfileStatus';
 import { useAccountStatus } from '@/features/auth/hooks/useAccountStatus';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
-const AppStatusGuard = ({ children }: { children: React.ReactNode }) => {
+const SuspendedGuard = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
   const { data: accountStatus, isLoading } = useAccountStatus();
 
-  if (!user) return null;
+  if (!user) return <Navigate to="/auth/login" replace />;
+
   if (isLoading)
     return (
       <div className="flex h-screen items-center justify-center">
@@ -18,15 +19,11 @@ const AppStatusGuard = ({ children }: { children: React.ReactNode }) => {
 
   const status = mapStatus(accountStatus?.status ?? user.status);
 
-  if (status === 'Suspended') {
-    return <Navigate to="/suspended" replace />;
+  if (status !== 'Suspended') {
+    return <Navigate to="/" replace />;
   }
 
-  if (status !== 'Completed' && status !== 'Approved') {
-    return <Navigate to="/onboarding" replace />;
-  }
-
-  return children;
+  return <>{children}</>;
 };
 
-export default AppStatusGuard;
+export default SuspendedGuard;

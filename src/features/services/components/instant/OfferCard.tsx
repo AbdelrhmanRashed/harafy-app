@@ -29,10 +29,10 @@ export default function OfferCard({
   );
 
   return (
-    <li className="group border-border bg-card relative mt-2 flex w-[360px] flex-col gap-4 overflow-hidden rounded-3xl border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <li className="group border-border bg-card relative mt-2 flex flex-col gap-4 overflow-hidden rounded-3xl border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       {/* ✨ glow */}
       <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="from-primary/5 to-primary/5 absolute inset-0 bg-gradient-to-r via-transparent" />
+        <div className="from-primary/5 to-primary/5 absolute inset-0 bg-linear-to-r via-transparent" />
       </div>
 
       {/* 👤 Header */}

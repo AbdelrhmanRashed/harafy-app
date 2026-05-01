@@ -13,18 +13,22 @@ export const verificationSchema = z.object({
 
     Longitude: z.coerce.number(),
 
-    AddressText: z.string().min(3, 'العنوان مطلوب'),
+    AddressText: z.string(),
   }),
 
   ServiceIds: z
     .array(z.coerce.number())
-    .min(1, 'لازم تختار خدمة واحدة على الأقل'),
+    .min(1, 'لازم تختار خدمة واحدة على الأقل')
+    .max(2, 'يمكنك اختيار خدمتين كحد أقصى'),
 
   personalImage: z
     .any()
     .optional()
     .refine((f) => f === undefined || f instanceof File, {
       message: 'الصورة الشخصية مطلوبة',
+    })
+    .refine((f) => f === undefined || f.size <= 5 * 1024 * 1024, {
+      message: 'حجم الملف يجب ألا يتجاوز 5 ميجابايت',
     }),
 
   nationalId: z
@@ -32,6 +36,9 @@ export const verificationSchema = z.object({
     .optional()
     .refine((f) => f === undefined || f instanceof File, {
       message: 'صورة البطاقة مطلوبة',
+    })
+    .refine((f) => f === undefined || f.size <= 5 * 1024 * 1024, {
+      message: 'حجم الملف يجب ألا يتجاوز 5 ميجابايت',
     }),
 
   criminalRecord: z
@@ -39,6 +46,9 @@ export const verificationSchema = z.object({
     .optional()
     .refine((f) => f === undefined || f instanceof File, {
       message: 'صحيفة الحالة الجنائية مطلوبة',
+    })
+    .refine((f) => f === undefined || f.size <= 5 * 1024 * 1024, {
+      message: 'حجم الملف يجب ألا يتجاوز 5 ميجابايت',
     }),
 });
 

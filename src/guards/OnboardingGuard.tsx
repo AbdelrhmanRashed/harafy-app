@@ -38,6 +38,10 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   );
   const status = mapStatus(accountStatus?.status ?? user.status);
 
+  if (status === 'Suspended') {
+    return <Navigate to="/suspended" replace />;
+  }
+
   if (role === 'Client') {
     if (status === 'Pending') return <ClientGuard>{children}</ClientGuard>;
     return <Navigate to="/app" replace />;

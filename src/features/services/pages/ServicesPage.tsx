@@ -247,7 +247,7 @@ export default function ServicesPage() {
                 <ServiceSearchCardSkeleton key={index} />
               ))}
             </div>
-          ) : providers.length > 0 ? (
+          ) : providers?.length > 0 ? (
             <ProvidersSearchList
               providers={providers}
               isLoading={isProvidersLoading}

@@ -29,8 +29,12 @@ import {
   Loader2,
   ZoomIn,
   ExternalLink,
+  Phone,
+  MapPin,
+  Wrench,
 } from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
+import CraftsmenDetailsSkeleton from '../components/craftsmenDetailsSkeleton';
 
 const DOCUMENT_TYPES: Record<number, string> = {
   1: 'الصورة الشخصية',
@@ -45,20 +49,23 @@ const getStatusConfig = (
   if (isRejectedLocally) {
     return {
       label: 'مرفوض',
-      color: 'text-red-700 bg-red-50 border-red-200',
+      color:
+        'text-red-700 bg-red-50 border-red-200 dark:border-red-900/40 dark:bg-red-900/40',
       icon: <XCircle className="h-4 w-4 text-red-600" />,
     };
   }
   if (isApproved === true) {
     return {
       label: 'مقبول',
-      color: 'text-green-700 bg-green-50 border-green-200',
+      color:
+        'text-green-700 bg-green-50 border-green-200 dark:border-green-900/40 dark:bg-green-900/40',
       icon: <CheckCircle className="h-4 w-4 text-green-600" />,
     };
   }
   return {
     label: 'قيد المراجعة',
-    color: 'text-yellow-700 bg-yellow-50 border-yellow-200',
+    color:
+      'text-yellow-700 bg-yellow-50 border-yellow-200 dark:border-yellow-900/40 dark:bg-yellow-900/40',
     icon: <Clock className="h-4 w-4 text-yellow-600" />,
   };
 };
@@ -77,84 +84,19 @@ const ProviderDetailsPage = () => {
 
   const { data, isLoading, isError, error } = useProviderDetails(id!);
 
+  console.log('provider', data);
   const { mutate: validateDoc, isPending } = useValidateDocument();
   const { mutate: verifyProvider, isPending: verifying } = useVerifyProvider();
 
   if (isLoading) {
-    return (
-      <div className="container mx-auto space-y-8 px-4 py-8" dir="rtl">
-        {/* ================= Header Skeleton ================= */}
-        <div className="bg-card flex flex-col items-start justify-between gap-4 rounded-xl border p-6 shadow-sm md:flex-row md:items-center">
-          <div className="flex w-full items-center gap-4 md:w-auto">
-            <Skeleton className="hidden h-10 w-10 shrink-0 rounded-full md:block" />
-            <div className="space-y-2">
-              <Skeleton className="h-8 w-48" />
-              <Skeleton className="h-4 w-64" />
-            </div>
-          </div>
-          <Skeleton className="h-12 w-full rounded-lg md:w-[180px]" />
-        </div>
-
-        {/* ================= Profile Overview Skeleton ================= */}
-        <Card className="border-t-primary overflow-hidden border-t-4 shadow-md">
-          <CardContent className="p-0">
-            <div className="flex flex-col items-center gap-6 p-6 sm:flex-row">
-              <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
-
-              <div className="flex w-full flex-1 flex-col items-center space-y-3 sm:items-start">
-                <Skeleton className="h-8 w-40" />
-                <Skeleton className="h-5 w-32" />
-
-                <div className="mt-2 flex flex-wrap justify-center gap-3 sm:justify-start">
-                  <Skeleton className="h-8 w-28 rounded-md" />
-                  <Skeleton className="h-8 w-36 rounded-md" />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ================= Documents Grid Skeleton ================= */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 px-1">
-            <Skeleton className="h-5 w-5 rounded-full" />
-            <Skeleton className="h-7 w-40" />
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="flex flex-col overflow-hidden border-2 border-gray-100/50"
-              >
-                <CardHeader className="bg-muted/30 border-b pb-4">
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-6 w-32" />
-                    <Skeleton className="h-6 w-20 rounded-full" />
-                  </div>
-                </CardHeader>
-
-                <CardContent className="flex flex-1 flex-col p-0">
-                  <Skeleton className="h-[260px] w-full rounded-none" />
-
-                  <div className="bg-background mt-auto flex items-center justify-end gap-3 border-t p-4">
-                    <Skeleton className="h-10 flex-1 rounded-md sm:w-[100px] sm:flex-none" />
-                    <Skeleton className="h-10 flex-1 rounded-md sm:w-[100px] sm:flex-none" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <CraftsmenDetailsSkeleton />;
   }
 
   if (isError) {
     return (
       <div className="container mx-auto max-w-2xl px-4 py-12" dir="rtl">
         <div className="flex items-start gap-4 rounded-xl border border-red-200 bg-red-50 p-6 text-red-800">
-          <AlertCircle className="mt-0.5 h-6 w-6 flex-shrink-0" />
+          <AlertCircle className="mt-0.5 h-6 w-6 shrink-0" />
           <div>
             <h3 className="mb-1 text-lg font-bold">
               حدث خطأ أثناء تحميل البيانات
@@ -254,7 +196,7 @@ const ProviderDetailsPage = () => {
             variant="outline"
             size="icon"
             onClick={() => navigate(-1)}
-            className="hidden h-10 w-10 shrink-0 rounded-full md:flex"
+            className="hidden h-10 w-10 shrink-0 cursor-pointer rounded-full md:flex"
           >
             <ChevronRight className="h-5 w-5" />
           </Button>
@@ -270,6 +212,7 @@ const ProviderDetailsPage = () => {
 
         <Button
           size="lg"
+          variant="gradient"
           className="w-full gap-2 text-base font-semibold shadow-md transition-all md:w-auto"
           disabled={!allValid || verifying}
           onClick={handleVerify}
@@ -286,7 +229,7 @@ const ProviderDetailsPage = () => {
       {/* ================= Profile Overview ================= */}
       <Card className="border-t-primary overflow-hidden border-t-4 shadow-md">
         <CardContent className="p-0">
-          <div className="from-primary/5 flex flex-col items-center gap-6 bg-gradient-to-r to-transparent p-6 sm:flex-row">
+          <div className="from-primary/5 flex flex-col items-center gap-6 to-transparent p-6 sm:flex-row">
             <div className="relative shrink-0">
               <Avatar className="border-background h-24 w-24 border-4 shadow-md">
                 <AvatarImage
@@ -321,13 +264,13 @@ const ProviderDetailsPage = () => {
                   <span>{docs.length} مستندات</span>
                 </div>
                 {pendingCount > 0 && (
-                  <div className="flex items-center gap-1.5 rounded-md border border-yellow-200 bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-700 shadow-sm">
+                  <div className="flex items-center gap-1.5 rounded-md border border-yellow-200 bg-yellow-50 px-3 py-1.5 text-sm font-medium text-yellow-700 shadow-sm dark:border-yellow-900/40 dark:bg-yellow-900/40">
                     <Clock className="h-4 w-4" />
                     <span>{pendingCount} قيد المراجعة</span>
                   </div>
                 )}
                 {hasInvalid && (
-                  <div className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm">
+                  <div className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 shadow-sm dark:border-red-900/40 dark:bg-red-900/40">
                     <XCircle className="h-4 w-4" />
                     <span>يوجد مستندات مرفوضة</span>
                   </div>
@@ -337,6 +280,106 @@ const ProviderDetailsPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* ================= Craftsman Details ================= */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Contact Information */}
+        <Card className="border-border/60 shadow-md transition-shadow hover:shadow-lg">
+          <CardHeader className="border-b pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg font-bold">
+              <User className="text-primary h-5 w-5" />
+              المعلومات الشخصية
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 p-6">
+            <div className="group flex items-start gap-4">
+              <div className="bg-primary/10 group-hover:bg-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-sm transition-colors">
+                <Phone className="text-primary h-5 w-5" />
+              </div>
+              <div className="flex flex-col justify-center">
+                <p className="text-muted-foreground text-sm font-medium">
+                  أرقام الهاتف
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2" dir="ltr">
+                  {profile?.phoneNumbers && profile.phoneNumbers.length > 0 ? (
+                    profile.phoneNumbers.map((phone: string, index: number) => (
+                      <span
+                        key={index}
+                        className="bg-muted text-foreground border-border/50 rounded-md border px-3 py-1 text-sm font-bold tracking-widest shadow-sm"
+                      >
+                        {phone}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-foreground text-base font-semibold">
+                      لا يوجد
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="group flex items-start gap-4">
+              <div className="bg-primary/10 group-hover:bg-primary/20 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-sm transition-colors">
+                <MapPin className="text-primary h-5 w-5" />
+              </div>
+              <div className="flex flex-col justify-center">
+                <p className="text-muted-foreground text-sm font-medium">
+                  العنوان
+                </p>
+                <p className="text-foreground mt-0.5 text-base leading-snug font-semibold">
+                  {profile?.baseLocation?.addressText || 'لا يوجد'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Specialty & Bio */}
+        <Card className="border-border/60 shadow-md transition-shadow hover:shadow-lg">
+          <CardHeader className="border-b pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg font-bold">
+              <Wrench className="text-primary h-5 w-5" />
+              التخصص والنبذة
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 p-6">
+            {/* Services Tags */}
+            <div>
+              <p className="text-muted-foreground mb-3 text-sm font-medium">
+                الخدمات المقدمة
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {profile?.services && profile.services.length > 0 ? (
+                  profile.services.map((service: any) => (
+                    <div
+                      key={service.id}
+                      className="bg-primary text-primary-foreground flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm transition-transform hover:scale-105"
+                    >
+                      <CheckCircle className="h-4 w-4 opacity-80" />
+                      {service.name}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    لا توجد خدمات محددة
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Bio Box */}
+            <div className="bg-muted/40 relative rounded-2xl border p-4">
+              <p className="text-muted-foreground text-sm font-medium">
+                نبذة شخصية
+              </p>
+              <p className="text-foreground mt-2 text-sm leading-relaxed font-medium">
+                {profile?.bio || 'لا يوجد نبذة شخصية مسجلة لهذا الحرفي.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* ================= Documents Grid ================= */}
       <div className="space-y-4">
@@ -359,15 +402,15 @@ const ProviderDetailsPage = () => {
             return (
               <Card
                 key={doc.id}
-                className={`flex flex-col overflow-hidden border-2 transition-all duration-300 hover:shadow-lg ${
+                className={`flex flex-col overflow-hidden border-2 p-0 transition-all duration-300 hover:shadow-lg ${
                   doc.isApproved === true && !isRejectedLocally
-                    ? 'border-green-200 shadow-green-100/40'
+                    ? 'border-green-200 shadow-green-100/40 dark:border-green-900/40 dark:shadow-green-900/40'
                     : isRejectedLocally
                       ? 'border-red-200 shadow-red-100/40'
                       : 'border-gray-200'
                 }`}
               >
-                <CardHeader className="bg-muted/30 border-b pb-4">
+                <CardHeader className="bg-muted/30 border-b py-6">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
                       <FileText className="text-muted-foreground h-4 w-4" />
@@ -438,7 +481,7 @@ const ProviderDetailsPage = () => {
                     <Button
                       type="button"
                       size="default"
-                      className={`flex-1 gap-2 transition-all sm:flex-none ${
+                      className={`flex-1 cursor-pointer gap-2 transition-all sm:flex-none ${
                         doc.isApproved === true && !isRejectedLocally
                           ? 'bg-green-600 text-white shadow-md ring-2 ring-green-600/50 ring-offset-2 hover:bg-green-700'
                           : 'hover:border-green-200 hover:bg-green-50 hover:text-green-700'
@@ -466,7 +509,7 @@ const ProviderDetailsPage = () => {
                     <Button
                       type="button"
                       size="default"
-                      className={`flex-1 gap-2 transition-all sm:flex-none ${
+                      className={`flex-1 cursor-pointer gap-2 transition-all sm:flex-none ${
                         isRejectedLocally
                           ? 'bg-red-600 text-white shadow-md ring-2 ring-red-600/50 ring-offset-2 hover:bg-red-700'
                           : 'hover:border-red-200 hover:bg-red-50 hover:text-red-700'

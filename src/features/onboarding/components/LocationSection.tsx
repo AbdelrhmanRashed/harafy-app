@@ -103,6 +103,10 @@ export function LocationSection() {
           <FieldError>{baseLocationErrors.AddressText.message}</FieldError>
         )}
 
+        {!baseLocationErrors?.AddressText && baseLocationErrors?.Latitude && (
+          <FieldError>{baseLocationErrors.Latitude.message}</FieldError>
+        )}
+
         {denied && (
           <p className="text-destructive flex items-center gap-1 text-xs">
             <AlertCircle size={13} />

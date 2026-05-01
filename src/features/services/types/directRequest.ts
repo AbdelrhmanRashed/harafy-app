@@ -1,4 +1,5 @@
 export interface DirectRequestDetails {
+  isReported: boolean;
   clientId: number;
   createdAt: string;
   description: string;

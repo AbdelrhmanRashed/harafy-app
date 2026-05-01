@@ -9,6 +9,7 @@ import RolesPage from '@/features/admin/roles/pages/RolesPage';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/guards/ProtectedRoute';
 import CraftsmenDetailsPage from '@/features/admin/craftsmen/pages/CraftsmenDetailsPage';
+import BannedUsersPage from '@/features/admin/banned/pages/BannedUsersPage';
 
 const adminRoutes = [
   {
@@ -52,6 +53,11 @@ const adminRoutes = [
         path: 'reports',
         element: <ReportsPage />,
         handle: { title: 'التقارير' },
+      },
+      {
+        path: 'banned-users',
+        element: <BannedUsersPage />,
+        handle: { title: 'المحظورين' },
       },
       {
         path: 'settings',

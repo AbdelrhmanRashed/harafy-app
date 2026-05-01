@@ -21,6 +21,7 @@ interface AuthState {
 
   saveUser: (data: any) => void;
   removeUser: () => void;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => {
@@ -60,6 +61,18 @@ export const useAuthStore = create<AuthState>((set) => {
       localStorage.removeItem('isAuthenticated');
 
       set({ user: null, token: null, isAuthenticated: false });
+    },
+
+    updateUser: (updates) => {
+      set((state) => {
+        if (!state.user) return state;
+        const updatedUser = { ...state.user, ...updates };
+        
+        if (JSON.stringify(state.user) === JSON.stringify(updatedUser)) return state;
+
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return { user: updatedUser };
+      });
     },
   };
 });

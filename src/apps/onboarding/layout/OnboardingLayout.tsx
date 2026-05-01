@@ -4,6 +4,7 @@ import InfoCard from '@/features/onboarding/components/InfoCard';
 import RegistrationStatusCard from '@/features/onboarding/components/RegistrationStatusCard';
 import { useAccountStatus } from '@/features/auth/hooks/useAccountStatus';
 import { getMainRole } from '@/lib/auth/getMainRole';
+import { Navbar } from '@/components/layout/navbar/Navbar';
 
 const OnboardingLayout = () => {
   const { data: accountStatus } = useAccountStatus();
@@ -13,6 +14,7 @@ const OnboardingLayout = () => {
 
   return (
     <div className="bg-background flex min-h-screen flex-col">
+      <Navbar hideLinks />
       <main className="mx-auto grid w-full max-w-7xl flex-1 gap-8 px-4 py-10 md:grid-cols-6 lg:gap-12">
         {/* Sidebar Logic */}
         {isProvider && (
@@ -23,7 +25,7 @@ const OnboardingLayout = () => {
             </div>
 
             {/* Desktop View */}
-            <div className="sticky top-10 hidden space-y-6 md:block">
+            <div className="sticky top-20 hidden space-y-6 md:block">
               <RegistrationStatusCard />
               <InfoCard />
             </div>

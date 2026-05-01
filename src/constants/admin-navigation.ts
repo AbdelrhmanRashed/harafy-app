@@ -1,12 +1,11 @@
 import {
   LayoutDashboard,
-  Users,
   FileText,
   Settings,
   ShieldUser,
   UserRoundCog,
-  NotepadText,
   type LucideIcon,
+  ShieldBan,
 } from 'lucide-react';
 
 interface NavLink {
@@ -28,6 +27,7 @@ export const ADMIN_NAV_LINKS: Record<'main' | 'settings', NavLink[]> = {
       icon: UserRoundCog,
       path: '/admin/craftsmen',
     },
+
     // {
     //   title: 'العملاء',
     //   icon: Users,
@@ -43,6 +43,11 @@ export const ADMIN_NAV_LINKS: Record<'main' | 'settings', NavLink[]> = {
       title: 'التقارير',
       icon: FileText,
       path: '/admin/reports',
+    },
+    {
+      title: 'المحظورين',
+      icon: ShieldBan,
+      path: '/admin/banned-users',
     },
   ],
   settings: [

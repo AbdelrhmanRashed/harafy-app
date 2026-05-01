@@ -52,7 +52,7 @@ const ProfileCard = ({
         </div>
 
         {/* Stats Grid */}
-        <div className="bg-muted/50 grid grid-cols-2 gap-4 rounded-2xl px-2 py-3">
+        {/* <div className="bg-muted/50 grid grid-cols-2 gap-4 rounded-2xl px-2 py-3">
           <div className="text-center">
             <p className="text-muted-foreground text-[10px] tracking-wider uppercase">
               المنشورات
@@ -65,20 +65,22 @@ const ProfileCard = ({
             </p>
             <p className="text-md text-primary font-bold">850</p>
           </div>
-        </div>
+        </div> */}
 
         {/* Rating Section */}
-        <div className="mt-6 space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-foreground text-xs font-semibold">
-              مستوى التقييم
-            </span>
-            <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-bold">
-              4.8 / 5
-            </span>
+        {roles?.includes('Provider') && (
+          <div className="mt-6 space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-foreground text-xs font-semibold">
+                مستوى التقييم
+              </span>
+              <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-bold">
+                4.8 / 5
+              </span>
+            </div>
+            <Progress value={96} className="h-2 rtl:rotate-180" />
           </div>
-          <Progress value={96} className="h-2 rtl:rotate-180" />
-        </div>
+        )}
 
         {/* Action Button */}
         <Button

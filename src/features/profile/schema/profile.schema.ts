@@ -90,7 +90,7 @@ export const updateClientProfileSchema = z.object({
         message: 'يجب أن يكون العمر 16 سنة على الأقل',
       },
     ),
-  Picture: z.instanceof(File).optional(),
+  Picture: z.instanceof(File).refine(f => f.size <= 5 * 1024 * 1024, 'حجم الصورة يجب ألا يتجاوز 5 ميجابايت').optional(),
   // stored as {value: string}[] so react-hook-form useFieldArray works correctly
   PhoneNumbers: z
     .array(

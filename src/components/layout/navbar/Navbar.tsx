@@ -3,7 +3,11 @@ import MobileNavbar from './MobileNavbar';
 import type { UserRole } from '@/types/auth.types';
 import { useAuthStore } from '@/store/useAuthStore';
 
-export const Navbar = () => {
+interface NavbarProps {
+  hideLinks?: boolean;
+}
+
+export const Navbar = ({ hideLinks }: NavbarProps) => {
   const { user } = useAuthStore();
   const role: UserRole = user?.role.includes('Provider')
     ? 'Provider'
@@ -13,8 +17,8 @@ export const Navbar = () => {
 
   return (
     <>
-      <DesktopNavbar role={role} />
-      <MobileNavbar role={role} />
+      <DesktopNavbar role={role} hideLinks={hideLinks} />
+      <MobileNavbar role={role} hideLinks={hideLinks} />
     </>
   );
 };
