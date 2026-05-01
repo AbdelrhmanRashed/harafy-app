@@ -49,9 +49,15 @@ export const BuyCreditsModal = ({ open, onClose }: BuyCreditsModalProps) => {
       }
     );
 
-    setTimeout(() => {
+    const invalidate = () => {
       queryClient.invalidateQueries({ queryKey: ['provider-his-profile'] });
-    }, 1000);
+      queryClient.invalidateQueries({ queryKey: ['credit-transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['credit-transactions-all'] });
+    };
+
+    setTimeout(invalidate, 1000);
+    setTimeout(invalidate, 3000);
+    setTimeout(invalidate, 5000);
   };
 
   return (
