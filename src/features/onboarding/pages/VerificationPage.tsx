@@ -5,53 +5,34 @@ import { useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group';
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from '@/components/ui/field';
 
 import FileUploadCard from '../components/FileUploadCard';
-import { LocationSection } from '../components/LocationSection';
 
 import {
   FileText,
   Info,
-  Briefcase,
   IdCard,
   SquareUser,
-  User,
-  AlignLeft,
-  MapPin,
   Loader2,
   CheckCircle2,
   XCircle,
   Clock,
   type LucideIcon,
 } from 'lucide-react';
+
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
-import ServicesDropdown from '../components/ServicesDropdown';
 import { cn, getImageUrl } from '@/lib/utils';
 
-import { verificationSchema } from '../schemas/verification.schema';
-import { useUpdateProviderProfile } from '../hooks/useUpdateProviderProfile';
+import { documentationSchema } from '../schemas/documentation.schema';
 import { useUploadDocuments } from '../hooks/useUploadDocuments';
 import { useGetProviderDocs } from '../hooks/useGetProviderDocs';
 import { useUpdateProviderDocs } from '../hooks/useUpdateProviderDocs';
-import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
 import { toast } from 'sonner';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type VerificationFormData = z.infer<typeof verificationSchema>;
+type DocumentationFormData = z.infer<typeof documentationSchema>;
 
 interface ProviderDoc {
   id: number;
@@ -65,7 +46,7 @@ interface ProviderDoc {
 const DOC_META: Record<
   number,
   {
-    field: keyof VerificationFormData;
+    field: keyof DocumentationFormData;
     title: string;
     icon: LucideIcon;
     description: string;
@@ -210,18 +191,12 @@ const DocSlot = ({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const VerificationPage = () => {
-  const { data: profile } = useClientProfile();
   const { data: existingDocs, isLoading: isLoadingDocs } = useGetProviderDocs();
 
-  const { mutateAsync: updateProfile, isPending: isUpdatingProfile } =
-    useUpdateProviderProfile();
   const { mutateAsync: uploadDocs, isPending: isUploadingDocs } =
     useUploadDocuments();
   const { mutateAsync: updateDoc, isPending: isUpdatingDocs } =
     useUpdateProviderDocs();
-
-  const governorateId = profile?.governorateId;
-  const regionId = profile?.regionId;
 
   // Track newly selected files in update-mode (keyed by documentType)
   const [newFiles, setNewFiles] = useState<Record<number, File | undefined>>(
@@ -237,50 +212,25 @@ const VerificationPage = () => {
 
   const docs = hasExistingDocs ? (existingDocs as ProviderDoc[]) : [];
 
-  const isSubmitting = isUpdatingProfile || isUploadingDocs || isUpdatingDocs;
+  const isSubmitting = isUploadingDocs || isUpdatingDocs;
 
-  const methods = useForm<VerificationFormData>({
-    resolver: zodResolver(verificationSchema as any),
-    defaultValues: {
-      Bio: '',
-      Nickname: '',
-      BaseLocation: { Latitude: 0, Longitude: 0, AddressText: '' },
-      GovernorateId: 0,
-      RegionId: 0,
-      ServiceIds: [],
-    } as any,
+  const methods = useForm<DocumentationFormData>({
+    resolver: zodResolver(documentationSchema as any),
+    defaultValues: {} as any,
   });
 
   const {
-    register,
     handleSubmit,
-    control,
     setValue,
     formState: { errors },
   } = methods;
 
   // ── Submit handler ──────────────────────────────────────────────────────────
 
-  const onSubmit = async (data: VerificationFormData) => {
-    const profileData = {
-      Bio: data.Bio || '',
-      Nickname: data.Nickname || '',
-      GovernorateId: governorateId,
-      RegionId: regionId,
-      BaseLocation: {
-        Latitude: data.BaseLocation.Latitude,
-        Longitude: data.BaseLocation.Longitude,
-        AddressText: data.BaseLocation.AddressText,
-      },
-      ServiceIds: data.ServiceIds,
-    };
-
+  const onSubmit = async (data: DocumentationFormData) => {
     try {
-      // 1) Always update profile
-      await updateProfile(profileData);
-
       if (isFirstUpload) {
-        // 2a) First time → all 3 docs are required
+        // First time → all 3 docs are required
         if (!data.personalImage || !data.nationalId || !data.criminalRecord) {
           toast.error('يرجى رفع جميع المستندات المطلوبة');
           return;
@@ -292,9 +242,8 @@ const VerificationPage = () => {
           { file: data.criminalRecord as File, type: 3 },
         ];
         await uploadDocs(docsToUpload);
-        console.log(docsToUpload);
       } else {
-        // 2b) Has existing docs → validate refused ones have a new file
+        // Has existing docs → validate refused ones have a new file
         const errors: Record<number, string> = {};
         docs.forEach((doc) => {
           if (doc.isApproved === false && !newFiles[doc.documentType]) {
@@ -310,7 +259,6 @@ const VerificationPage = () => {
 
         setDocErrors({});
 
-        // Build payload array and let the hook run Promise.all internally
         const docsToUpdate = docs
           .filter((doc) => !!newFiles[doc.documentType])
           .map((doc) => ({ docId: doc.id, file: newFiles[doc.documentType]! }));
@@ -320,10 +268,10 @@ const VerificationPage = () => {
         }
       }
 
-      toast.success('تم الإرسال بنجاح');
+      toast.success('تم إرسال المستندات بنجاح');
     } catch (err) {
       console.error(err);
-      toast.error('حدث خطأ أثناء الإرسال');
+      toast.error('حدث خطأ أثناء رفع المستندات');
     }
   };
 
@@ -335,100 +283,13 @@ const VerificationPage = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Header */}
               <div className="space-y-1">
-                <p className="text-muted-foreground text-xs">الخطوة 2 من 3</p>
+                <p className="text-muted-foreground text-xs">الخطوة 3 من 4</p>
                 <h1 className="text-foreground text-xl font-bold">
-                  إكمال بيانات الحرفي
+                  رفع المستندات
                 </h1>
                 <p className="text-muted-foreground text-sm">
-                  يرجى رفع المستندات المطلوبة لإثبات المهنة والهوية وتحديد نطاق
-                  عملك.
+                  يرجى رفع المستندات المطلوبة لإثبات الهوية والمهنة.
                 </p>
-              </div>
-
-              <Separator />
-
-              {/* Profile Info */}
-              <div className="space-y-3">
-                <div className="text-md flex items-center gap-2 font-bold">
-                  <User size={16} className="text-primary" />
-                  المعلومات الشخصية
-                </div>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <Field data-invalid={!!errors.Nickname}>
-                    <FieldLabel>الاسم المستعار (اختياري)</FieldLabel>
-                    <InputGroup className="rounded-lg px-3 py-5">
-                      <InputGroupInput
-                        {...register('Nickname')}
-                        placeholder="مثال: أبو محمد النجار"
-                      />
-                      <InputGroupAddon align="inline-start">
-                        <User className="text-muted-foreground" />
-                      </InputGroupAddon>
-                    </InputGroup>
-                    {errors.Nickname && (
-                      <FieldError>{errors.Nickname.message}</FieldError>
-                    )}
-                  </Field>
-                </div>
-
-                <Field data-invalid={!!errors.Bio}>
-                  <FieldLabel>نبذة تعريفية (اختياري)</FieldLabel>
-                  <div className="relative">
-                    <AlignLeft
-                      size={16}
-                      className="text-muted-foreground absolute inset-s-3 top-3 z-10"
-                    />
-                    <Textarea
-                      {...register('Bio')}
-                      placeholder="اكتب نبذة مختصرة عن خبرتك وأعمالك..."
-                      className="min-h-[80px] resize-none rounded-lg ps-9"
-                    />
-                  </div>
-                  {errors.Bio && <FieldError>{errors.Bio.message}</FieldError>}
-                </Field>
-              </div>
-
-              <Separator />
-
-              {/* Service Details */}
-              <div className="space-y-3">
-                <div className="text-md flex items-center gap-2 font-bold">
-                  <Briefcase size={16} className="text-primary" />
-                  تفاصيل الخدمة
-                </div>
-                <Field
-                  className="font-semibold"
-                  data-invalid={!!errors.ServiceIds}
-                >
-                  <FieldLabel>اختر الخدمات التي تقدمها</FieldLabel>
-                  <ServicesDropdown
-                    control={control}
-                    errors={errors}
-                    name="ServiceIds"
-                    multiple
-                  />
-                  {errors.ServiceIds && (
-                    <FieldError>
-                      {Array.isArray(errors.ServiceIds)
-                        ? errors.ServiceIds[0]?.message
-                        : (errors.ServiceIds as { message?: string })?.message}
-                    </FieldError>
-                  )}
-                  <FieldDescription>
-                    يمكنك اختيار خدمتين كحد أقصى
-                  </FieldDescription>
-                </Field>
-              </div>
-
-              <Separator />
-
-              {/* Location */}
-              <div className="space-y-3">
-                <div className="text-md flex items-center gap-2 font-bold">
-                  <MapPin size={16} className="text-primary" />
-                  الموقع والنطاق الجغرافي
-                </div>
-                <LocationSection />
               </div>
 
               <Separator />
@@ -448,32 +309,36 @@ const VerificationPage = () => {
                 ) : (
                   <>
                     {/* Global status banner for existing docs */}
-                    {hasExistingDocs && docs.some((d) => d.isApproved === false) && (
-                      <Alert className="border-destructive/30 bg-destructive/5 rounded-xl border p-4">
-                        <AlertDescription className="text-destructive flex items-center gap-2 text-sm">
-                          <XCircle size={16} />
-                          بعض مستنداتك مرفوضة. يرجى إعادة رفعها ثم اضغط إرسال.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                    {hasExistingDocs && docs.some((d) => d.isApproved === null) && !docs.some((d) => d.isApproved === false) && (
-                      <Alert className="border-yellow-300/50 bg-yellow-50 dark:bg-yellow-900/10 rounded-xl border p-4">
-                        <AlertDescription className="text-yellow-700 dark:text-yellow-500 flex items-center gap-2 text-sm">
-                          <Clock size={16} />
-                          بعض مستنداتك لا تزال قيد المراجعة.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                    {hasExistingDocs && docs.every((d) => d.isApproved === true) && (
-                      <Alert className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
-                        <AlertDescription className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
-                          <CheckCircle2 size={16} />
-                          جميع مستنداتك مقبولة. يمكنك تحديثها إذا أردت.
-                        </AlertDescription>
-                      </Alert>
-                    )}
+                    {hasExistingDocs &&
+                      docs.some((d) => d.isApproved === false) && (
+                        <Alert className="border-destructive/30 bg-destructive/5 rounded-xl border p-4">
+                          <AlertDescription className="text-destructive flex items-center gap-2 text-sm">
+                            <XCircle size={16} />
+                            بعض مستنداتك مرفوضة. يرجى إعادة رفعها ثم اضغط إرسال.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    {hasExistingDocs &&
+                      docs.some((d) => d.isApproved === null) &&
+                      !docs.some((d) => d.isApproved === false) && (
+                        <Alert className="rounded-xl border border-yellow-300/50 bg-yellow-50 p-4 dark:bg-yellow-900/10">
+                          <AlertDescription className="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-500">
+                            <Clock size={16} />
+                            بعض مستنداتك لا تزال قيد المراجعة.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    {hasExistingDocs &&
+                      docs.every((d) => d.isApproved === true) && (
+                        <Alert className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950/30">
+                          <AlertDescription className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+                            <CheckCircle2 size={16} />
+                            جميع مستنداتك مقبولة. يمكنك تحديثها إذا أردت.
+                          </AlertDescription>
+                        </Alert>
+                      )}
 
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       {/* ── Update mode: show status per doc slot ── */}
                       {hasExistingDocs &&
                         docs.map((doc) => {
@@ -546,13 +411,6 @@ const VerificationPage = () => {
 
               {/* Single submit button — always visible */}
               <div className="flex items-center justify-end gap-4 pt-4">
-                <Button
-                  variant="outline"
-                  type="button"
-                  className="h-11 cursor-pointer rounded-lg px-6"
-                >
-                  حفظ كمسودة
-                </Button>
                 <Button
                   variant="gradient"
                   type="submit"

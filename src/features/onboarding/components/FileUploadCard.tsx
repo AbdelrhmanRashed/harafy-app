@@ -85,7 +85,7 @@ const FileUploadCard = ({
       <Card
         {...getRootProps()}
         className={cn(
-          'relative cursor-pointer overflow-hidden rounded-xl border-2 border-dashed p-6 text-center shadow-none ring-0 transition-all duration-200',
+          'relative flex min-h-[300px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed p-6 text-center shadow-none ring-0 transition-all duration-200',
 
           isDragActive
             ? 'border-primary bg-primary/5 ring-primary/10 scale-[1.01]'
@@ -104,7 +104,7 @@ const FileUploadCard = ({
           <div className="animate-in fade-in zoom-in-95 relative duration-300">
             <div className="flex flex-col items-center space-y-4">
               {isImage && !currentFile?.name.endsWith('.pdf') ? (
-                <div className="border-border relative h-28 w-28 overflow-hidden rounded-lg border shadow-md">
+                <div className="border-border relative h-72 max-w-72 overflow-hidden rounded-lg border shadow-md">
                   <img
                     src={preview}
                     alt="Preview"

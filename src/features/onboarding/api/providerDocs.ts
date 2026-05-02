@@ -39,3 +39,8 @@ export const updateProviderDocs = async (docId: number, docs: FormData) => {
     throw error;
   }
 };
+
+export const getMyProviderProfile = async () => {
+  const res = await axiosInstance.get('/api/Provider/get-my-provider-profile');
+  return res.data;
+};

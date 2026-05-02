@@ -8,9 +8,11 @@ export const useUpdateProviderProfile = () => {
     mutationFn: updateProviderProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['account-status'] });
+      queryClient.invalidateQueries({ queryKey: ['my-provider-profile'] });
     },
     onError: () => {
       toast.error('حدث خطأ أثناء تحديث الملف الشخصي');
     },
   });
 };
+

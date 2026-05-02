@@ -1,5 +1,6 @@
 import OnboardingLayout from './layout/OnboardingLayout';
 import VerificationPage from '@/features/onboarding/pages/VerificationPage';
+import ProviderProfilePage from '@/features/onboarding/pages/ProviderProfilePage';
 import ReviewPage from '@/features/onboarding/pages/ReviewPage';
 import UserProfileSettings from '@/features/onboarding/pages/UserProfileSettings';
 import { Navigate } from 'react-router-dom';
@@ -26,7 +27,16 @@ const onboardingRoutes = [
             <UserProfileSettings />
           </OnboardingGuard>
         ),
-        handle: { title: 'معلومات الملف الشخصي' },
+        handle: { title: 'المعلومات الشخصية' },
+      },
+      {
+        path: 'provider-profile',
+        element: (
+          <OnboardingGuard>
+            <ProviderProfilePage />
+          </OnboardingGuard>
+        ),
+        handle: { title: 'بيانات المهنة' },
       },
       {
         path: 'verification',
@@ -35,7 +45,7 @@ const onboardingRoutes = [
             <VerificationPage />
           </OnboardingGuard>
         ),
-        handle: { title: 'التحقق' },
+        handle: { title: 'رفع المستندات' },
       },
       {
         path: 'review',

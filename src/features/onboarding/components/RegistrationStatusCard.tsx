@@ -9,10 +9,15 @@ const STEPS = [
   { id: 1, label: 'المعلومات الشخصية', path: '/onboarding/user-profile' },
   {
     id: 2,
-    label: 'بيانات المهنة و التراخيص',
+    label: 'بيانات المهنة',
+    path: '/onboarding/provider-profile',
+  },
+  {
+    id: 3,
+    label: 'التراخيص والمستندات',
     path: '/onboarding/verification',
   },
-  { id: 3, label: 'المراجعة والاعتماد', path: '/onboarding/review' },
+  { id: 4, label: 'المراجعة والاعتماد', path: '/onboarding/review' },
 ];
 
 const RegistrationStatusCard = () => {
