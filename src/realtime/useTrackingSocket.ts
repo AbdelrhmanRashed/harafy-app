@@ -6,9 +6,8 @@ export const useTrackingSocket = (
   onLocation?: (lat: number, lng: number) => void,
 ) => {
   const connectionRef = useRef<signalR.HubConnection | null>(null);
-  const onLocationRef = useRef(onLocation); // ✅ ref للـ callback
+  const onLocationRef = useRef(onLocation);
 
-  // ✅ حدّث الـ ref من غير ما تعمل re-run للـ effect
   useEffect(() => {
     onLocationRef.current = onLocation;
   }, [onLocation]);
@@ -16,7 +15,6 @@ export const useTrackingSocket = (
   useEffect(() => {
     if (!providerId) return;
 
-    // ✅ لو في connection شغالة متعملش تانية
     if (connectionRef.current) return;
 
     let cancelled = false;
@@ -30,7 +28,6 @@ export const useTrackingSocket = (
       .configureLogging(signalR.LogLevel.None)
       .build();
 
-    // ✅ استخدم الـ ref مش الـ callback مباشرة
     connection.on('ReceiveLocation', (data) => {
       onLocationRef.current?.(data.latitude, data.longitude);
     });
@@ -54,5 +51,5 @@ export const useTrackingSocket = (
       connectionRef.current = null;
       connection.stop().catch(() => {});
     };
-  }, [providerId]); // ✅ providerId بس مش onLocation
+  }, [providerId]);
 };

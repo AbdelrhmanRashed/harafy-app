@@ -4,7 +4,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
-// 🎯 type mapping
 const mapType = (type: number): 'info' | 'success' | 'warning' | 'error' => {
   switch (type) {
     case 1:
@@ -24,12 +23,10 @@ export const useNotificationSocket = (token: string | null) => {
 
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
-  // 🔥 tracking shown notifications (important)
   const shownRef = useRef<Set<number>>(new Set());
 
   const [connected, setConnected] = useState(false);
 
-  // ✅ load shown notifications from localStorage
   useEffect(() => {
     const stored = localStorage.getItem('shown_notifications');
 
@@ -48,7 +45,6 @@ export const useNotificationSocket = (token: string | null) => {
       .withAutomaticReconnect()
       .build();
 
-    // ✅ connected
     connection.onreconnected(() => {
       setConnected(true);
     });
@@ -61,9 +57,7 @@ export const useNotificationSocket = (token: string | null) => {
       setConnected(false);
     });
 
-    // 📩 receive notification
     connection.on('ReceiveNotification', (data) => {
-      // 🧠 update cache (infinite query)
       qc.setQueryData(['notifications'], (old: any) => {
         if (!old) return old;
 
@@ -82,17 +76,13 @@ export const useNotificationSocket = (token: string | null) => {
         };
       });
 
-      // 🚫 prevent duplicate toast (حتى بعد refresh)
       if (shownRef.current.has(data.id)) return;
 
       shownRef.current.add(data.id);
 
-      // 🧹 limit size (performance)
       if (shownRef.current.size > 50) {
         shownRef.current = new Set(Array.from(shownRef.current).slice(-50));
       }
-
-      // 💾 save
       localStorage.setItem(
         'shown_notifications',
         JSON.stringify(Array.from(shownRef.current)),
@@ -103,7 +93,6 @@ export const useNotificationSocket = (token: string | null) => {
       audio.currentTime = 0;
       audio.play().catch(() => {});
 
-      // 🔔 toast
       toast[mapType(data.type)](data.title, {
         description: data.message,
         action: {
@@ -115,7 +104,6 @@ export const useNotificationSocket = (token: string | null) => {
       });
     });
 
-    // 🚀 start connection
     connection
       .start()
       .then(() => {
