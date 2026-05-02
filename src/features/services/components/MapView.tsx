@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -14,7 +14,21 @@ import type { LatLng, Provider } from '../types/types.ts';
 import LoadingSpinner from '@/components/shared/LoadingSpinner.tsx';
 import { Search, X } from 'lucide-react';
 
-// ─── Map click handler ─────────────────────────────────────────
+// ─── Haversine ────────────────────────────────────────────────
+function getDistanceMeters(a: LatLng, b: LatLng): number {
+  const R = 6371e3;
+  const φ1 = (a.lat * Math.PI) / 180;
+  const φ2 = (b.lat * Math.PI) / 180;
+  const Δφ = ((b.lat - a.lat) * Math.PI) / 180;
+  const Δλ = ((b.lng - a.lng) * Math.PI) / 180;
+  const x =
+    Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+const CENTER_MOVE_THRESHOLD_M = 20; // أقل من 20م → مش هنحرك الماب
+
+// ─── Map click handler ────────────────────────────────────────
 function MapClickHandler({
   onLocationSelect,
 }: {
@@ -31,9 +45,30 @@ function MapClickHandler({
 // ─── Fly to center ────────────────────────────────────────────
 function ChangeView({ center, zoom }: { center: LatLng; zoom?: number }) {
   const map = useMap();
+  const lastCenterRef = useRef<LatLng | null>(null);
+  const userMovedRef = useRef(false);
+
+  useMapEvents({
+    dragstart() {
+      userMovedRef.current = true;
+    },
+    locationfound() {
+      userMovedRef.current = false;
+    },
+  });
 
   useEffect(() => {
-    map.flyTo([center.lat, center.lng], zoom || 14, {
+    const prev = lastCenterRef.current;
+
+    const movedEnough =
+      !prev || getDistanceMeters(prev, center) >= CENTER_MOVE_THRESHOLD_M;
+    if (!movedEnough) return;
+
+    lastCenterRef.current = center;
+
+    if (userMovedRef.current) return; // حفظنا الـ center الجديد بس ما نطيرش
+
+    map.flyTo([center.lat, center.lng], zoom ?? 14, {
       duration: 1.5,
       animate: true,
     });
@@ -59,6 +94,43 @@ interface MapViewProps {
 
 const ZAGAZIG_COORDS: LatLng = { lat: 30.5877, lng: 31.502 };
 
+// ─── Stable center hook ───────────────────────────────────────
+// بيحسب effectiveCenter مرة واحدة بس لما الـ provider يتحرك أكتر من 20م
+function useStableCenter(
+  liveProviderPos: { lat: number; lng: number } | null | undefined,
+  fallback: LatLng,
+): LatLng {
+  const prevLiveRef = useRef<LatLng | null>(null);
+  const [stableCenter, setStableCenter] = useState<LatLng>(
+    liveProviderPos ?? fallback,
+  );
+
+  useEffect(() => {
+    if (!liveProviderPos) {
+      prevLiveRef.current = null;
+      setStableCenter(fallback);
+      return;
+    }
+
+    const current: LatLng = {
+      lat: liveProviderPos.lat,
+      lng: liveProviderPos.lng,
+    };
+
+    const moved = !prevLiveRef.current
+      ? Infinity
+      : getDistanceMeters(prevLiveRef.current, current);
+
+    if (moved >= CENTER_MOVE_THRESHOLD_M) {
+      prevLiveRef.current = current;
+      setStableCenter(current);
+    }
+  }, [liveProviderPos?.lat, liveProviderPos?.lng, fallback]);
+
+  return stableCenter;
+}
+
+// ─── Component ────────────────────────────────────────────────
 export default function MapView({
   center = ZAGAZIG_COORDS,
   customerPos = ZAGAZIG_COORDS,
@@ -67,15 +139,15 @@ export default function MapView({
   route = [],
   allowMapPickLocation = true,
   onLocationSelect = () => {},
-  // onProviderSelect = () => {},
   onAddressSearch = () => {},
   liveProviderPos,
   zoom,
 }: MapViewProps) {
   const [mapSearch, setMapSearch] = useState('');
-  const effectiveCenter = liveProviderPos
-    ? { lat: liveProviderPos.lat, lng: liveProviderPos.lng }
-    : center;
+
+  // ← التغيير الجوهري: بدل effectiveCenter المتغير مع كل ping
+  const stableCenter = useStableCenter(liveProviderPos, center);
+
   return (
     <div className="relative h-full w-full">
       {!liveProviderPos && selectedProvider && (
@@ -88,7 +160,7 @@ export default function MapView({
           </div>
         </div>
       )}
-      {/* 🔍 Search */}
+
       {allowMapPickLocation && (
         <div className="absolute top-4 left-1/2 z-500 w-[90%] max-w-md -translate-x-1/2">
           <div className="group border-border/50 bg-background/80 focus-within:ring-primary/10 flex flex-row-reverse items-center gap-3 rounded-full px-4 py-3 shadow-lg backdrop-blur-xl transition-all">
@@ -127,26 +199,23 @@ export default function MapView({
         </div>
       )}
 
-      {/* 🗺️ Map */}
       <MapContainer
-        center={[effectiveCenter.lat, effectiveCenter.lng]}
+        center={[stableCenter.lat, stableCenter.lng]}
         zoom={zoom || 13}
         className="h-full w-full"
         zoomControl={false}
       >
-        <ChangeView center={effectiveCenter} zoom={zoom} />
+        <ChangeView center={stableCenter} zoom={zoom} />
 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* 📍 pick location */}
         {allowMapPickLocation && (
           <MapClickHandler onLocationSelect={onLocationSelect} />
         )}
 
-        {/* 👤 Customer */}
         <Marker
           position={[customerPos.lat, customerPos.lng]}
           icon={customerIcon}
@@ -156,11 +225,10 @@ export default function MapView({
           </Popup>
         </Marker>
 
-        {/* 👷 Nearby Providers (بدون المختار) */}
         {providers
           ?.filter(
             (p) =>
-              p.id !== selectedProvider?.id && // ❌ منع التكرار
+              p.id !== selectedProvider?.id &&
               p.baseLocation?.latitude &&
               p.baseLocation?.longitude,
           )
@@ -178,11 +246,6 @@ export default function MapView({
                 provider.avatar,
                 provider,
               )}
-              eventHandlers={
-                {
-                  // click: () => onProviderSelect(provider),
-                }
-              }
             >
               <Popup>
                 <div className="text-right text-sm">
@@ -195,7 +258,6 @@ export default function MapView({
             </Marker>
           ))}
 
-        {/* 🚀 Live Provider (المختار فقط) */}
         {liveProviderPos && selectedProvider && (
           <Marker
             position={[liveProviderPos.lat, liveProviderPos.lng]}
@@ -210,15 +272,10 @@ export default function MapView({
           </Marker>
         )}
 
-        {/* 🛣️ Route */}
         {liveProviderPos && liveProviderPos.lat !== 0 && route?.length > 1 && (
           <Polyline
             positions={route.map((p) => [p.lat, p.lng])}
-            pathOptions={{
-              color: '#7C3AED',
-              weight: 4,
-              opacity: 0.8,
-            }}
+            pathOptions={{ color: '#7C3AED', weight: 4, opacity: 0.8 }}
           />
         )}
       </MapContainer>
