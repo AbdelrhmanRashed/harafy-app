@@ -24,7 +24,9 @@ const MobileNavbar = ({ role, hideLinks }: MobileNavbarProps) => {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      {!hideLinks && <NavLinks navLinks={getNavLinks(role)} mobile />}
+      {!hideLinks && role !== 'Guest' && (
+        <NavLinks navLinks={getNavLinks(role)} mobile />
+      )}
     </>
   );
 };

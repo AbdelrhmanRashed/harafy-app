@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/tooltip';
 import { useTheme } from '@/hooks/useTheme';
 import { useNotificationSocket } from '@/realtime/useNotificationSocket';
-import { useAuthStore } from '@/store/useAuthStore';
 import NotificationCenter from '@/components/shared/NotificationCenter';
 import {
   useMarkAsRead,
@@ -20,10 +19,9 @@ const ProviderActions = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { token } = useAuthStore();
 
   // ── Realtime notification ───────────────────────────────────────────────────
-  const { connected } = useNotificationSocket(token);
+  const { connected } = useNotificationSocket();
   // ── Get all notifications ───────────────────────────────────────────────────
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useNotifications();
