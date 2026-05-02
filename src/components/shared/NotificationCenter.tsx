@@ -242,7 +242,7 @@ export default function NotificationCenter({
         {notifications.length > 0 && (
           <div
             ref={setFiltersEl}
-            className="bg-muted/10 relative flex items-center gap-1 overflow-x-auto border-b px-3 py-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="bg-muted/10 relative flex items-center gap-1 overflow-x-auto border-b px-3 py-2"
           >
             {FILTER_OPTIONS.map((filter) => {
               const isActive = activeFilter === filter.id;
@@ -289,7 +289,7 @@ export default function NotificationCenter({
         <div
           ref={listRef}
           onScroll={handleScroll}
-          className="max-h-112 overflow-x-hidden overflow-y-auto p-1.5"
+          className="max-h-80 overflow-x-hidden overflow-y-auto p-1.5"
         >
           {/* Skeleton State */}
           {isLoading ? (

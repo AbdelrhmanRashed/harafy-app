@@ -86,42 +86,52 @@ const OrderTrackPage = () => {
   );
 
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row" dir="ltr">
-      <div className="flex-1">
-        <MapView
-          center={providerPos ?? clientPos}
-          customerPos={clientPos ?? providerPos}
-          providers={[]}
-          selectedProvider={
-            {
-              id: 'current-provider',
-              name: 'أنا (الفني)',
-              pictureUrl: '',
-              services: [{ name: serviceName }],
-              rating: 5,
-            } as any
-          }
-          liveProviderPos={providerPos}
-          route={route}
-          onLocationSelect={setProviderPos}
-          onProviderSelect={() => {}}
-          onAddressSearch={() => {}}
-          allowMapPickLocation={false}
-          zoom={getDynamicZoom()}
-        />
+    <div className="flex h-[calc(100vh-4rem)] flex-col md:flex-row overflow-hidden" dir="ltr">
+      <div className="relative flex-1 transition-all duration-300">
+        <div className="absolute inset-0">
+          <MapView
+            center={providerPos ?? clientPos}
+            customerPos={clientPos ?? providerPos}
+            providers={[]}
+            selectedProvider={
+              {
+                id: 'current-provider',
+                name: 'أنا (الفني)',
+                pictureUrl: '',
+                services: [{ name: serviceName }],
+                rating: 5,
+              } as any
+            }
+            liveProviderPos={providerPos}
+            route={route}
+            onLocationSelect={setProviderPos}
+            onProviderSelect={() => {}}
+            onAddressSearch={() => {}}
+            allowMapPickLocation={false}
+            zoom={getDynamicZoom()}
+          />
+        </div>
       </div>
 
 <aside
   dir="rtl"
   className={cn(
-    'bg-background/95 fixed inset-y-0 right-0 z-1050 flex w-full max-w-full flex-col backdrop-blur-xl transition-transform duration-300 ease-out',
-    'md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none',
-    sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
+    // Base & Mobile layout: Instead of fixed, it takes flex space so the map resizes!
+    'bg-background/95 z-20 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
+    // Desktop layout
+    'md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
+    // Toggle State (Mobile uses height, Desktop is always visible)
+    sidebarOpen ? 'h-[60vh] md:h-auto' : 'h-0 overflow-hidden md:h-auto md:overflow-visible',
   )}
 >
-  {/* Mobile handle */}
-  <div className="flex shrink-0 items-center justify-between px-5 pt-4 pb-3 md:hidden">
-    <h2 className="text-foreground text-base font-black">تفاصيل الطلب</h2>
+  {/* Mobile Drag Indicator */}
+  <div className="flex w-full justify-center pt-3 pb-1 md:hidden">
+    <div className="bg-muted-foreground/30 h-1.5 w-12 rounded-full" />
+  </div>
+
+  {/* Header */}
+  <div className="flex shrink-0 items-center justify-between px-5 pt-2 pb-3 md:pt-6">
+    <h2 className="text-foreground text-lg font-black">تفاصيل الطلب</h2>
     <button
       type="button"
       onClick={() => setSidebarOpen(false)}
@@ -291,9 +301,10 @@ const OrderTrackPage = () => {
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="absolute bottom-6 left-4 z-9999 flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md md:hidden"
+          className="bg-primary text-primary-foreground absolute bottom-6 left-1/2 z-99999 flex -translate-x-1/2 items-center gap-2 rounded-full px-6 py-3 font-bold shadow-xl transition-all hover:scale-105 active:scale-95 md:hidden"
         >
-          <Menu className="text-foreground h-5 w-5" />
+          <Menu className="h-5 w-5" />
+          عرض التفاصيل
         </button>
       )}
 
