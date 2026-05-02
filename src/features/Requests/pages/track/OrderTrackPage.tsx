@@ -151,7 +151,7 @@ const OrderTrackPage = () => {
       className="relative flex h-[calc(100vh-8rem)] flex-col overflow-hidden md:h-[calc(100vh-4rem)] md:flex-row"
       dir="ltr"
     >
-      <div className="relative flex-1 transition-all duration-300">
+      <div className="relative flex-1 transition-all duration-300 z-0">
         <div className="absolute inset-0">
           <MapView
             center={providerPos ?? clientPos ?? { lat: 30.5877, lng: 31.502 }}
@@ -175,7 +175,7 @@ const OrderTrackPage = () => {
       <aside
         dir="rtl"
         className={cn(
-          'bg-background/95 z-20 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
+          'bg-background/95 z-[1000] flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
           'absolute right-0 bottom-0 left-0 md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
           sidebarOpen
             ? 'h-[60vh] translate-y-0 md:h-auto'
@@ -364,7 +364,7 @@ const OrderTrackPage = () => {
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="bg-primary text-primary-foreground absolute bottom-6 left-1/2 z-99999 flex -translate-x-1/2 items-center gap-2 rounded-full px-6 py-3 font-bold shadow-xl transition-all hover:scale-105 active:scale-95 md:hidden"
+          className="bg-primary text-primary-foreground absolute bottom-6 left-1/2 z-[1000] flex -translate-x-1/2 items-center gap-2 rounded-full px-6 py-3 font-bold shadow-xl transition-all hover:scale-105 active:scale-95 md:hidden"
         >
           <Menu className="h-5 w-5" />
           عرض التفاصيل

@@ -33,12 +33,14 @@ export default function Step2CreateOffer({
 
   const handleSubmit = () => {
     const numPrice = Number(price);
-    if (!numPrice || numPrice <= 0) return;
+    const trimmedMessage = message.trim();
+    if (!numPrice || numPrice <= 0 || !trimmedMessage) return;
+    
     create(
       {
         serviceRequestId: request.id,
         price: numPrice,
-        message: message.trim() || undefined,
+        message: trimmedMessage,
       },
       {
         onSuccess: (data) => {
@@ -46,7 +48,7 @@ export default function Step2CreateOffer({
             offerId: data?.id ?? data?.offerId ?? 0,
             serviceRequestId: request.id,
             price: numPrice,
-            message: message.trim() || undefined,
+            message: trimmedMessage,
           });
         },
       },
@@ -65,7 +67,7 @@ export default function Step2CreateOffer({
   const [lightbox, setLightbox] = useState<string | null>(null);
   return (
     <div
-      className="flex h-full flex-col gap-5 px-4 py-4 pb-8 sm:px-5"
+      className="flex min-h-full flex-col gap-5 px-4 py-4 pb-8 sm:px-5"
       dir="rtl"
     >
       {/* Header */}
@@ -109,9 +111,11 @@ export default function Step2CreateOffer({
           </div>
 
           {/* Description */}
-          <p className="text-muted-foreground line-clamp-3 text-xs leading-relaxed">
-            {request.description || 'لا يوجد وصف مضاف لهذا الطلب.'}
-          </p>
+          <div className="bg-muted/30 rounded-xl p-3">
+            <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+              {request.description || 'لا يوجد وصف مضاف لهذا الطلب.'}
+            </p>
+          </div>
 
           {/* Meta Details: Location & Time */}
           <div className="border-border/50 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
@@ -178,7 +182,7 @@ export default function Step2CreateOffer({
         {/* Message */}
         <div className="flex flex-col gap-2">
           <label className="text-foreground text-sm font-bold">
-            رسالة للعميل{' '}
+            رسالة للعميل <span className="text-red-500">*</span>
           </label>
           <textarea
             value={message}
@@ -194,7 +198,7 @@ export default function Step2CreateOffer({
       <div className="mt-auto pt-2">
         <Button
           onClick={handleSubmit}
-          disabled={isPending || !price || Number(price) <= 0}
+          disabled={isPending || !price || Number(price) <= 0 || !message.trim()}
           className="h-14 w-full gap-2 rounded-2xl text-base font-bold"
           variant="gradient"
         >

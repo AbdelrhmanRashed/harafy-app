@@ -121,94 +121,87 @@ const RequestsPage = () => {
   }, [submittedOffer, selectedRequest, navigate]);
 
   return (
-    <div className="bg-background relative flex h-[calc(100vh-64px)] flex-col overflow-hidden md:flex-row">
-      {/* Sidebar */}
+    <div
+      className="bg-background relative flex h-[calc(100vh-8rem)] flex-col overflow-hidden md:h-[calc(100vh-4rem)] md:flex-row"
+      dir="ltr"
+    >
+      {/* Map — fills all remaining space beside the sidebar */}
+      <div className="relative flex-1 transition-all duration-300 z-0">
+        <div className="absolute inset-0">
+          <MapView
+            onLocationSelect={setProviderPos}
+            center={mapCenter}
+            customerPos={requestPos ?? providerPos}
+            providers={[]}
+            selectedProvider={null}
+            route={route}
+            onProviderSelect={() => {}}
+            onAddressSearch={searchAddress}
+          />
+        </div>
+      </div>
+
+      {/* Sidebar - Bottom Sheet on Mobile */}
       <aside
+        dir="rtl"
         className={cn(
-          // Mobile: fixed full-screen drawer from right
-          'border-border bg-sidebar fixed inset-y-0 right-0 z-1100 flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
-          // Desktop: static side panel, always visible, not overlapping the map
-          'md:relative md:inset-auto md:z-auto md:w-[420px] md:shrink-0 md:translate-x-0 md:border-l md:transition-none',
-          sidebarOpen ? 'translate-x-0' : 'translate-x-full',
+          'bg-background/95 z-[1000] flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
+          'absolute right-0 bottom-0 left-0 md:relative md:w-full md:max-w-[420px] md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
+          sidebarOpen
+            ? 'h-[85vh] translate-y-0 md:h-full'
+            : 'h-[45vh] translate-y-0 md:h-full',
         )}
       >
-        {/* Mobile header */}
+        <div
+          className="flex w-full cursor-pointer justify-center pb-1 pt-3 md:hidden"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <div className="bg-muted-foreground/30 h-1.5 w-12 rounded-full" />
+        </div>
+        
         <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
           <h2 className="text-foreground text-sm font-bold">
             {SIDEBAR_TITLES[step]}
           </h2>
           <button
             type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-primary bg-primary/10 hover:bg-primary/20 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors"
           >
-            <X className="h-4 w-4" />
+            {sidebarOpen ? 'تصغير' : 'تكبير'}
           </button>
         </div>
 
         {/* Step content */}
-        {step === 'REQUESTS' && (
-          <Step1AvailableRequests
-            onSelectRequest={handleSelectRequest}
-            onOpenExistingOffer={handleOpenExistingOffer}
-            selectedRequestId={selectedRequest?.id ?? null}
-          />
-        )}
+        <div className="flex-1 overflow-y-auto">
+          {step === 'REQUESTS' && (
+            <Step1AvailableRequests
+              onSelectRequest={handleSelectRequest}
+              onOpenExistingOffer={handleOpenExistingOffer}
+              selectedRequestId={selectedRequest?.id ?? null}
+            />
+          )}
 
-        {step === 'CREATE_OFFER' && selectedRequest && (
-          <Step2CreateOffer
-            request={selectedRequest}
-            onBack={() => {
-              setSelectedRequest(null);
-              setStep('REQUESTS');
-            }}
-            onOfferCreated={handleOfferCreated}
-          />
-        )}
+          {step === 'CREATE_OFFER' && selectedRequest && (
+            <Step2CreateOffer
+              request={selectedRequest}
+              onBack={() => {
+                setSelectedRequest(null);
+                setStep('REQUESTS');
+              }}
+              onOfferCreated={handleOfferCreated}
+            />
+          )}
 
-        {step === 'WAITING' && submittedOffer && (
-          <Step3WaitingApproval
-            offer={submittedOffer}
-            onCancelled={handleCancelled}
-            onAccepted={handleAccepted}
-          />
-        )}
+          {step === 'WAITING' && submittedOffer && (
+            <Step3WaitingApproval
+              offer={submittedOffer}
+              onCancelled={handleCancelled}
+              onAccepted={handleAccepted}
+            />
+          )}
+        </div>
       </aside>
-
-      {/* Backdrop — fixed to match the fixed sidebar */}
-      {sidebarOpen && (
-        <button
-          type="button"
-          aria-label="إغلاق"
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-90 bg-black/50 md:hidden"
-        />
-      )}
-
-      {/* Toggle button */}
-      {!sidebarOpen && (
-        <button
-          type="button"
-          onClick={() => setSidebarOpen(true)}
-          className="bg-background absolute bottom-6 left-4 z-9999 flex h-10 w-10 items-center justify-center rounded-full shadow-md md:hidden"
-        >
-          <Menu className="text-foreground h-5 w-5" />
-        </button>
-      )}
-
-      {/* Map — fills all remaining space beside the sidebar */}
-      <div className="relative h-full min-h-[300px] flex-1 overflow-hidden">
-        <MapView
-          onLocationSelect={setProviderPos}
-          center={mapCenter}
-          customerPos={requestPos ?? providerPos}
-          providers={[]}
-          selectedProvider={null}
-          route={route}
-          onProviderSelect={() => {}}
-          onAddressSearch={searchAddress}
-        />
-      </div>
     </div>
   );
 };

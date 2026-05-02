@@ -26,7 +26,7 @@ export default function Step1AvailableRequests({
 
   return (
     <div
-      className="relative flex h-full flex-col gap-5 px-4 pt-4 pb-8 sm:px-5"
+      className="relative flex min-h-full flex-col gap-5 px-4 pt-4 pb-8 sm:px-5"
       dir="rtl"
     >
       {/* Header */}
