@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Menu, X } from 'lucide-react';
 import {
   useLocation as useRouterLocation,
   useNavigate,
@@ -126,7 +125,7 @@ const RequestsPage = () => {
       dir="ltr"
     >
       {/* Map — fills all remaining space beside the sidebar */}
-      <div className="relative flex-1 transition-all duration-300 z-0">
+      <div className="relative z-0 flex-1 transition-all duration-300">
         <div className="absolute inset-0">
           <MapView
             onLocationSelect={setProviderPos}
@@ -153,12 +152,12 @@ const RequestsPage = () => {
         )}
       >
         <div
-          className="flex w-full cursor-pointer justify-center pb-1 pt-3 md:hidden"
+          className="flex w-full cursor-pointer justify-center pt-3 pb-1 md:hidden"
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
           <div className="bg-muted-foreground/30 h-1.5 w-12 rounded-full" />
         </div>
-        
+
         <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
           <h2 className="text-foreground text-sm font-bold">
             {SIDEBAR_TITLES[step]}
