@@ -33,10 +33,10 @@ const links: NavItem[] = [
 
 const ProviderSidebar = () => {
   const { pathname } = useLocation();
-  
-//  const collapsed =
-//     pathname.startsWith('/provider/requests') ||
-//     pathname.startsWith('/provider/community');
+
+  //  const collapsed =
+  //     pathname.startsWith('/provider/requests') ||
+  //     pathname.startsWith('/provider/community');
   const collapsed = false;
 
   return (
@@ -44,7 +44,7 @@ const ProviderSidebar = () => {
       <aside
         dir="rtl"
         className={cn(
-          'bg-background border-border sticky top-16 z-30 h-[calc(100vh-4rem)] shrink-0 border-l transition-all duration-300',
+          'bg-background border-border sticky top-16 z-30 hidden h-[calc(100vh-4rem)] shrink-0 border-l transition-all duration-300 md:block',
           collapsed ? 'w-[72px]' : 'w-[72px] xl:w-60',
         )}
       >

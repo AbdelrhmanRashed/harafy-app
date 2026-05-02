@@ -16,7 +16,7 @@ const ProviderLayout = () => {
         <ProviderSidebar />
 
         {/* Content */}
-        <main className="flex-1  bg-muted/30">
+        <main className="bg-muted/30 flex-1 pb-16 md:pb-0">
           <Outlet />
         </main>
 

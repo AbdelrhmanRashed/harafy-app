@@ -11,7 +11,7 @@ import {
   ClipboardClock,
   Star,
   Wallet,
-  Settings,
+  UserRoundPen,
 } from 'lucide-react';
 import { ADMIN_NAV_LINKS } from './admin-navigation';
 
@@ -37,7 +37,7 @@ export const NAV_LINKS: Record<UserRole, NavLink[]> = {
     { title: 'الطلبات', path: '/provider/requests', icon: ClipboardClock },
     { title: 'التقييمات', path: '/provider/reviews', icon: Star },
     { title: 'المحفظة', path: '/provider/wallet', icon: Wallet },
-    { title: 'الملف الشخصي', path: '/provider/profile', icon: Settings },
+    { title: 'الملف الشخصي', path: '/provider/profile', icon: UserRoundPen },
   ],
 
   Admin: [
