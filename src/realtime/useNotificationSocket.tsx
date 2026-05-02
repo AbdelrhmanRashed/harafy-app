@@ -1,8 +1,8 @@
 import * as signalR from '@microsoft/signalr';
-import { useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const mapType = (type: number): 'info' | 'success' | 'warning' | 'error' => {
   switch (type) {
@@ -17,26 +17,44 @@ const mapType = (type: number): 'info' | 'success' | 'warning' | 'error' => {
   }
 };
 
-export const useNotificationSocket = (token: string | null) => {
+interface NotificationSocketContextType {
+  connected: boolean;
+}
+
+const NotificationSocketContext = createContext<NotificationSocketContextType | undefined>(
+  undefined,
+);
+
+export const NotificationSocketProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const { token } = useAuthStore();
   const qc = useQueryClient();
-  const navigate = useNavigate();
 
   const connectionRef = useRef<signalR.HubConnection | null>(null);
-
   const shownRef = useRef<Set<number>>(new Set());
-
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('shown_notifications');
-
     if (stored) {
       shownRef.current = new Set(JSON.parse(stored));
     }
   }, []);
 
   useEffect(() => {
-    if (!token || connectionRef.current) return;
+    // If no token, make sure any existing connection is stopped
+    if (!token) {
+      if (connectionRef.current) {
+        connectionRef.current.stop();
+        connectionRef.current = null;
+        setConnected(false);
+      }
+      return;
+    }
+
+    // If already connecting or connected, don't start another one
+    if (connectionRef.current) return;
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${import.meta.env.VITE_BASE_URL}/hubs/notification`, {
@@ -88,17 +106,12 @@ export const useNotificationSocket = (token: string | null) => {
         JSON.stringify(Array.from(shownRef.current)),
       );
 
-      // 🔊 sound
       const audio = new Audio('/notification.mp3');
       audio.currentTime = 0;
       audio.play().catch(() => {});
 
       toast[mapType(data.type)](data.title, {
         description: data.message,
-        action: {
-          label: 'عرض',
-          onClick: () => navigate('/app/notifications'),
-        },
         duration: 5000,
         position: 'top-center',
       });
@@ -120,7 +133,21 @@ export const useNotificationSocket = (token: string | null) => {
       connectionRef.current = null;
       setConnected(false);
     };
-  }, [token]);
+  }, [token, qc]);
 
-  return { connected };
+  return (
+    <NotificationSocketContext.Provider value={{ connected }}>
+      {children}
+    </NotificationSocketContext.Provider>
+  );
+};
+
+export const useNotificationSocket = () => {
+  const context = useContext(NotificationSocketContext);
+  if (context === undefined) {
+    throw new Error(
+      'useNotificationSocket must be used within a NotificationSocketProvider',
+    );
+  }
+  return context;
 };
