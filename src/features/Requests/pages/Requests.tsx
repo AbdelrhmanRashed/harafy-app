@@ -121,15 +121,14 @@ const RequestsPage = () => {
   }, [submittedOffer, selectedRequest, navigate]);
 
   return (
-    <div className="bg-background relative flex h-[calc(100vh-64px)] flex-col md:flex-row overflow-hidden">
-
+    <div className="bg-background relative flex h-[calc(100vh-64px)] flex-col overflow-hidden md:flex-row">
       {/* Sidebar */}
       <aside
         className={cn(
           // Mobile: fixed full-screen drawer from right
-          'border-border bg-sidebar fixed inset-y-0 right-0 z-[1100] flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
+          'border-border bg-sidebar fixed inset-y-0 right-0 z-1100 flex w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out',
           // Desktop: static side panel, always visible, not overlapping the map
-          'md:relative md:inset-auto md:z-auto md:w-[420px] md:shrink-0 md:translate-x-0 md:transition-none md:border-l',
+          'md:relative md:inset-auto md:z-auto md:w-[420px] md:shrink-0 md:translate-x-0 md:border-l md:transition-none',
           sidebarOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >
@@ -191,7 +190,7 @@ const RequestsPage = () => {
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="absolute bottom-6 left-4 z-9999 flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md md:hidden"
+          className="bg-background absolute bottom-6 left-4 z-9999 flex h-10 w-10 items-center justify-center rounded-full shadow-md md:hidden"
         >
           <Menu className="text-foreground h-5 w-5" />
         </button>
@@ -206,11 +205,10 @@ const RequestsPage = () => {
           providers={[]}
           selectedProvider={null}
           route={route}
-          onProviderSelect={() => { }}
+          onProviderSelect={() => {}}
           onAddressSearch={searchAddress}
         />
       </div>
-
     </div>
   );
 };

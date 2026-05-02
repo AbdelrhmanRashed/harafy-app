@@ -10,6 +10,9 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import type { AssignedRequest } from '../../types/providerOfferTypes';
 import { useLiveLocation } from '../../hooks/useUpdateLiveLocation';
+import { useAssignedRequests } from '../../hooks/useAssignedRequests';
+import { ServiceStatus } from '@/constants/service-status';
+import CompletionOverlay from '../../components/CompletionOverlay';
 
 const BASE_URL = axiosInstance.defaults.baseURL ?? '';
 
@@ -21,6 +24,22 @@ const OrderTrackPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const request = state?.request as AssignedRequest | undefined;
+
+  // Poll every 10 s to detect when the client marks the service as completed
+  const { data: assignedRequests } = useAssignedRequests(true, {
+    refetchInterval: 10_000,
+    enabled: !!request?.id,
+  });
+
+  const liveRequest = useMemo(
+    () => assignedRequests?.find((r) => r.id === request?.id) ?? request,
+    [assignedRequests, request],
+  );
+
+  const isCompleted = liveRequest?.requestStatus === ServiceStatus.COMPLETED;
+
+  console.log(liveRequest);
+  console.log(isCompleted);
 
   const {
     position: providerPos,
@@ -129,7 +148,7 @@ const OrderTrackPage = () => {
 
   return (
     <div
-      className="flex h-[calc(100vh-4rem)] flex-col overflow-hidden md:flex-row"
+      className="relative flex h-[calc(100vh-8rem)] flex-col overflow-hidden md:h-[calc(100vh-4rem)] md:flex-row"
       dir="ltr"
     >
       <div className="relative flex-1 transition-all duration-300">
@@ -157,10 +176,10 @@ const OrderTrackPage = () => {
         dir="rtl"
         className={cn(
           'bg-background/95 z-20 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
-          'md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
+          'absolute right-0 bottom-0 left-0 md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
           sidebarOpen
-            ? 'h-[60vh] md:h-auto'
-            : 'h-0 overflow-hidden md:h-auto md:overflow-visible',
+            ? 'h-[60vh] translate-y-0 md:h-auto'
+            : 'h-0 translate-y-full overflow-hidden md:h-auto md:translate-y-0 md:overflow-visible',
         )}
       >
         <div className="flex w-full justify-center pt-3 pb-1 md:hidden">
@@ -369,6 +388,11 @@ const OrderTrackPage = () => {
             onClick={(e) => e.stopPropagation()}
           />
         </div>
+      )}
+
+      {/* Completion overlay — shown when client marks service as done */}
+      {isCompleted && liveRequest && (
+        <CompletionOverlay request={liveRequest} />
       )}
     </div>
   );

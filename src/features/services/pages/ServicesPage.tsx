@@ -201,6 +201,8 @@ export default function ServicesPage() {
     if (reviewRequestIdFromNav) {
       setCompletedRequestId(reviewRequestIdFromNav);
       setShowReview(true);
+      // Clear the state from history so a refresh doesn't re-open the dialog
+      navigate(location.pathname, { replace: true, state: {} });
     }
   }, [reviewRequestIdFromNav]);
 

@@ -202,7 +202,7 @@ export default function MapView({
           <div className="flex flex-col items-center gap-3">
             <LoadingSpinner />
             <span className="text-muted-foreground text-sm font-bold">
-              جاري تحديد موقع الحرفي...
+              جاري تحديد الموقع...
             </span>
           </div>
         </div>
