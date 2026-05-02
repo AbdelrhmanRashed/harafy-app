@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import MapView from '../../components/MapView';
 import {
   Step1RequestForm,
@@ -86,14 +86,16 @@ const InstantRequestPage = () => {
       enabled: !!targetProviderId,
     },
   );
+  const providerPosInitialized = useRef(false);
 
-  //  Initialize live location from baseLocation if socket hasn't sent one yet
+  // عدّل الـ useEffect بتاع baseLocation
   useEffect(() => {
     if (
       step === 'IN_PROGRESS' &&
       providerData?.baseLocation &&
-      !providerLivePos
+      !providerPosInitialized.current // ← بدل !providerLivePos
     ) {
+      providerPosInitialized.current = true;
       setProviderLivePos({
         lat: providerData.baseLocation.latitude,
         lng: providerData.baseLocation.longitude,
@@ -104,6 +106,13 @@ const InstantRequestPage = () => {
     providerData?.baseLocation?.latitude,
     providerData?.baseLocation?.longitude,
   ]);
+
+  // وكمان reset الـ ref لما يتغير الـ step
+  useEffect(() => {
+    if (step !== 'IN_PROGRESS') {
+      providerPosInitialized.current = false;
+    }
+  }, [step]);
 
   // 🗺️ map providers
   const mapProviders = useMemo(() => {
