@@ -6,7 +6,7 @@ import { useLocationCustom } from '../../../services/hooks/useLocation';
 import { useRoute } from '../../../services/hooks/useRoute';
 import { Button } from '@/components/ui/button';
 import axiosInstance from '@/lib/axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import type { AssignedRequest } from '../../types/providerOfferTypes';
 import { useLiveLocation } from '../../hooks/useUpdateLiveLocation';
@@ -27,62 +27,104 @@ const OrderTrackPage = () => {
     setPosition: setProviderPos,
     detect: detectMyPosition,
   } = useLocationCustom();
-  useLiveLocation(true, (pos) => {
-    setProviderPos(pos);
-  });
 
+  useLiveLocation(true, setProviderPos);
+  // ↑ بدل (pos) => setProviderPos(pos) — arrow function جديدة كل render
+
+  // ← مرة واحدة بس عند mount
+  const detected = useRef(false);
   useEffect(() => {
+    if (detected.current) return;
+    detected.current = true;
     detectMyPosition();
-  }, [detectMyPosition]);
+  }, []);
+  // ↑ مش محتاج detectMyPosition في deps لأنها ref-stable من useLocationCustom
+  // لو مش stable نضيف eslint-disable-line
 
-  const clientPos = request?.serviceRequestLocation
-    ? {
-        lat: request.serviceRequestLocation.latitude,
-        lng: request.serviceRequestLocation.longitude,
-      }
-    : null;
+  const clientPos = useMemo(
+    () =>
+      request?.serviceRequestLocation
+        ? {
+            lat: request.serviceRequestLocation.latitude,
+            lng: request.serviceRequestLocation.longitude,
+          }
+        : null,
+    // client position ثابت طول الـ session
+    [
+      request?.serviceRequestLocation?.latitude,
+      request?.serviceRequestLocation?.longitude,
+    ],
+  );
 
   const { route } = useRoute(providerPos, clientPos);
 
-  const getDynamicZoom = () => {
+  // zoom بيتحسب بس لما providerPos أو clientPos يتغيروا فعلاً
+  const zoom = useMemo(() => {
     if (!providerPos || !clientPos) return 13;
     const latDiff = Math.abs(providerPos.lat - clientPos.lat);
     const lngDiff = Math.abs(providerPos.lng - clientPos.lng);
-    if (latDiff < 0.005 && lngDiff < 0.005) return 18;
-    return 14;
-  };
+    return latDiff < 0.005 && lngDiff < 0.005 ? 18 : 14;
+  }, [providerPos?.lat, providerPos?.lng, clientPos?.lat, clientPos?.lng]);
 
-  const serviceName =
-    services?.find((s) => s.id === request?.serviceId)?.name ?? '';
+  const serviceName = useMemo(
+    () => services?.find((s) => s.id === request?.serviceId)?.name ?? '',
+    [services, request?.serviceId],
+  );
 
-  const createdAt = request?.createdAt
-    ? new Date(request.createdAt).toLocaleDateString('ar-EG', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : null;
+  // هذين ثابتين — بيتحسبوا مرة واحدة
+  const createdAt = useMemo(
+    () =>
+      request?.createdAt
+        ? new Date(request.createdAt).toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : null,
+    [request?.createdAt],
+  );
 
-  const preferredTime = request?.preferredTime
-    ? new Date(request.preferredTime).toLocaleDateString('ar-EG', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : null;
+  const preferredTime = useMemo(
+    () =>
+      request?.preferredTime
+        ? new Date(request.preferredTime).toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : null,
+    [request?.preferredTime],
+  );
 
-  const clientPictureUrl = request?.clientPictureUrl
-    ? request.clientPictureUrl.startsWith('http')
+  const clientPictureUrl = useMemo(() => {
+    if (!request?.clientPictureUrl) return null;
+    return request.clientPictureUrl.startsWith('http')
       ? request.clientPictureUrl
-      : `${BASE_URL}/${request.clientPictureUrl}`
-    : null;
+      : `${BASE_URL}/${request.clientPictureUrl}`;
+  }, [request?.clientPictureUrl]);
 
-  const images: string[] = (request?.imageUrls ?? []).map((url: string) =>
-    url.startsWith('http') ? url : `${BASE_URL}/${url}`,
+  const images = useMemo<string[]>(
+    () =>
+      (request?.imageUrls ?? []).map((url: string) =>
+        url.startsWith('http') ? url : `${BASE_URL}/${url}`,
+      ),
+    [request?.imageUrls],
+  );
+
+  // selectedProvider ثابت — object جديد كل render كان بيسبب re-render في MapView
+  const selectedProvider = useMemo(
+    () => ({
+      id: 0,
+      name: 'أنا (الفني)',
+      pictureUrl: '',
+      services: [{ id: 0, name: serviceName }],
+      rating: 5,
+    }),
+    [serviceName],
   );
 
   return (
@@ -93,48 +135,38 @@ const OrderTrackPage = () => {
       <div className="relative flex-1 transition-all duration-300">
         <div className="absolute inset-0">
           <MapView
-            center={providerPos ?? clientPos}
-            customerPos={clientPos ?? providerPos}
-            providers={[]}
-            selectedProvider={
-              {
-                id: 'current-provider',
-                name: 'أنا (الفني)',
-                pictureUrl: '',
-                services: [{ name: serviceName }],
-                rating: 5,
-              } as any
+            center={providerPos ?? clientPos ?? { lat: 30.5877, lng: 31.502 }}
+            customerPos={
+              clientPos ?? providerPos ?? { lat: 30.5877, lng: 31.502 }
             }
+            providers={[]}
+            selectedProvider={selectedProvider}
             liveProviderPos={providerPos}
             route={route}
             onLocationSelect={setProviderPos}
             onProviderSelect={() => {}}
             onAddressSearch={() => {}}
             allowMapPickLocation={false}
-            zoom={getDynamicZoom()}
+            zoom={zoom}
           />
         </div>
       </div>
 
+      {/* باقي الـ JSX زي ما هو */}
       <aside
         dir="rtl"
         className={cn(
-          // Base & Mobile layout: Instead of fixed, it takes flex space so the map resizes!
           'bg-background/95 z-20 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
-          // Desktop layout
           'md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
-          // Toggle State (Mobile uses height, Desktop is always visible)
           sidebarOpen
             ? 'h-[60vh] md:h-auto'
             : 'h-0 overflow-hidden md:h-auto md:overflow-visible',
         )}
       >
-        {/* Mobile Drag Indicator */}
         <div className="flex w-full justify-center pt-3 pb-1 md:hidden">
           <div className="bg-muted-foreground/30 h-1.5 w-12 rounded-full" />
         </div>
 
-        {/* Header */}
         <div className="flex shrink-0 items-center justify-between px-5 pt-2 pb-3 md:pt-6">
           <h2 className="text-foreground text-lg font-black">تفاصيل الطلب</h2>
           <button
@@ -147,7 +179,6 @@ const OrderTrackPage = () => {
         </div>
 
         <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 pt-4 pb-8">
-          {/* Client Card */}
           <div className="flex items-center gap-4 rounded-3xl p-4">
             <div className="ring-primary/20 relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2">
               {clientPictureUrl ? (
@@ -176,14 +207,12 @@ const OrderTrackPage = () => {
             </div>
           </div>
 
-          {/* Description */}
           {request?.description && (
             <p className="text-muted-foreground px-1 text-sm leading-relaxed">
               {request.description}
             </p>
           )}
 
-          {/* Meta Details */}
           <div className="flex flex-col gap-2">
             {preferredTime && (
               <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
@@ -230,7 +259,6 @@ const OrderTrackPage = () => {
             )}
           </div>
 
-          {/* Final Price */}
           {request?.finalPrice && (
             <div className="from-primary/10 to-primary/5 flex items-center justify-between rounded-2xl bg-linear-to-l px-5 py-4">
               <span className="text-muted-foreground text-sm font-bold">
@@ -245,7 +273,6 @@ const OrderTrackPage = () => {
             </div>
           )}
 
-          {/* Images */}
           {images.length === 1 && (
             <div
               className="h-48 cursor-pointer overflow-hidden rounded-2xl"
@@ -303,7 +330,6 @@ const OrderTrackPage = () => {
 
           <div className="flex-1" />
 
-          {/* CTA Button */}
           <Button
             variant="gradient"
             className="h-12 w-full rounded-2xl text-base font-black"
@@ -326,7 +352,6 @@ const OrderTrackPage = () => {
         </button>
       )}
 
-      {/* Lightbox */}
       {lightbox && (
         <div
           className="fixed inset-0 z-9999 flex items-center justify-center bg-black/90"

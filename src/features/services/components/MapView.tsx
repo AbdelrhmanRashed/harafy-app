@@ -82,7 +82,7 @@ interface MapViewProps {
   center: LatLng;
   customerPos: LatLng;
   providers: Provider[];
-  selectedProvider: Provider | null;
+  selectedProvider: Partial<Provider> | null;
   route: LatLng[];
   allowMapPickLocation?: boolean;
   onLocationSelect: (pos: LatLng) => void;
@@ -310,7 +310,7 @@ export default function MapView({
           <Marker
             position={[confirmedProviderPos.lat, confirmedProviderPos.lng]}
             icon={workerIcon(
-              selectedProvider.name,
+              selectedProvider.name!,
               selectedProvider.services?.map((s) => s.name).join(', ') || '',
               selectedProvider.rating || 0,
               selectedProvider.pictureUrl,
