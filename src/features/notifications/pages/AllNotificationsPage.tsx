@@ -93,8 +93,8 @@ const FILTER_OPTIONS = [
 
 // ── Skeleton Item ─────────────────────────────────────────────────────────────
 const NotificationSkeleton = () => (
-  <div className="border-border bg-card flex items-start gap-3 sm:gap-6 rounded-2xl border p-4 sm:p-5 shadow-sm">
-    <Skeleton className="mt-0.5 h-10 w-10 sm:h-12 sm:w-12 shrink-0 rounded-xl" />
+  <div className="border-border bg-card flex items-start gap-3 rounded-2xl border p-4 shadow-sm sm:gap-6 sm:p-5">
+    <Skeleton className="mt-0.5 h-10 w-10 shrink-0 rounded-xl sm:h-12 sm:w-12" />
     <div className="flex-1 space-y-3 pt-1">
       <Skeleton className="h-4 w-1/3 rounded-lg" />
       <Skeleton className="h-3 w-full rounded-lg" />
@@ -145,7 +145,7 @@ export default function AllNotificationsPage() {
   return (
     <div className="mx-auto mt-2 max-w-7xl pb-12" dir="rtl">
       {/* ── Hero Banner ─────────────────────────────────────────────── */}
-      <div className="relative mx-4 sm:mx-5 overflow-hidden rounded-3xl px-5 py-8 shadow-xl sm:px-10 sm:py-10">
+      <div className="relative mx-4 overflow-hidden rounded-3xl px-5 py-8 shadow-xl sm:mx-5 sm:px-10 sm:py-10">
         <div className="bg-primary-gradient absolute inset-0" />
 
         {/* Animated Background Orbs */}
@@ -193,7 +193,7 @@ export default function AllNotificationsPage() {
             className="flex w-full flex-col gap-4 sm:flex-row md:w-auto"
           >
             <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-center shadow-inner backdrop-blur-md sm:px-8 sm:py-5 md:min-w-[140px]">
-              <p className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+              <p className="text-3xl font-black tracking-tight text-white sm:text-4xl">
                 {isLoading ? '-' : unreadCount}
               </p>
               <p className="mt-1.5 text-xs font-bold tracking-wider text-white/90 uppercase">
@@ -362,7 +362,7 @@ export default function AllNotificationsPage() {
                       className={cn(
                         'group bg-card relative flex cursor-pointer items-start gap-3 rounded-2xl border p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:gap-6 sm:p-5',
                         !n.isRead
-                          ? 'border-primary/20 bg-primary/[0.03]'
+                          ? 'border-primary/20 bg-primary/3'
                           : 'border-border/50 hover:border-border hover:bg-muted/30',
                       )}
                     >
@@ -377,7 +377,7 @@ export default function AllNotificationsPage() {
                       {/* Icon badge */}
                       <div
                         className={cn(
-                          'mt-1 flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl ring-1 transition-transform group-hover:scale-105',
+                          'mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ring-1 transition-transform group-hover:scale-105 sm:h-12 sm:w-12',
                           config.bg,
                           config.ring,
                         )}

@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Clock, Calendar, X, Star, Menu } from 'lucide-react';
 import { useGetServices } from '../../../Requests/hooks/useGetServices';
 import MapView from '../../../services/components/MapView';
@@ -86,7 +86,10 @@ const OrderTrackPage = () => {
   );
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col md:flex-row overflow-hidden" dir="ltr">
+    <div
+      className="flex h-[calc(100vh-4rem)] flex-col overflow-hidden md:flex-row"
+      dir="ltr"
+    >
       <div className="relative flex-1 transition-all duration-300">
         <div className="absolute inset-0">
           <MapView
@@ -113,189 +116,204 @@ const OrderTrackPage = () => {
         </div>
       </div>
 
-<aside
-  dir="rtl"
-  className={cn(
-    // Base & Mobile layout: Instead of fixed, it takes flex space so the map resizes!
-    'bg-background/95 z-20 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
-    // Desktop layout
-    'md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
-    // Toggle State (Mobile uses height, Desktop is always visible)
-    sidebarOpen ? 'h-[60vh] md:h-auto' : 'h-0 overflow-hidden md:h-auto md:overflow-visible',
-  )}
->
-  {/* Mobile Drag Indicator */}
-  <div className="flex w-full justify-center pt-3 pb-1 md:hidden">
-    <div className="bg-muted-foreground/30 h-1.5 w-12 rounded-full" />
-  </div>
-
-  {/* Header */}
-  <div className="flex shrink-0 items-center justify-between px-5 pt-2 pb-3 md:pt-6">
-    <h2 className="text-foreground text-lg font-black">تفاصيل الطلب</h2>
-    <button
-      type="button"
-      onClick={() => setSidebarOpen(false)}
-      className="bg-secondary hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full transition-colors"
-    >
-      <X className="h-4 w-4" />
-    </button>
-  </div>
-
-  <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 pt-4 pb-8">
-
-    {/* Client Card */}
-    <div className="flex items-center gap-4 rounded-3xl p-4">
-      <div className="ring-primary/20 relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2">
-        {clientPictureUrl ? (
-          <img
-            src={clientPictureUrl}
-            alt={request?.clientName ?? ''}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="bg-primary/10 flex h-full w-full items-center justify-center">
-            <span className="text-primary text-xl font-black">
-              {request?.clientName?.charAt(0) ?? 'ع'}
-            </span>
-          </div>
+      <aside
+        dir="rtl"
+        className={cn(
+          // Base & Mobile layout: Instead of fixed, it takes flex space so the map resizes!
+          'bg-background/95 z-20 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-10px_40px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 ease-in-out',
+          // Desktop layout
+          'md:relative md:w-full md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none md:backdrop-blur-none',
+          // Toggle State (Mobile uses height, Desktop is always visible)
+          sidebarOpen
+            ? 'h-[60vh] md:h-auto'
+            : 'h-0 overflow-hidden md:h-auto md:overflow-visible',
         )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <h2 className="text-foreground truncate text-base font-black">
-          {request?.clientName ?? 'عميل'}
-        </h2>
-        {serviceName && (
-          <p className="text-primary truncate text-sm font-semibold">
-            {serviceName}
-          </p>
-        )}
-      </div>
-
-    </div>
-
-    {/* Description */}
-    {request?.description && (
-      <p className="text-muted-foreground px-1 text-sm leading-relaxed">
-        {request.description}
-      </p>
-    )}
-
-    {/* Meta Details */}
-    <div className="flex flex-col gap-2">
-      {preferredTime && (
-        <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
-          <div className="bg-primary/10 rounded-xl p-2">
-            <Calendar className="text-primary h-4 w-4" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-muted-foreground mb-0.5 text-[10px] font-bold uppercase tracking-wide">
-              الموعد المفضل
-            </p>
-            <span className="text-foreground text-sm font-semibold">
-              {preferredTime}
-            </span>
-          </div>
-        </div>
-      )}
-      {createdAt && (
-        <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
-          <div className="bg-primary/10 rounded-xl p-2">
-            <Clock className="text-primary h-4 w-4" />
-          </div>
-          <div className="min-w-0">
-
-            <span className="text-foreground text-sm font-semibold">
-              {createdAt}
-            </span>
-          </div>
-        </div>
-      )}
-      {request?.serviceRequestLocation && (
-        <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
-          <div className="rounded-xl bg-amber-500/10 p-2">
-            <MapPin className="h-4 w-4 text-amber-600" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-foreground text-sm font-semibold" dir="ltr">
-              {request.serviceRequestLocation.address ??
-                `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
-
-    {/* Final Price */}
-    {request?.finalPrice && (
-      <div className="from-primary/10 to-primary/5 flex items-center justify-between rounded-2xl bg-linear-to-l px-5 py-4">
-        <span className="text-muted-foreground text-sm font-bold">
-          السعر المتفق عليه
-        </span>
-        <span className="text-primary text-2xl font-black">
-          {Number(request.finalPrice).toLocaleString('ar-EG')}
-          <span className="text-primary/70 mr-1 text-sm font-bold">جنيه</span>
-        </span>
-      </div>
-    )}
-
-    {/* Images */}
-    {images.length === 1 && (
-      <div
-        className="h-48 cursor-pointer overflow-hidden rounded-2xl"
-        onClick={() => setLightbox(images[0])}
       >
-        <img src={images[0]} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
-      </div>
-    )}
-    {images.length === 2 && (
-      <div className="grid h-48 grid-cols-2 gap-2">
-        {images.map((src, i) => (
-          <div
-            key={i}
-            className="cursor-pointer overflow-hidden rounded-2xl"
-            onClick={() => setLightbox(src)}
+        {/* Mobile Drag Indicator */}
+        <div className="flex w-full justify-center pt-3 pb-1 md:hidden">
+          <div className="bg-muted-foreground/30 h-1.5 w-12 rounded-full" />
+        </div>
+
+        {/* Header */}
+        <div className="flex shrink-0 items-center justify-between px-5 pt-2 pb-3 md:pt-6">
+          <h2 className="text-foreground text-lg font-black">تفاصيل الطلب</h2>
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="bg-secondary hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full transition-colors"
           >
-            <img src={src} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
-          </div>
-        ))}
-      </div>
-    )}
-    {images.length >= 3 && (
-      <div className="grid h-48 grid-cols-[1fr_2fr] gap-2">
-        <div className="flex flex-col gap-2">
-          {images.slice(0, 2).map((src, i) => (
-            <div
-              key={i}
-              className="flex-1 cursor-pointer overflow-hidden rounded-2xl"
-              onClick={() => setLightbox(src)}
-            >
-              <img src={src} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 pt-4 pb-8">
+          {/* Client Card */}
+          <div className="flex items-center gap-4 rounded-3xl p-4">
+            <div className="ring-primary/20 relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2">
+              {clientPictureUrl ? (
+                <img
+                  src={clientPictureUrl}
+                  alt={request?.clientName ?? ''}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="bg-primary/10 flex h-full w-full items-center justify-center">
+                  <span className="text-primary text-xl font-black">
+                    {request?.clientName?.charAt(0) ?? 'ع'}
+                  </span>
+                </div>
+              )}
             </div>
-          ))}
+            <div className="min-w-0 flex-1">
+              <h2 className="text-foreground truncate text-base font-black">
+                {request?.clientName ?? 'عميل'}
+              </h2>
+              {serviceName && (
+                <p className="text-primary truncate text-sm font-semibold">
+                  {serviceName}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Description */}
+          {request?.description && (
+            <p className="text-muted-foreground px-1 text-sm leading-relaxed">
+              {request.description}
+            </p>
+          )}
+
+          {/* Meta Details */}
+          <div className="flex flex-col gap-2">
+            {preferredTime && (
+              <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
+                <div className="bg-primary/10 rounded-xl p-2">
+                  <Calendar className="text-primary h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-muted-foreground mb-0.5 text-[10px] font-bold tracking-wide uppercase">
+                    الموعد المفضل
+                  </p>
+                  <span className="text-foreground text-sm font-semibold">
+                    {preferredTime}
+                  </span>
+                </div>
+              </div>
+            )}
+            {createdAt && (
+              <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
+                <div className="bg-primary/10 rounded-xl p-2">
+                  <Clock className="text-primary h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-foreground text-sm font-semibold">
+                    {createdAt}
+                  </span>
+                </div>
+              </div>
+            )}
+            {request?.serviceRequestLocation && (
+              <div className="bg-secondary/30 flex items-center gap-3 rounded-2xl px-4 py-3">
+                <div className="rounded-xl bg-amber-500/10 p-2">
+                  <MapPin className="h-4 w-4 text-amber-600" />
+                </div>
+                <div className="min-w-0">
+                  <span
+                    className="text-foreground text-sm font-semibold"
+                    dir="ltr"
+                  >
+                    {request.serviceRequestLocation.address ??
+                      `${request.serviceRequestLocation.latitude.toFixed(3)}, ${request.serviceRequestLocation.longitude.toFixed(3)}`}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Final Price */}
+          {request?.finalPrice && (
+            <div className="from-primary/10 to-primary/5 flex items-center justify-between rounded-2xl bg-linear-to-l px-5 py-4">
+              <span className="text-muted-foreground text-sm font-bold">
+                السعر المتفق عليه
+              </span>
+              <span className="text-primary text-2xl font-black">
+                {Number(request.finalPrice).toLocaleString('ar-EG')}
+                <span className="text-primary/70 mr-1 text-sm font-bold">
+                  جنيه
+                </span>
+              </span>
+            </div>
+          )}
+
+          {/* Images */}
+          {images.length === 1 && (
+            <div
+              className="h-48 cursor-pointer overflow-hidden rounded-2xl"
+              onClick={() => setLightbox(images[0])}
+            >
+              <img
+                src={images[0]}
+                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+          )}
+          {images.length === 2 && (
+            <div className="grid h-48 grid-cols-2 gap-2">
+              {images.map((src, i) => (
+                <div
+                  key={i}
+                  className="cursor-pointer overflow-hidden rounded-2xl"
+                  onClick={() => setLightbox(src)}
+                >
+                  <img
+                    src={src}
+                    className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          {images.length >= 3 && (
+            <div className="grid h-48 grid-cols-[1fr_2fr] gap-2">
+              <div className="flex flex-col gap-2">
+                {images.slice(0, 2).map((src, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 cursor-pointer overflow-hidden rounded-2xl"
+                    onClick={() => setLightbox(src)}
+                  >
+                    <img
+                      src={src}
+                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div
+                className="cursor-pointer overflow-hidden rounded-2xl"
+                onClick={() => setLightbox(images[2])}
+              >
+                <img
+                  src={images[2]}
+                  className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="flex-1" />
+
+          {/* CTA Button */}
+          <Button
+            variant="gradient"
+            className="h-12 w-full rounded-2xl text-base font-black"
+            onClick={() => navigate('/provider/reviews')}
+          >
+            <Star className="ml-2 h-4 w-4" />
+            التقييمات
+          </Button>
         </div>
-        <div
-          className="cursor-pointer overflow-hidden rounded-2xl"
-          onClick={() => setLightbox(images[2])}
-        >
-          <img src={images[2]} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" />
-        </div>
-      </div>
-    )}
-
-    <div className="flex-1" />
-
-    {/* CTA Button */}
-    <Button
-      variant="gradient"
-      className="h-12 w-full rounded-2xl font-black text-base"
-      onClick={() => navigate('/provider/reviews')}
-    >
-      <Star className="ml-2 h-4 w-4" />
-      التقييمات
-    </Button>
-
-  </div>
-</aside>
+      </aside>
 
       {!sidebarOpen && (
         <button

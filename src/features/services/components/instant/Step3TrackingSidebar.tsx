@@ -6,6 +6,8 @@ import {
   MessageSquare,
   Star,
   Zap,
+  Clock,
+  MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useGetServiceReqById } from '../../hooks/useGetServiceReqById';
@@ -55,6 +57,8 @@ type Step3TrackingSidebarProps = {
   requestId: string;
   onCompleteSuccess: () => void;
   onLocationChange?: (loc: { lat: number; lng: number }) => void;
+  distance?: number;
+  duration?: number;
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -63,6 +67,8 @@ export default function Step3TrackingSidebar({
   requestId,
   onCompleteSuccess,
   onLocationChange,
+  distance = 0,
+  duration = 0,
 }: Step3TrackingSidebarProps) {
   const { data: reqData, isFetching: fetchingReq } =
     useGetServiceReqById(requestId);
@@ -229,14 +235,41 @@ export default function Step3TrackingSidebar({
             </div>
 
             {/* Price */}
-            <div className="border-border/50 flex items-center justify-between border-t pt-1">
+            <div className="border-border/50 flex items-center justify-between border-t pt-3">
               <span className="text-primary text-base font-black">
                 {myOffer?.price != null ? `${myOffer?.price} جنيه` : '—'}
               </span>
-              <span className="text-muted-foreground text-xs">
+              <span className="text-muted-foreground text-xs font-semibold">
                 السعر المتفق عليه
               </span>
             </div>
+
+            {/* Distance & Time */}
+            {!isCompleted && (
+              <div className="border-border/50 flex items-center justify-between border-t pt-3">
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="text-primary h-4 w-4" />
+                    <span className="text-foreground text-sm font-bold">
+                      {duration > 0
+                        ? `${Math.ceil(duration / 60)} دقيقة`
+                        : 'جاري الحساب...'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="text-primary h-4 w-4" />
+                    <span className="text-foreground text-sm font-bold">
+                      {distance > 0
+                        ? `${(distance / 1000).toFixed(1)} كم`
+                        : 'جاري الحساب...'}
+                    </span>
+                  </div>
+                </div>
+                <span className="text-muted-foreground text-xs font-semibold">
+                  المسافة والوقت
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import { getImageUrl, getRoleName } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import type { ClientProfile } from '@/features/profile/types/client-profile.types';
 import { getFullName } from '@/lib/utils';
+import { useMyProviderProfile } from '@/features/dashboard/hooks/useMyProviderProfile';
 
 const ProfileCard = ({
   clientProfile,
@@ -16,6 +17,8 @@ const ProfileCard = ({
   roles: string[] | undefined;
 }) => {
   const navigate = useNavigate();
+  const isProvider = roles?.includes('Provider');
+  const { data: providerProfile } = useMyProviderProfile(isProvider);
   return (
     <Card className="group bg-card w-full max-w-sm overflow-hidden rounded-xl border-none">
       <CardContent className="p-6">
@@ -75,10 +78,13 @@ const ProfileCard = ({
                 مستوى التقييم
               </span>
               <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-bold">
-                4.8 / 5
+                {providerProfile?.rating?.toFixed(1) || 0} / 5
               </span>
             </div>
-            <Progress value={96} className="h-2 rtl:rotate-180" />
+            <Progress
+              value={(providerProfile?.rating || 0) * 20}
+              className="h-2 rtl:rotate-180"
+            />
           </div>
         )}
 

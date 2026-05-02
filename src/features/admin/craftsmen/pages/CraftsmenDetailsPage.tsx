@@ -12,7 +12,6 @@ import {
   DialogTrigger,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useValidateDocument } from '../hooks/useValidateDocument';
 import { useVerifyProvider } from '../hooks/useVerifyProvider';
 import { useQueryClient } from '@tanstack/react-query';

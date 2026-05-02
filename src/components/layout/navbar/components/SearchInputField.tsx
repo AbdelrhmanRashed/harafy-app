@@ -219,7 +219,7 @@ const SearchInputField = () => {
             </CommandGroup>
 
             {/* Quick Access */}
-            {isAuthenticated && (
+            {isAuthenticated && userRole !== 'Admin' && (
               <>
                 <CommandSeparator className="my-1.5" />
                 <CommandGroup

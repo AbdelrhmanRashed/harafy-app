@@ -1,5 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import MapView from '../../components/MapView';
 import {
   Step1RequestForm,
@@ -18,7 +17,7 @@ import { useGetProviderData } from '../../hooks/useGetProviderData';
 import { useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 
 const InstantRequestPage = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [nearbyForMap, setNearbyForMap] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
     null,
@@ -45,10 +44,21 @@ const InstantRequestPage = () => {
     searchAddress,
   } = useLocationCustom();
 
-  // 📡 request
+  //  request
   const { data: request } = useGetServiceReqById(requestId);
 
-  // 🧠 STEP (derived from server)
+  //  On refresh / re-mount: restore the saved pin from the existing request
+  useEffect(() => {
+    if (!request?.serviceRequestLocation) return;
+    const { latitude: lat, longitude: lng } = request.serviceRequestLocation;
+    // Only override the default centre – don't stomp a position the user just moved
+    setCustomerPos({ lat, lng });
+  }, [
+    request?.serviceRequestLocation?.latitude,
+    request?.serviceRequestLocation?.longitude,
+  ]);
+
+  //  STEP (derived from server)
   const step = useMemo(() => {
     if (!requestId) return 'REQUEST';
     if (!request) return 'LOADING';
@@ -76,6 +86,25 @@ const InstantRequestPage = () => {
       enabled: !!targetProviderId,
     },
   );
+
+  //  Initialize live location from baseLocation if socket hasn't sent one yet
+  useEffect(() => {
+    if (
+      step === 'IN_PROGRESS' &&
+      providerData?.baseLocation &&
+      !providerLivePos
+    ) {
+      setProviderLivePos({
+        lat: providerData.baseLocation.latitude,
+        lng: providerData.baseLocation.longitude,
+      });
+    }
+  }, [
+    step,
+    providerData?.baseLocation?.latitude,
+    providerData?.baseLocation?.longitude,
+  ]);
+
   // 🗺️ map providers
   const mapProviders = useMemo(() => {
     if (request?.providerId && providerData) {
@@ -95,7 +124,7 @@ const InstantRequestPage = () => {
     return providerLivePos;
   }, [providerLivePos]);
 
-  const { route } = useRoute(customerPos, routeEnd);
+  const { route, distance, duration } = useRoute(customerPos, routeEnd);
 
   // 📡 mutations
   const { mutate: assignMutate, isPending: assignPending } =
@@ -119,9 +148,7 @@ const InstantRequestPage = () => {
     assignMutate(
       { requestId, providerId },
       {
-        onSuccess: () => {
-          // React Query هيعمل re-render لوحده
-        },
+        onSuccess: () => {},
       },
     );
   };
@@ -185,9 +212,12 @@ const InstantRequestPage = () => {
   // };
 
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row" dir="ltr">
+    <div
+      className="relative flex h-[calc(100dvh-128px)] flex-col overflow-hidden md:h-[calc(100dvh-64px)] md:flex-row"
+      dir="ltr"
+    >
       {/* map */}
-      <div className="flex-1">
+      <div className="absolute inset-0 z-0 md:relative md:flex-1">
         <MapView
           allowMapPickLocation={allowMapPick}
           onLocationSelect={setCustomerPos}
@@ -203,59 +233,71 @@ const InstantRequestPage = () => {
         />
       </div>
 
-      {/* sidebar */}
+      {/* sidebar - Bottom Sheet on Mobile */}
       <aside
         dir="rtl"
         className={cn(
-          'border-border bg-sidebar absolute inset-y-0 right-0 z-1050 flex w-full max-w-full flex-col overflow-y-auto border-l backdrop-blur-sm transition-transform duration-300 ease-out md:relative md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:transition-none',
-          sidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
+          'bg-card border-border absolute bottom-0 z-10 flex w-full flex-col rounded-t-3xl border-t shadow-[0_-8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 ease-in-out md:relative md:max-w-md md:rounded-none md:border-t-0 md:border-l md:shadow-none',
+          isExpanded ? 'h-[85vh] md:h-full' : 'h-[40vh] md:h-full',
         )}
       >
-        <div className="border-border flex shrink-0 items-center justify-between border-b px-4 py-3 md:hidden">
+        {/* Handle to toggle expand/collapse */}
+        <div
+          className="border-border active:bg-muted/50 flex shrink-0 cursor-pointer items-center justify-center border-b px-4 py-3 transition-colors md:hidden"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <div className="bg-muted-foreground/30 mb-1 h-1.5 w-12 rounded-full" />
+        </div>
+        <div className="border-border flex shrink-0 items-center justify-between border-b px-5 py-3 md:hidden">
           <h2 className="text-foreground text-sm font-bold">{sidebarTitle}</h2>
           <button
             type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-primary bg-primary/10 hover:bg-primary/20 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors"
           >
-            <X className="h-4 w-4" />
+            {isExpanded ? 'تصغير' : 'تكبير'}
           </button>
         </div>
-        {step === 'REQUEST' && (
-          <Step1RequestForm
-            serviceIdAI={aiData?.serviceIdAI}
-            descriptionAI={aiData?.descriptionAI}
-            address={address}
-            position={customerPos}
-            locating={locating}
-            onDetect={detect}
-            onAddressSearch={searchAddress}
-            onRequestCreated={handleRequestCreated}
-            onNearbyProvidersChange={onNearbyProvidersChange}
-            selectedProvider={selectedProvider}
-            onSelectProvider={handleProviderSelect}
-          />
-        )}
 
-        {step === 'OFFERS' && requestId && (
-          <Step2OffersSidebar
-            requestId={requestId}
-            onAccept={handleAcceptOffer}
-            isAssigning={assignPending}
-            onCancel={handleCancelRequest}
-            isCancelling={cancelPending}
-          />
-        )}
+        <div className="flex-1 overflow-y-auto">
+          {step === 'REQUEST' && (
+            <Step1RequestForm
+              serviceIdAI={aiData?.serviceIdAI}
+              descriptionAI={aiData?.descriptionAI}
+              address={address}
+              position={customerPos}
+              locating={locating}
+              onDetect={detect}
+              onAddressSearch={searchAddress}
+              onRequestCreated={handleRequestCreated}
+              onNearbyProvidersChange={onNearbyProvidersChange}
+              selectedProvider={selectedProvider}
+              onSelectProvider={handleProviderSelect}
+            />
+          )}
 
-        {step === 'IN_PROGRESS' && requestId && (
-          <Step3TrackingSidebar
-            requestId={requestId}
-            onCompleteSuccess={() => {
-              handleCompleteSuccess();
-            }}
-            onLocationChange={setProviderLivePos}
-          />
-        )}
+          {step === 'OFFERS' && requestId && (
+            <Step2OffersSidebar
+              requestId={requestId}
+              onAccept={handleAcceptOffer}
+              isAssigning={assignPending}
+              onCancel={handleCancelRequest}
+              isCancelling={cancelPending}
+            />
+          )}
+
+          {step === 'IN_PROGRESS' && requestId && (
+            <Step3TrackingSidebar
+              requestId={requestId}
+              onCompleteSuccess={() => {
+                handleCompleteSuccess();
+              }}
+              onLocationChange={setProviderLivePos}
+              distance={distance}
+              duration={duration}
+            />
+          )}
+        </div>
       </aside>
     </div>
   );

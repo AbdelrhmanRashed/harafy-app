@@ -1,6 +1,6 @@
-import { Bell, MessageSquare, Moon, Search, Sun } from 'lucide-react';
+import { Bell, MessageSquare, Moon, Sun } from 'lucide-react';
 import { SidebarTrigger } from '../../../components/ui/sidebar';
-import { Input } from '../../../components/ui/input';
+import SearchInputField from '@/components/layout/navbar/components/SearchInputField';
 import { Button } from '../../../components/ui/button';
 import {
   Tooltip,
@@ -23,14 +23,7 @@ const AdminNavbar = () => {
       </div>
 
       <div className="flex flex-1 items-center justify-center px-4">
-        <div className="group relative w-full max-w-[400px]">
-          <Input
-            type="search"
-            placeholder="ابحث في الموارد..."
-            className="bg-muted/40 focus-visible:bg-background ring-offset-background ring-border focus-visible:ring-primary h-10 w-full rounded-full border-none ps-10 ring-1 transition-all focus-visible:ring-2"
-          />
-          <Search className="text-muted-foreground group-focus-within:text-primary absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-colors" />
-        </div>
+        <SearchInputField />
       </div>
 
       <div className="flex items-center gap-1 md:gap-2">

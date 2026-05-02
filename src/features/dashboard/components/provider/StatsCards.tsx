@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ClipboardClock, Tag, Star, Briefcase, Wallet } from 'lucide-react';
+import { ClipboardClock, Tag, Star, Wallet } from 'lucide-react';
 import { useMyOffers } from '../../hooks/useMyOffers';
 import { useGetAvailableRequests } from '../../../Requests/hooks/useGetAvailableRequests';
 import { useGetMyReviews } from '../../../reviews/hooks/useGetMyReviews';

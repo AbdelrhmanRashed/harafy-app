@@ -13,6 +13,7 @@ import {
   Wallet,
   Settings,
 } from 'lucide-react';
+import { ADMIN_NAV_LINKS } from './admin-navigation';
 
 interface NavLink {
   title: string;
@@ -21,9 +22,7 @@ interface NavLink {
 }
 
 export const NAV_LINKS: Record<UserRole, NavLink[]> = {
-  Guest: [
-
-  ],
+  Guest: [],
 
   Client: [
     { title: 'الرئيسية', path: '/app/home', icon: Home },
@@ -42,10 +41,11 @@ export const NAV_LINKS: Record<UserRole, NavLink[]> = {
   ],
 
   Admin: [
-    { title: 'الرئيسية', path: '/dashboard', icon: Home },
-    { title: 'الخدمات', path: '/services', icon: Compass },
-    { title: 'المجتمع', path: '/community', icon: MessageCircle },
-    { title: 'الطلبات', path: '/requests', icon: User },
+    ...ADMIN_NAV_LINKS.main.map((link) => ({
+      title: link.title,
+      path: link.path,
+      icon: link.icon,
+    })),
   ],
 };
 

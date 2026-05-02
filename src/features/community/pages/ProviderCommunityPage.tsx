@@ -1,6 +1,5 @@
 import CreatePost from '../components/CreatePost';
 import CommunityFeed from '../components/CommunityFeed';
-import QuickLinks from '../components/QuickLinks';
 import ProfileCard from '../components/ProfileCard';
 import FooterLinks from '../components/FooterLinks';
 import { useClientProfile } from '@/features/profile/hooks/useClientProfile';
