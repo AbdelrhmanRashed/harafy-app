@@ -3,7 +3,7 @@ import {
   Loader2,
   Wrench,
   Phone,
-  MessageSquare,
+  
   Star,
   Zap,
   Clock,
