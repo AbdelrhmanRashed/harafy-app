@@ -12,15 +12,20 @@ export const useUpdateProviderDocs = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (docs: UpdateDocPayload[]) =>
-      Promise.all(
-        docs.map(({ docId, file, fileName }) => {
-          const formData = new FormData();
-          formData.append('DocumentFile', file);
-          if (fileName) formData.append('FileName', fileName);
-          return updateProviderDocs(docId, formData);
-        }),
-      ),
+    mutationFn: async (docs: UpdateDocPayload[]) => {
+      const results = [];
+
+      for (const { docId, file, fileName } of docs) {
+        const formData = new FormData();
+        formData.append('DocumentFile', file);
+        if (fileName) formData.append('FileName', fileName);
+
+        const result = await updateProviderDocs(docId, formData);
+        results.push(result);
+      }
+
+      return results;
+    },
     onSuccess: () => {
       toast.success('تم تحديث المستندات بنجاح');
       queryClient.invalidateQueries({ queryKey: ['account-status'] });
