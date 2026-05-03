@@ -183,10 +183,10 @@ export default function Step3TrackingSidebar({
           </div>
 
           {/* Action buttons */}
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-4 flex justify-center">
             <Button
               variant="gradient"
-              className="h-11 gap-2 rounded-2xl font-bold"
+              className="h-11 gap-2 rounded-2xl font-bold w-full"
               onClick={() =>
                 phoneNumber && (window.location.href = `tel:${phoneNumber}`)
               }
@@ -195,16 +195,7 @@ export default function Step3TrackingSidebar({
               <Phone className="h-4 w-4" />
               اتصال
             </Button>
-            <Button
-              variant="outline"
-              className="border-border h-11 gap-2 rounded-2xl font-bold"
-              onClick={() => {
-                /* TODO: chat */
-              }}
-            >
-              <MessageSquare className="h-4 w-4" />
-              محادثة
-            </Button>
+          
           </div>
         </div>
 

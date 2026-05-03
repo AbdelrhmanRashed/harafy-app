@@ -69,7 +69,7 @@ const DirectRequestDetailsPage = () => {
       },
     });
   };
-
+console.log(requestDetails);
   // Status mapping
   const getStatusLabel = (status: any) => {
     switch (status) {
@@ -126,7 +126,6 @@ const DirectRequestDetailsPage = () => {
     );
   }
 
-  console.log(requestDetails);
   const isCompleted = requestDetails.requestStatus === ServiceStatus.COMPLETED;
   const isCancelled = requestDetails.requestStatus === ServiceStatus.CANCELLED;
 
@@ -211,19 +210,22 @@ const DirectRequestDetailsPage = () => {
                   >
                     العودة للرئيسية
                   </Button>
-                  {(isCompleted || isCancelled) &&
-                    requestDetails.providerId &&
-                    !requestDetails.isReported && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-10 cursor-pointer rounded-full border-rose-200 px-4 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
-                        onClick={() => setIsReportOpen(true)}
-                      >
-                        <Flag className="h-3.5 w-3.5" />
-                        إبلاغ
-                      </Button>
-                    )}
+                  {(isCompleted || isCancelled) && requestDetails.providerId && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={requestDetails.isReported}
+                      className={`h-10 rounded-full px-4 text-xs font-bold transition-all ${
+                        requestDetails.isReported
+                          ? 'cursor-not-allowed border-rose-100 bg-rose-50 text-rose-400 dark:border-rose-900/30 dark:bg-rose-950/20 dark:text-rose-500'
+                          : 'cursor-pointer border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400 dark:hover:bg-rose-950/30'
+                      }`}
+                      onClick={() => setIsReportOpen(true)}
+                    >
+                      <Flag className="h-3.5 w-3.5" />
+                      {requestDetails.isReported ? 'تم الابلاغ' : 'إبلاغ'}
+                    </Button>
+                  )}
                 </div>
               )}
             </div>

@@ -131,7 +131,7 @@ const LoginPage = () => {
           </form>
 
           {/* Divider */}
-          <div className="text-muted-foreground flex items-center gap-3 text-sm">
+          {/* <div className="text-muted-foreground flex items-center gap-3 text-sm">
             <div className="bg-muted-foreground/20 h-px flex-1" />
             أو
             <div className="bg-muted-foreground/20 h-px flex-1" />
@@ -149,7 +149,7 @@ const LoginPage = () => {
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               className="h-4 w-4"
             />
-          </Button>
+          </Button> */}
 
           <p className="text-muted-foreground text-center text-sm">
             ليس لديك حساب؟{' '}
