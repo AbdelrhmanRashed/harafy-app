@@ -68,7 +68,7 @@ export default function CompletionOverlay({ request }: Props) {
         </div>
 
         <div className="space-y-1 text-center">
-          <h1 className="text-foreground text-2xl font-black">تمت الخدمة! 🎉</h1>
+          <h1 className="text-foreground text-2xl font-black">تمت الخدمة!</h1>
           <p className="text-muted-foreground text-sm">
             تم إكمال الطلب بنجاح لـ{' '}
             <span className="text-foreground font-bold">

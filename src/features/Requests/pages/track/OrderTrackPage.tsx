@@ -10,7 +10,6 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import type { AssignedRequest } from '../../types/providerOfferTypes';
 import { useLiveLocation } from '../../hooks/useUpdateLiveLocation';
-import { useAssignedRequests } from '../../hooks/useAssignedRequests';
 import { ServiceStatus } from '@/constants/service-status';
 import CompletionOverlay from '../../components/CompletionOverlay';
 import { useServiceRequestGeneral } from '../../hooks/useServiceRequestGeneral';
@@ -40,6 +39,12 @@ const OrderTrackPage = () => {
       refetchInterval: 8_000,
     });
   const isCompleted = liveRequest?.requestStatus === ServiceStatus.COMPLETED;
+
+  const fullRequest = useMemo(() => {
+    if (!request) return null;
+    if (!liveRequest) return request;
+    return { ...request, ...liveRequest } as AssignedRequest;
+  }, [request, liveRequest]);
 
   console.log(liveRequest);
   console.log(isCompleted);
@@ -394,8 +399,8 @@ const OrderTrackPage = () => {
       )}
 
       {/* Completion overlay — shown when client marks service as done */}
-      {isCompleted && liveRequest && (
-        <CompletionOverlay request={liveRequest} />
+      {isCompleted && fullRequest && (
+        <CompletionOverlay request={fullRequest} />
       )}
     </div>
   );

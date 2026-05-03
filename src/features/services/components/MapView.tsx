@@ -22,13 +22,13 @@ function getDistanceMeters(a: LatLng, b: LatLng): number {
   const Δφ = ((b.lat - a.lat) * Math.PI) / 180;
   const Δλ = ((b.lng - a.lng) * Math.PI) / 180;
   const x =
-    Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    Math.sin(Δφ / 2) ** 2 +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
 const CENTER_MOVE_THRESHOLD_M = 20;
-// الـ provider لازم يتحرك أكتر من كده عشان نعتبره "تحرك فعلاً"
-const PROVIDER_MOVE_THRESHOLD_M = 15;
+const LIVE_UPDATE_INTERVAL_MS = 5000;
 
 // ─── Map click handler ────────────────────────────────────────
 function MapClickHandler({
@@ -112,10 +112,12 @@ function useStableCenter(
       setStableCenter({ lat: fallbackLat, lng: fallbackLng });
       return;
     }
+
     const current: LatLng = {
       lat: liveProviderPos.lat,
       lng: liveProviderPos.lng,
     };
+
     const moved = !prevLiveRef.current
       ? Infinity
       : getDistanceMeters(prevLiveRef.current, current);
@@ -125,47 +127,48 @@ function useStableCenter(
       setStableCenter(current);
     }
   }, [liveProviderPos?.lat, liveProviderPos?.lng, fallbackLat, fallbackLng]);
-  // ↑ primitives بدل object → مش بيتعمل جديد كل render
 
   return stableCenter;
 }
 
 // ─── Confirmed provider position hook ────────────────────────
-// بيخلي الـ marker ميظهرش غير لما يتحرك فعلاً من الـ baseLocation
+// بيعرض الـ marker فور أول position، وبيحدثه كل 5 ثواني بس
 function useConfirmedProviderPos(
   liveProviderPos: { lat: number; lng: number } | null | undefined,
   hasSelectedProvider: boolean,
 ): { lat: number; lng: number } | null {
-  // آخر position اتأكدنا إنها حركة حقيقية
-  const firstPosRef = useRef<{ lat: number; lng: number } | null>(null);
+  const latestPosRef = useRef<{ lat: number; lng: number } | null>(null);
   const [confirmedPos, setConfirmedPos] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
 
+  // دايما احفظ آخر position في ref من غير ما تعمل re-render
   useEffect(() => {
-    // reset لما ما يكونش في provider مختار
     if (!hasSelectedProvider || !liveProviderPos) {
-      firstPosRef.current = null;
+      latestPosRef.current = null;
       setConfirmedPos(null);
       return;
     }
 
-    // أول position وصلت → احفظها كـ baseline بس ما تعرضهاش
-    if (!firstPosRef.current) {
-      firstPosRef.current = liveProviderPos;
-      return;
-    }
+    latestPosRef.current = liveProviderPos;
 
-    // لو تحرك أكتر من الـ threshold من أول position → ده موقع حقيقي
-    const dist = getDistanceMeters(
-      firstPosRef.current as LatLng,
-      liveProviderPos as LatLng,
-    );
-    if (dist >= PROVIDER_MOVE_THRESHOLD_M) {
-      setConfirmedPos(liveProviderPos);
-    }
+    // أول position → اعرضها فوراً عشان الـ loading يختفي
+    setConfirmedPos((prev) => prev ?? liveProviderPos);
   }, [liveProviderPos?.lat, liveProviderPos?.lng, hasSelectedProvider]);
+
+  // كل 5 ثواني → حدّث الـ marker من آخر قيمة في الـ ref
+  useEffect(() => {
+    if (!hasSelectedProvider) return;
+
+    const interval = setInterval(() => {
+      if (latestPosRef.current) {
+        setConfirmedPos({ ...latestPosRef.current });
+      }
+    }, LIVE_UPDATE_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [hasSelectedProvider]);
 
   return confirmedPos;
 }
@@ -185,10 +188,12 @@ export default function MapView({
 }: MapViewProps) {
   const [mapSearch, setMapSearch] = useState('');
 
-  // primitives عشان نتجنب re-render من object جديد كل مرة
-  const stableCenter = useStableCenter(liveProviderPos, center.lat, center.lng);
+  const stableCenter = useStableCenter(
+    liveProviderPos,
+    center.lat,
+    center.lng,
+  );
 
-  // الـ marker بيظهر بس لما الـ provider يتحرك فعلاً
   const confirmedProviderPos = useConfirmedProviderPos(
     liveProviderPos,
     !!selectedProvider,
@@ -196,7 +201,6 @@ export default function MapView({
 
   return (
     <div className="relative h-full w-full">
-      {/* Loading overlay: بيظهر لحد ما نتأكد من أول حركة */}
       {!confirmedProviderPos && selectedProvider && (
         <div className="bg-card/10 dark:bg-card/90 absolute inset-0 z-600 flex items-center justify-center backdrop-blur-sm">
           <div className="flex flex-col items-center gap-3">
@@ -305,7 +309,6 @@ export default function MapView({
             </Marker>
           ))}
 
-        {/* ← confirmedProviderPos بدل liveProviderPos مباشرة */}
         {confirmedProviderPos && selectedProvider && (
           <Marker
             position={[confirmedProviderPos.lat, confirmedProviderPos.lng]}
