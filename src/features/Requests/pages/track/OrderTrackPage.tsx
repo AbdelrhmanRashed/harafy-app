@@ -13,6 +13,7 @@ import { useLiveLocation } from '../../hooks/useUpdateLiveLocation';
 import { useAssignedRequests } from '../../hooks/useAssignedRequests';
 import { ServiceStatus } from '@/constants/service-status';
 import CompletionOverlay from '../../components/CompletionOverlay';
+import { useServiceRequestGeneral } from '../../hooks/useServiceRequestGeneral';
 
 const BASE_URL = axiosInstance.defaults.baseURL ?? '';
 
@@ -26,16 +27,18 @@ const OrderTrackPage = () => {
   const request = state?.request as AssignedRequest | undefined;
 
   // Poll every 10 s to detect when the client marks the service as completed
-  const { data: assignedRequests } = useAssignedRequests(true, {
-    refetchInterval: 10_000,
-    enabled: !!request?.id,
-  });
-
-  const liveRequest = useMemo(
-    () => assignedRequests?.find((r) => r.id === request?.id) ?? request,
-    [assignedRequests, request],
-  );
-
+  // const { data: assignedRequests } = useAssignedRequests(true, {
+  //   refetchInterval: 10_000,
+  //   enabled: !!request?.id,
+  // });
+  // const liveRequest = useMemo(
+    //   () => assignedRequests?.find((r) => r.id === request?.id) ?? request,
+    //   [assignedRequests, request],
+    // );
+    
+    const { data: liveRequest } = useServiceRequestGeneral(request?.id, {
+      refetchInterval: 8_000,
+    });
   const isCompleted = liveRequest?.requestStatus === ServiceStatus.COMPLETED;
 
   console.log(liveRequest);

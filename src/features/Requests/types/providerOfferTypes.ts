@@ -81,3 +81,23 @@ export type ProviderReview = {
   clientName?: string | null;
   clientPictureUrl?: string | null;
 };
+
+export interface ServiceRequestLocation {
+  latitude: number;
+  longitude: number;
+  address?: string | null;
+}
+
+export interface ServiceRequestGeneral {
+  id: number;
+  requestStatus: number;
+  description?: string | null;
+  finalPrice?: number | null;
+  createdAt: string;
+  preferredTime?: string | null;
+  clientId: number;
+  providerId: number;
+  serviceId: number;
+  serviceRequestLocation: ServiceRequestLocation;
+  imageUrls: string[];
+}
