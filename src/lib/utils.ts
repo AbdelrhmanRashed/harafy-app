@@ -5,8 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getImageUrl = (imagePath: string | null | undefined) => imagePath;
-
+export const getImageUrl = (imagePath: string | undefined) => imagePath;
 export const getFullName = (
   firstName: string | null | undefined,
   lastName: string | null | undefined,
