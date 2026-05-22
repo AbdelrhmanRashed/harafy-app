@@ -1,73 +1,149 @@
-# React + TypeScript + Vite
+# Herafy App — Service Marketplace Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern platform that connects users with trusted service providers such as plumbers, electricians, carpenters, and other professionals.
 
-Currently, two official plugins are available:
+The platform focuses on:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Building trust between clients and providers  
+- Fast and seamless service requests  
+- Community-driven experiences  
+- Real-time updates and live tracking  
+- Provider verification system  
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Features
 
-## Expanding the ESLint configuration
+## Authentication & Authorization
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- JWT Authentication  
+- Access Token & Refresh Token flow  
+- Protected Routes  
+- Role-based access (Client / Provider / Admin)  
+- Persistent user sessions  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Provider Verification System
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Providers are required to upload:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- Personal photo  
+- National ID  
+- Criminal record certificate  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+All uploaded documents are reviewed manually through the Admin Dashboard before activating the provider account.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+This helps improve:
+
+- Trust  
+- Platform safety  
+- Service quality  
+
+---
+
+## Community System
+
+Users can:
+
+- Share experiences  
+- Create posts  
+- Interact with others  
+- View similar problems  
+- Build trust before requesting services  
+
+### Community Features
+
+- Infinite scrolling posts  
+- Likes & comments  
+- Real-time interactions  
+
+---
+
+# Service Requests
+
+## Direct Request Flow
+
+Clients can:
+
+- Choose a service  
+- Detect their location  
+- View nearby providers  
+- Send direct requests  
+- Track request status in real time  
+
+---
+
+# Real-time Tracking
+
+Implemented using **SignalR**.
+
+### Features
+
+- Live provider location updates  
+- Real-time notifications  
+- Request status updates  
+- Smooth real-time user experience  
+
+---
+
+# Reviews & Ratings
+
+After service completion:
+
+- Clients can leave ratings  
+- Write reviews  
+- Improve provider trust & visibility  
+
+---
+
+# Tech Stack
+
+## Frontend
+
+- React  
+- TypeScript  
+- Vite  
+- Tailwind CSS  
+- shadcn/ui  
+- React Router  
+- Zustand  
+- React Query  
+- React Hook Form  
+- Zod  
+- Leaflet  
+- SignalR  
+
+---
+
+# Why These Technologies?
+
+| Technology | Purpose |
+|---|---|
+| React | Building dynamic and interactive UI |
+| TypeScript | Type safety and scalability |
+| Tailwind CSS | Fast and flexible styling |
+| shadcn/ui | Reusable modern UI components |
+| React Query | Server state management & caching |
+| Zustand | Lightweight client-side state management |
+| React Hook Form | Form handling |
+| Zod | Schema validation |
+| Leaflet | Maps & live tracking |
+| SignalR | Real-time communication |
+
+---
+
+# Future Improvements
+
+- AI-powered provider recommendations  
+- Automated document verification  
+- Integrated payment system  
+- In-app chat system  
+- Push notifications  
+- Mobile application  
+
+---
+
+# Business Goal
+
+Herafy is designed to simplify the process of finding trusted service providers while improving safety, transparency, and user trust through verification systems and community-driven experiences.
