@@ -30,9 +30,9 @@ export default function OfferRequestCard({ data }: Props) {
 
   const createdAt = data.createdAt
     ? new Date(data.createdAt).toLocaleTimeString('ar-EG', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+        hour: '2-digit',
+        minute: '2-digit',
+      })
     : null;
 
   return (
@@ -73,12 +73,12 @@ export default function OfferRequestCard({ data }: Props) {
           <div className="space-y-1">
             {serviceName && (
               <p className="text-primary text-right text-lg font-bold">
-               {serviceName}   
+                {serviceName}
               </p>
             )}
             <div className="bg-muted/40 relative mt-5 rounded-2xl p-4">
               <MessageSquare className="text-primary/70 absolute top-5.5 right-4 h-5 w-5 rotate-12" />
-              <p className="text-muted-foreground text-right text-base leading-relaxed font-medium ms-10">
+              <p className="text-muted-foreground ms-10 text-right text-base leading-relaxed font-medium">
                 {data.description || 'لا يوجد وصف'}
               </p>
             </div>
@@ -108,7 +108,7 @@ export default function OfferRequestCard({ data }: Props) {
                   <img
                     src={url}
                     alt={`صورة ${i + 1}`}
-                    className="h-full w-full object-cover cursor-pointer"
+                    className="h-full w-full cursor-pointer object-cover"
                     onClick={() => {
                       setSelectedImage(i);
                       setLightboxOpen(true);

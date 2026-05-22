@@ -20,9 +20,7 @@ export const getAvailableRequests = async (
     offerId: item.offerId ?? null,
     serviceName: services?.find((s) => s.id === item.serviceId)?.name ?? null,
     clientName: item.clientName ?? null,
-    clientPictureUrl: item.clientPictureUrl
-      ? `${BASE_URL}/${item.clientPictureUrl}`
-      : null,
+    clientPictureUrl: item.clientPictureUrl,
     imageUrls: (item.imageUrls ?? []).map((url: string) =>
       url.startsWith('http') ? url : `${BASE_URL}/${url}`,
     ),

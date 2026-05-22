@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { Loader2, RefreshCw, UserSearch, Zap, XCircle } from 'lucide-react';
-import { useGetRequestOffer } from '../../hooks/useGetRequestOffer';
+// import { useGetRequestOffer } from '../../hooks/useGetRequestOffer';
 import OfferCard from './OfferCard';
 import type { RequestOfferItem } from './types';
 import { Button } from '@/components/ui/button';
+import { useOffersSocket } from '@/realtime/useOffersSocket';
 
 function normalizeOffers(raw: unknown): RequestOfferItem[] {
   if (!raw) return [];
@@ -40,27 +41,34 @@ type Step2OffersSidebarProps = {
 };
 
 export default function Step2OffersSidebar({
-  requestId,
   onAccept,
   isAssigning,
   onCancel,
   isCancelling,
 }: Step2OffersSidebarProps) {
-  const { data: raw } = useGetRequestOffer(requestId, {
-    enabled: !!requestId,
-    refetchInterval: 3000,
-  });
+  // const { data: raw } = useGetRequestOffer(requestId, {
+  //   enabled: !!requestId,
+  //   refetchInterval: 3000,
+  // });
 
+  const { isConnected, offers: raw } = useOffersSocket();
   const offers = useMemo(() => normalizeOffers(raw), [raw]);
 
   return (
     <div className="relative flex h-full flex-col gap-6 px-4 py-4 pb-8 sm:px-5">
       <div className="flex items-center justify-between">
         <h2 className="text-foreground text-xl font-black">عروض الحرفيين</h2>
-        <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold">
-          <div className="bg-primary h-1.5 w-1.5 rounded-full" />
-          مباشر
-        </div>
+        {isConnected ? (
+          <div className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold">
+            <div className="bg-primary h-1.5 w-1.5 animate-pulse rounded-full" />
+            مباشر
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 rounded-full bg-red-800/20 px-3 py-1 text-xs font-bold text-red-900">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-900" />
+            غير متصل
+          </div>
+        )}
       </div>
 
       <div className="bg-primary/5 flex items-center gap-4 rounded-2xl px-5 py-4">

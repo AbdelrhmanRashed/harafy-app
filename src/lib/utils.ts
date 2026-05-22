@@ -5,8 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getImageUrl = (imagePath: string | null | undefined) =>
-  imagePath ? `${import.meta.env.VITE_BASE_URL}/${imagePath}` : undefined;
+export const getImageUrl = (imagePath: string | null | undefined) => imagePath;
 
 export const getFullName = (
   firstName: string | null | undefined,
